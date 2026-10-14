@@ -1,7 +1,7 @@
 # ai-toolkit
 
-A small, opinionated set of skills, rules and hooks for **Claude Code** and **Codex**, written for
-an AI engineer / CTO who builds full-stack products and agent systems.
+A small, opinionated set of skills, rules and hooks for **Claude Code** and **Codex**, for building
+full-stack products and agent systems.
 
 Every skill exists because a current frontier model skips the behaviour it enforces, or does not
 know it. Generic advice the model already follows was left out. Each skill lists its sources;
@@ -48,16 +48,6 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
 3. Rewrite, don't copy — upstream material is read and restated; licences are respected.
 4. Resident cost is a budget: descriptions are short, long rules load only when relevant.
 
----
-
-## 中文简介
-
-面向 AI 工程师 / CTO 的一套精简 skill、规则和钩子，同时支持 Claude Code 和 Codex。只收录"模型自己
-不会做、或在压力下会跳过"的做法；每个 skill 都注明来源（见 CREDITS.md）。设计品味、趋势信号、
-安全钩子直接采用 impeccable、last30days、claude-code-hooks。
-
-安装：`./install.sh claude` 先预览，确认后加 `--apply`。个人参数写在
-`toolkit/<类别>/personal.local.md`（不会提交），安装时合并进对应 skill。
 
 ## License
 
