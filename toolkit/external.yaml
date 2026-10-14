@@ -27,7 +27,7 @@
   category: research
   repo: https://github.com/mvanhorn/last30days-skill
   license: MIT
-  install: npx skills add mvanhorn/last30days-skill -g
+  install: npx -y skills@latest add mvanhorn/last30days-skill -g -a claude-code,codex -y
   update: npx skills update last30days -g
   covers: >
     Recency-windowed signal collection across Reddit, Hacker News, arXiv, Techmeme,
@@ -58,3 +58,17 @@
     Installed from inside Claude Code (slash commands), not by install.sh. git-safety blocks
     direct changes on main/master at the default level; set HOOK_SAFETY_LEVEL or work on a
     branch. Codex relies on its own sandbox and approval policy instead.
+
+- name: emil-design-engineering
+  category: design
+  repo: https://github.com/emilkowalski/skills
+  license: MIT
+  install: npx -y skills@latest add emilkowalski/skills -g -a claude-code,codex -s review-animations -s mobile-native -s break-ui -y
+  update: npx -y skills@latest update -g
+  covers: >
+    Three skills that complement impeccable where it is thin: review-animations (motion
+    standards: whether to animate by frequency, easing, exact curves), mobile-native (mobile web
+    feel: viewport units, tap highlight, sticky hover, safe areas, real-device checks) and
+    break-ui (plausible worst-case data behind a dev-only toggle; report before fixing).
+  notes: >
+    Do not install his `animate` skill alongside impeccable's animate command — they overlap.

@@ -11,16 +11,18 @@ see [CREDITS.md](CREDITS.md).
 
 | area | skills |
 |---|---|
-| engineering | `system-design` (numbers before boxes; design reviews) · `debugging` · `verification` · `code-review` · `app-security` · `production-ops` (safe changes and incidents) · `architecture-diagram` |
+| engineering | `design-discussion` (think a design through, one question at a time) · `system-design` (numbers before boxes; design reviews) · `debugging` · `verification` · `code-review` · `app-security` · `production-ops` (safe changes and incidents) · `architecture-diagram` |
 | AI agents | `agent-architecture` · `agent-orchestration` · `agent-evals` · `agent-security` · `agent-instructions` (CLAUDE.md / AGENTS.md) |
 | research and market | `verified-research` · `market-scan` (competitors and unmet demand) · `macro-regime` |
-| product | `adopt-or-build` · `product-scoping` |
+| product | `customer-discovery` (validate ideas with real users) · `product-scoping` · `pricing` · `experiment-readout` (A/B tests and launches) · `adopt-or-build` |
+| investing | `thesis-ledger` · `valuation-audit` — decision support for individual investors; never buy/sell advice |
 | strategy | `liu-ayi` — a strategic-analysis framework built on order-and-institution checks, base rates and calibrated decisions |
 | career | `career-navigator` |
 | rules | `core.md` (always loaded, ~20 lines) plus language traps that load only for matching files: Python, Java/Spring, C++, TypeScript/React/Next.js, Flutter/Dart, SQL/containers |
 | hooks | `claim-check` — blocks "done / fixed / tests pass" claims made after editing files without running anything |
 
-Design taste is delegated to [impeccable](https://github.com/pbakaus/impeccable), trend signals to
+Design taste is delegated to [impeccable](https://github.com/pbakaus/impeccable) plus three of
+[emilkowalski/skills](https://github.com/emilkowalski/skills) (motion review, mobile-web feel, worst-case data), trend signals to
 [last30days](https://github.com/mvanhorn/last30days-skill), and safety hooks to
 [claude-code-hooks](https://github.com/karanb192/claude-code-hooks) — installed from their own
 sources (see `toolkit/external.yaml`).

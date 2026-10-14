@@ -1,12 +1,14 @@
 ---
 name: market-scan
 description: Scan a market for competitors and unmet demand with claims that survive scrutiny — label every competitor fact observed (source, date), inferred or implication; treat "not seen" as different from "absent"; rank demand signals by behaviour (posted workarounds and rejected pull requests over upvotes); score candidate opportunities on fixed bands; kill an idea only by naming what already does it; and return "nothing solid" rather than invent one. Use for competitor teardowns, market maps, positioning, unmet needs, pain points, idea mining, and "who wins here and why".
-version: 1.0.0
+version: 1.1.0
 sources:
   - upstream/marketingskills/skills/{competitor-profiling,competitors} (MIT) — observed / inferred / implication, not observed is not absent, dated snapshots, switching evidence both ways
   - upstream/geekjourneyx-github-demand-radar/references/{rice-jtbd-rubric.md,pr-scan-guide.md,negative-filters.md} (MIT) — job inference, workaround and rejected-PR signals, not-noise table, standalone-tool ease
   - upstream/mvanhorn-last30days-skill (MIT) — recency-windowed signals and the nothing-solid floor (installed tool; see toolkit/external.yaml)
   - upstream/wanshuiyin-auto-claude-code-research-in-sleep/skills/novelty-check (MIT) — name the prior work before killing an idea
+  - upstream/ferdinandobons-startup-skill/startup-competitors/references/honesty-protocol.md (MIT) — sentiment weighted by volume
+  - authored for this toolkit from a stated need — dated pricing history from web archives; price compared for a typical buyer
 ---
 
 # Market Scan
@@ -35,13 +37,18 @@ Two jobs, one discipline: **who is already here** (competitors) and **what is st
 
 1. Scope: our product, the decision this feeds, the competitors (ask if a reference is
    ambiguous; discovering them is part of the job — say how they were found).
-2. Per competitor: positioning and target user from their own pages, pricing and packaging,
+2. Per competitor: positioning and target user from their own pages, pricing and packaging
+   (list price as observed; plus the cost for a stated buyer profile — seats, usage — labelled
+   inferred),
    product surface from docs and changelog, momentum (release cadence, hiring, funding), what
-   users praise and complain about.
+   users praise and complain about — weighted by volume: a few angry posts do not outweigh a
+   large body of good reviews elsewhere, and the reverse.
 3. **Switching evidence both ways** — why people leave them for us and us for them. It outranks
    feature tables.
 4. Re-verify before reusing an old claim: current (new date), changed, or unverifiable (soften
-   or remove).
+   or remove). For "has it changed", use dated history — archived snapshots of the pricing or
+   customer pages (e.g. the Wayback Machine); logos removed from a customer page are a lead
+   to verify (redesigns also drop logos), labelled inferred.
 
 ## Demand
 

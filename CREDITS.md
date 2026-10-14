@@ -48,6 +48,13 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/gstack/qa (MIT) — regression-test value bar — used in: debugging
 - upstream/addyosmani-agent-skills/skills/debugging-and-error-recovery (MIT) — check the layer (UI, network, backend) — used in: debugging
 - authored for this toolkit from a stated need (frontend-or-backend triage) — request/response boundary isolation steps — used in: debugging
+- upstream/superpowers/skills/brainstorming (MIT) — think wide privately, play back in chunks, builder check by a fresh reader, nothing built before approval — used in: design-discussion
+- upstream/addyosmani-agent-skills/skills/interview-me (MIT) — one question with a guess attached, "want vs should want" probe, predict-the-next-three stop test, bare assent is not a yes — used in: design-discussion
+- upstream/addyosmani-agent-skills/skills/idea-refine (MIT) — directions must differ, not vary; name what each bets on; a not-doing list — used in: design-discussion
+- upstream/mattpocock-skills/skills/engineering/domain-modeling (MIT) — sharpen overloaded terms, edge-case scenarios, check the code, ADR only when hard to reverse, surprising and a real trade-off — used in: design-discussion
+- upstream/mattpocock-skills/skills/engineering/grill-with-docs (MIT) — record decisions and terms as they settle, not at the end — used in: design-discussion
+- upstream/compound-engineering-plugin/skills/ce-brainstorm/references/{approaches,dialogue,interaction-rules,settled-decisions}.md (MIT) — present all approaches before recommending, anti-genericness test, look up rather than ask, integration check, no self-settling of decisions — used in: design-discussion
+- upstream/gstack/office-hours (MIT) — premise challenge (right problem, cost of doing nothing, what already exists); minimal versus long-term versus lateral approaches — used in: design-discussion
 - upstream/everything-claude-code/skills/{database-migrations,docker-patterns} (MIT) — expand-migrate-contract, CONCURRENTLY, batched backfills — used in: production-ops
 - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/data-migration-reviewer.md (MIT) — broken dual-write transitions — used in: production-ops
 - upstream/jeffallan-claude-skills/skills/microservices-architect (MIT) — idempotency keys, idempotent saga steps, explicit retry budgets — used in: production-ops
@@ -69,6 +76,13 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - authored for this toolkit from a stated need (results challenged as unverified) — state how and where; answer challenges with evidence — used in: verification
 - upstream/addyosmani-agent-skills/skills/doubt-driven-development (MIT) — artifact-only adversarial review, bounded cycles, "doubt theater" — used in: verification
 - upstream/gstack/ship (MIT) — freshness by content, not by commit count — used in: verification
+- upstream/yennanliu-investskill/prompts/thesis-tracker.md (MIT) — mechanism / mispricing / why-now test, 3–5 KPIs with thresholds, ordered status rules, stale data cannot support intact, next-check timing, dated pre-mortem, memory figures low confidence — used in: thesis-ledger
+- upstream/yennanliu-investskill/prompts/10k-digest.md (MIT) — prior commitments scored delivered / partial / missed; restatement or auditor change makes earlier figures stale — used in: thesis-ledger
+- upstream/yennanliu-investskill/prompts/result-validator.md (MIT) — provenance header first; memory figures above low confidence are a red flag — used in: thesis-ledger
+- upstream/xbtlin-ai-berkshire/skills/thesis-drift.md (MIT) — fact / price / wording separation, compare evidence not prose, no change without new evidence, no mental arithmetic, kill criteria outrank a cheap multiple, no baseline means no drift check — used in: thesis-ledger
+- authored for this toolkit from a stated need (options positions) — claim dates vs expiry — used in: thesis-ledger
+- upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — reconciliation table, 3% market-cap tolerance, no quote no price, two method families, divergence handling, market-implied valuation, premium counted once, ±30% anchor rule, e + r + e×r return split, no-rerating case — used in: valuation-audit
+- upstream/yennanliu-investskill/prompts/dcf-valuation.md (MIT) — terminal growth below the discount rate; flag terminal value above 80% of enterprise value — used in: valuation-audit
 - upstream/yennanliu-investskill/plugins/us-stock-analysis/skills/economics-analysis (MIT) — never use remembered readings; provenance header; memory means low confidence; conflicting sources shown, never averaged — used in: macro-regime
 - upstream/anthropics-financial-services/plugins/partner-built/lseg/skills/macro-rates-monitor (Apache-2.0) — fixed dashboard; real rate = nominal − breakeven; 2s10s and 3M-10Y slopes; cycle, policy, real-rate and financial-conditions synthesis — used in: macro-regime
 - upstream/tradermonty-claude-trading-skills/skills/macro-regime-detector (MIT) — fail closed on missing inputs; require a sustained signal before calling a regime change — used in: macro-regime
@@ -77,7 +91,30 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/geekjourneyx-github-demand-radar/references/{rice-jtbd-rubric.md,pr-scan-guide.md,negative-filters.md} (MIT) — job inference, workaround and rejected-PR signals, not-noise table, standalone-tool ease — used in: market-scan
 - upstream/mvanhorn-last30days-skill (MIT) — recency-windowed signals and the nothing-solid floor (installed tool; see toolkit/external.yaml) — used in: market-scan
 - upstream/wanshuiyin-auto-claude-code-research-in-sleep/skills/novelty-check (MIT) — name the prior work before killing an idea — used in: market-scan
+- upstream/ferdinandobons-startup-skill/startup-competitors/references/honesty-protocol.md (MIT) — sentiment weighted by volume — used in: market-scan
+- authored for this toolkit from a stated need — dated pricing history from web archives; price compared for a typical buyer — used in: market-scan
 - upstream/compound-engineering-plugin/skills/ce-pov (MIT) — project floor and external floor, grade vocabulary, skeptic stance, reversibility-tiered effort, freeze-before-panel, "either is viable" — used in: adopt-or-build
+- upstream/sreshtalluri-mom-test/skills/mom-test (MIT) — past-behaviour rule, reflexes for bad data, evidence ladder — used in: customer-discovery
+- upstream/sreshtalluri-mom-test/skills/mom-test-check-questions (MIT) — question failure tests and reframe shapes — used in: customer-discovery
+- upstream/sreshtalluri-mom-test/skills/mom-test-debrief (MIT) — 19-rung ladder, facts vs interpretations, assumption statuses, segment split in batch mode — used in: customer-discovery
+- upstream/sreshtalluri-mom-test/skills/mom-test-gate (MIT) — per-segment qualifying count, 3-interview bar, commitment needed for a solution — used in: customer-discovery
+- upstream/sreshtalluri-mom-test/skills/mom-test-memory/templates/assumptions.md (MIT) — assumption row with segment and kill condition — used in: customer-discovery
+- upstream/eltntawy-idea-discovery-playbook/skills/behavior-led-validation (MIT) — email-only waitlist does not validate; payment as strongest signal — used in: customer-discovery
+- upstream/eltntawy-idea-discovery-playbook/skills/validation-experiments (MIT) — technique picker, priced CTA, success and fail thresholds, sequence, ethical fake door — used in: customer-discovery
+- upstream/gstack/office-hours/sections/phase-2a-startup-diagnostic.md (MIT) — demand-reality and status-quo questions; waitlists and interest are not demand — used in: customer-discovery
+- upstream/phuryn-pm-skills/pm-product-discovery/skills/brainstorm-experiments-new (MIT) — "at least X% of Y will do Z" hypothesis line — used in: customer-discovery
+- upstream/ai-analyst-lab-ai-analyst/.claude/skills/srm-check (MIT) — SRM as a blocking gate, per-period SRM, investigation paths — used in: experiment-readout
+- upstream/ai-analyst-lab-ai-analyst/.claude/skills/guardrails (MIT) — clear / trade-off / degraded verdicts, net impact in shared units — used in: experiment-readout
+- upstream/ai-analyst-lab-ai-analyst/.claude/skills/experiment (MIT) — pre-registered config, not-viable power checkpoint, stricter SRM threshold while monitoring, Holm correction, outcome classes — used in: experiment-readout
+- upstream/ai-analyst-lab-ai-analyst/.claude/skills/triangulation (MIT) — independent methods for non-randomised changes; agreement is not proof — used in: experiment-readout
+- upstream/posthog-experiments/products/experiments/skills/diagnosing-experiment-health (MIT, method only) — age and exposed-population checks, systematic vs statistical, mechanisms need evidence — used in: experiment-readout
+- upstream/posthog-experiments/products/experiments/skills/diagnosing-experiment-health/references/interpretation.md (MIT, method only) — peeking, multiple comparisons, MDE and sample arithmetic, "target reached" is not a result — used in: experiment-readout
+- upstream/wondelai-skills/monetizing-innovation/SKILL.md (MIT) — value metric before level, segment by willingness to pay, zero pushback as the under-pricing signature — used in: pricing
+- upstream/wondelai-skills/monetizing-innovation/references/wtp-conversations.md (MIT) — top-box scoring, haircut stated numbers, curve not average, red flags in answers — used in: pricing
+- upstream/wondelai-skills/monetizing-innovation/references/packaging-tiers.md (MIT) — leader/filler/killer thresholds, killers never inside a tier price — used in: pricing
+- upstream/aidevgtm-gtm-cofounder/skills/12-pricing/SKILL.md (MIT) — deflected payment requests as the strongest signal, metric then packaging then number, value-multiple heuristic — used in: pricing
+- upstream/marketingskills/skills/pricing/SKILL.md (MIT) — new-customers-first rollout, small existing cohort, grandfathering as a transition, the ultra-low-price trap — used in: pricing
+- upstream/marketingskills/skills/pricing/references/pricing-page-teardown.md (MIT) — reviewing the page for AI agents as well as humans — used in: pricing
 - upstream/gstack/plan-ceo-review (MIT) — four explicit scope modes chosen before review — used in: product-scoping
 - upstream/phuryn-pm-skills/pm-product-discovery/skills/opportunity-solution-tree (MIT) — opportunities not features, three solutions per opportunity, opportunity score — used in: product-scoping
 - upstream/phuryn-pm-skills/pm-execution/skills/create-prd (MIT) — value proposition with an explicit alternatives slot; findings enter the PRD only if they change a decision — used in: product-scoping

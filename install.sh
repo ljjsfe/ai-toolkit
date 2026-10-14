@@ -38,7 +38,7 @@ stamp = time.strftime("%Y%m%d-%H%M%S")
 backup = home / ".toolkit-backup" / stamp
 MARK_START, MARK_END = "<!-- toolkit:start -->", "<!-- toolkit:end -->"
 KEEP = {"synced"}
-EXTERNAL_PREFIXES = ("impeccable", "last30days")
+EXTERNAL_PREFIXES = ("impeccable", "last30days", "review-animations", "mobile-native", "break-ui")
 keep_file = home / ".toolkit-keep"
 if keep_file.is_file():
     KEEP |= {l.strip() for l in keep_file.read_text().splitlines() if l.strip()}

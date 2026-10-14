@@ -67,4 +67,5 @@ Kill-assumptions (3–5):   claim · fails if · evidence to get this week · ki
 What holds up:
 ```
 
-Research that does not change a decision stays out of the PRD; put it in notes.
+Research that does not change a decision stays out of the PRD; put it in notes. Assumptions
+that need evidence from real people go to `customer-discovery`.
