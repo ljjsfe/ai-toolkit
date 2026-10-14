@@ -1,0 +1,58 @@
+---
+name: verification
+description: Back completion claims with fresh evidence — the command that proves it, where it ran, re-run after the checked content changes, and an independent reviewer that sees only the artifact. Use before saying done, fixed, passing or deployed, and whenever a result is challenged.
+version: 1.0.0
+sources:
+  - upstream/superpowers/skills/verification-before-completion (MIT) — fresh evidence before claims, partial evidence, what each claim needs
+  - authored for this toolkit from a stated need (results challenged as unverified) — state how and where; answer challenges with evidence
+  - upstream/addyosmani-agent-skills/skills/doubt-driven-development (MIT) — artifact-only adversarial review, bounded cycles, "doubt theater"
+  - upstream/gstack/ship (MIT) — freshness by content, not by commit count
+---
+
+# Verification
+
+"Done" is a claim about the world. Claims need evidence produced now, not memory of evidence
+produced earlier.
+
+## Iron laws
+
+1. **No success claim without fresh evidence from this session** (the always-on core rule),
+   read in full — output and exit code — before the claim is made.
+2. **Say how and where.** Every "reproduced" or "verified" states the exact command or steps,
+   the environment (local, staging, which deployment, which data), and the observed result.
+   If it was not run in the real target environment, say so explicitly.
+3. **Evidence expires when the content it checked changes.** A test run or review applies to
+   the code, config and dependencies it saw. If any of those changed since, re-run; a
+   message-only amend changes nothing.
+4. **Partial evidence proves only its part.** Lint passing is not a build; a build is not a
+   test; tests passing is not the requirement met; an agent saying "success" is not a diff.
+
+## What each claim needs
+
+| claim | evidence | not enough |
+|---|---|---|
+| tests pass | test output, 0 failures, exit 0 | an earlier run, a subset |
+| builds | build command exit 0 | lint or type-check alone |
+| bug fixed | the original reproduction now passes | "code changed" |
+| deployed | the running version or commit hash read from the target, plus a live check | "the pipeline finished" |
+| requirement met | each requirement checked off against observed behaviour | tests passing |
+| delegated work done | the diff or artifact, inspected | the worker's report |
+
+## Challenge your own result (non-trivial work)
+
+Use this only when the change is hard to undo, or asserts something the compiler cannot check
+(concurrency, security, data integrity), or the user asks for it.
+
+1. Give a fresh reviewer — a subagent or another model, briefed as in `code-review` — **only
+   the artifact and the requirement**, never your reasoning or your claim that it works.
+2. Ask it to find what is wrong, not whether it is good.
+3. Classify each finding: actionable, already handled (say where), or not applicable (why).
+4. Fix the actionable ones and repeat. Stop after three rounds or when a round finds nothing
+   actionable.
+5. If two or more rounds produced findings and you classified none as actionable, you are
+   defending rather than checking: re-read the findings as if someone else wrote the code.
+
+## When challenged by the user
+
+Answer with the evidence, not reassurance: what was run, where, the output, and what was not
+checked. If the honest answer is that it was not verified, say that first, then verify.

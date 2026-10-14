@@ -1,0 +1,60 @@
+# Externally maintained components, installed from their own source by install.sh.
+# Adopted only when best-in-class for a category, actively maintained, and installable
+# for both Claude Code and Codex. Our toolkit never restates what these cover.
+
+- name: impeccable
+  category: design
+  repo: https://github.com/pbakaus/impeccable
+  license: Apache-2.0
+  install: npx -y impeccable install --providers=claude,codex --scope=global
+  update: npx impeccable update
+  covers: >
+    Frontend design taste end to end: surface modes (persuade/operate/read/experience),
+    new-work direction process, calibration against saturated AI looks, craft floor
+    (contrast, spacing, type, motion, states, browser surfaces), refusal list, 25 commands
+    (shape, critique, audit, polish, typeset, animate, ...), and an edit-time detector hook.
+  why_not_rewritten: >
+    Read 2026-10-13 against the other design upstreams (anthropics-skills frontend-design,
+    gstack design-*, everything-claude-code frontend-design-direction, taste-skill): its craft
+    floor and calibration already include their distinctive rules, and it adds an edit-time
+    detector we cannot reproduce in prose. 650+ commits in the last month.
+  notes: >
+    The edit-time detector hook is installed per project, not globally: run
+    `npx -y impeccable install` inside each project that should have it. Codex asks to
+    approve that project hook (/hooks).
+
+- name: last30days
+  category: research
+  repo: https://github.com/mvanhorn/last30days-skill
+  license: MIT
+  install: npx skills add mvanhorn/last30days-skill -g
+  update: npx skills update last30days -g
+  covers: >
+    Recency-windowed signal collection across Reddit, Hacker News, arXiv, Techmeme,
+    Polymarket and GitHub without API keys (X, TikTok, YouTube comments need optional keys).
+    Used by market-scan as a signal source; its own "worthiness" score rates content
+    appeal, not business opportunity, so scoring stays in market-scan.
+  notes: >
+    Use one install method per machine; Claude Code shows duplicates if both the plugin and
+    the npx skills copy are installed.
+
+- name: claude-code-hooks
+  category: hooks
+  repo: https://github.com/karanb192/claude-code-hooks
+  license: MIT
+  install: |
+    /plugin marketplace add karanb192/claude-code-hooks
+    /plugin install guard-pack@claude-code-hooks
+    /plugin install instructions-audit@claude-code-hooks
+    /plugin install cache-tax@claude-code-hooks
+    /plugin install subagent-spawn-cap@claude-code-hooks
+  update: /plugin marketplace update claude-code-hooks
+  covers: >
+    guard-pack (dangerous commands, secret files, git safety, test tampering, guardrail-config
+    tampering — seven guards in one process); instructions-audit (hidden directives in loaded
+    CLAUDE.md / rules); cache-tax (cold prompt-cache cost warning); subagent-spawn-cap.
+    Tested upstream (1,900+ tests). Claude Code only.
+  notes: >
+    Installed from inside Claude Code (slash commands), not by install.sh. git-safety blocks
+    direct changes on main/master at the default level; set HOOK_SAFETY_LEVEL or work on a
+    branch. Codex relies on its own sandbox and approval policy instead.
