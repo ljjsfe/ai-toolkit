@@ -11,6 +11,8 @@
 # KEEP below or in ~/.toolkit-keep (one per line), and anything external installers added.
 # Agents are never moved; they are listed for you to decide. Skills this toolkit installed in
 # an earlier run but no longer ships are removed (tracked in a manifest).
+# If a personal/ folder exists next to this script (private copies only; never exported),
+# personal/skills/* install alongside the toolkit and personal/external.yaml adds externals.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
@@ -94,8 +96,9 @@ def frontmatter(path):
     return "\n".join(lines[1:lines[1:].index("---") + 1])
 
 
+personal = root / "personal"
 skills = {}
-for skill_md in sorted(toolkit.glob("*/skills/*/SKILL.md")):
+for skill_md in sorted(toolkit.glob("*/skills/*/SKILL.md")) + sorted(personal.glob("skills/*/SKILL.md")):
     frontmatter(skill_md)
     d = skill_md.parent
     if d.name in skills:
@@ -231,9 +234,11 @@ if target in ("codex", "both"):
     install_codex()
 
 def external_entries():
-    """Parse toolkit/external.yaml (a fixed subset of YAML, so no library is needed)."""
+    """Parse external.yaml files (a fixed subset of YAML, so no library is needed)."""
     entries, cur, in_install = [], None, False
-    for line in (toolkit / "external.yaml").read_text(encoding="utf-8").splitlines():
+    files = [toolkit / "external.yaml"] + ([personal / "external.yaml"] if (personal / "external.yaml").is_file() else [])
+    lines = [l for f in files for l in f.read_text(encoding="utf-8").splitlines()]
+    for line in lines:
         if line.startswith("- name:"):
             cur = {"name": line.split(":", 1)[1].strip(), "install": [], "tools": [], "optional": False}
             entries.append(cur)
@@ -259,7 +264,7 @@ def external_entries():
 
 
 wanted = {"claude", "codex"} if target == "both" else {target}
-print("\nExternal components (toolkit/external.yaml):")
+print("\nExternal components (external.yaml):")
 failed = []
 for e in external_entries():
     if not wanted & set(e["tools"]):

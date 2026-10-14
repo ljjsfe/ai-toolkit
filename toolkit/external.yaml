@@ -5,7 +5,8 @@
 # Format (read by install.sh without a YAML library — keep to this shape):
 #   tools:    which targets the entry applies to (claude, codex)
 #   optional: true → listed but not installed by --external; install it yourself when decided
-#   install:  one shell command per "- " line, run in order
+#   install:  one shell command per "- " line, run in order. Commands must be safe to rerun
+#             and leave the latest version installed: ./update.sh simply reruns them.
 #   folded fields (`>`) are documentation only
 
 - name: impeccable
@@ -14,8 +15,7 @@
   license: Apache-2.0
   tools: claude, codex
   install:
-    - npx -y impeccable install --providers=claude,codex --scope=global
-  update: npx impeccable update
+    - npx -y impeccable@latest install --providers=claude,codex --scope=global
   covers: >
     Frontend design taste end to end: surface modes (persuade/operate/read/experience),
     new-work direction process, calibration against saturated AI looks, craft floor
@@ -38,7 +38,6 @@
   tools: claude, codex
   install:
     - npx -y skills@latest add mvanhorn/last30days-skill -g -a claude-code -a codex -y
-  update: npx skills update last30days -g
   covers: >
     Recency-windowed signal collection across Reddit, Hacker News, arXiv, Techmeme,
     Polymarket and GitHub without API keys (X, TikTok, YouTube comments need optional keys).
@@ -55,7 +54,6 @@
   tools: claude, codex
   install:
     - npx -y skills@latest add emilkowalski/skills -g -a claude-code -a codex -s review-animations -s mobile-native -s break-ui -y
-  update: npx -y skills@latest update -g
   covers: >
     Three skills that complement impeccable where it is thin: review-animations (motion
     standards: whether to animate by frequency, easing, exact curves), mobile-native (mobile web
@@ -72,7 +70,7 @@
   install:
     - claude plugin marketplace add openai/codex-plugin-cc
     - claude plugin install codex@openai-codex
-  update: claude plugin update codex@openai-codex
+    - claude plugin update codex@openai-codex
   covers: >
     Hands a task, a second opinion or a stuck investigation from Claude Code to Codex
     (codex:codex-rescue agent and /codex commands). Needs the Codex CLI installed and signed in.
@@ -89,7 +87,6 @@
     - claude plugin install instructions-audit@claude-code-hooks
     - claude plugin install cache-tax@claude-code-hooks
     - claude plugin install subagent-spawn-cap@claude-code-hooks
-  update: claude plugin marketplace update claude-code-hooks
   covers: >
     guard-pack (dangerous commands, secret files, git safety, test tampering, guardrail-config
     tampering — seven guards in one process); instructions-audit (hidden directives in loaded

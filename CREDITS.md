@@ -130,4 +130,6 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 
 - impeccable (Apache-2.0) — https://github.com/pbakaus/impeccable
 - last30days (MIT) — https://github.com/mvanhorn/last30days-skill
+- emil-design-engineering (MIT) — https://github.com/emilkowalski/skills
+- codex-plugin-cc (Apache-2.0) — https://github.com/openai/codex-plugin-cc
 - claude-code-hooks (MIT) — https://github.com/karanb192/claude-code-hooks

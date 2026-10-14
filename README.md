@@ -36,6 +36,7 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
 ./install.sh claude --apply                    # install for Claude Code
 ./install.sh claude --apply --replace-legacy   # also move your existing skills/rules to ~/.toolkit-backup/
 ./install.sh both --apply --external           # new machine: toolkit + the external components
+./update.sh                                    # later: git pull, then reinstall everything at latest
 ```
 
 - `--external` runs each installer listed in `toolkit/external.yaml` (impeccable, last30days,
