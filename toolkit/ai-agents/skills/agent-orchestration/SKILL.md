@@ -1,13 +1,14 @@
 ---
 name: agent-orchestration
 description: Run a team of subagents inside Claude Code or Codex without losing work — keep progress in a ledger that survives compaction, pin models, assign file ownership, serialise single-writer operations, and verify every "done" against an artifact. Use when dispatching more than one subagent or delegating multi-step work.
-version: 1.0.0
+version: 1.1.0
 sources:
   - upstream/superpowers/skills/{subagent-driven-development,dispatching-parallel-agents} (MIT)
   - upstream/oh-my-claudecode/skills/team (MIT)
   - upstream/compound-engineering-plugin/skills/ce-work/references/execution-strategy.md (MIT) — exclusive file ownership, orchestrator-only git, bounded batch concurrency
   - upstream/anthropics-skills/skills/claude-api/shared/managed-agents-multiagent.md — when delegation fits
   - upstream/seanellyjames-deep-research-skill/SKILL.md (MIT) — concurrency cap and no nested spawning
+  - upstream/villetakanen-asdlc-io (MIT) — declared dependencies and a divergence rule in the task brief
 ---
 
 # Agent Orchestration
@@ -19,7 +20,7 @@ verdict. This skill is about running the team, not about designing an agent prod
 ## Iron laws
 
 1. **Progress lives in a ledger file, not in your context.** Write each task's status, owner,
-   model and result path to a file as you go. After any compaction or resume, trust the ledger
+   model, dependencies and result path to a file as you go. After any compaction or resume, trust the ledger
    and `git log` over your own recollection. The most expensive orchestration failure is an
    orchestrator that loses its place and re-dispatches work that was already done.
 2. **Pass the model explicitly on every dispatch.** An omitted model inherits the session's,
@@ -56,6 +57,10 @@ Owns:        files it may modify (empty for read-only work)
 Must not:    files, commands and decisions that are out of bounds
 Return:      the exact shape — fields, file path, max length — plus what was not done or assumed
 Done when:   the checkable condition
+Depends on:  tasks that must finish first — declared now, not discovered at merge
+If wrong:    what to do if the brief or spec turns out wrong — stop and report, or
+             continue and log each deviation; a deviation never crosses Owns or Must not
+             (if it would, stop); never silently work around it
 Model:       explicit
 ```
 

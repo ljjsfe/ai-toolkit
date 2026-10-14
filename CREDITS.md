@@ -16,11 +16,14 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/compound-engineering-plugin/.agents/skills/ce-skill-work/references/evaluate.md (MIT) — used in: agent-evals
 - upstream/anthropics-skills/skills/claude-api/shared/evals/{eval-audit,build-eval,eval-hillclimb}.md — grade the end state, start from real failures, report spread, held-out split — used in: agent-evals
 - upstream/compound-engineering-plugin/docs (MIT) — blinded arms, small-n paired evals — used in: agent-evals
+- upstream/villetakanen-asdlc-io (MIT) — toolchain-first decision rule, instruction files as a friction diagnostic, generated files as a list of what to leave out, map only hidden knowledge, skills listed by name — used in: agent-instructions
+- {'Gloaguen et al., "Evaluating AGENTS.md': 'Are Repository-Level Context Files Helpful for Coding Agents?" (2026), https://arxiv.org/abs/2602.11988 — context files did not generally improve task success and raised inference cost by over 20%; agents follow the instructions; repository overviews were not helpful'} — used in: agent-instructions
 - upstream/superpowers/skills/{subagent-driven-development,dispatching-parallel-agents} (MIT) — used in: agent-orchestration
 - upstream/oh-my-claudecode/skills/team (MIT) — used in: agent-orchestration
 - upstream/compound-engineering-plugin/skills/ce-work/references/execution-strategy.md (MIT) — exclusive file ownership, orchestrator-only git, bounded batch concurrency — used in: agent-orchestration
 - upstream/anthropics-skills/skills/claude-api/shared/managed-agents-multiagent.md — when delegation fits — used in: agent-orchestration
 - upstream/seanellyjames-deep-research-skill/SKILL.md (MIT) — concurrency cap and no nested spawning — used in: agent-orchestration
+- upstream/villetakanen-asdlc-io (MIT) — declared dependencies and a divergence rule in the task brief — used in: agent-orchestration
 - upstream/everything-claude-code/skills/{agent-security-hardening,mcp-dependency-review,prompt-caching-strategy,llm-trading-agent-security,agent-architecture-audit} (MIT) — used in: agent-security
 - upstream/vila-lab/README.md, docs/architecture.md (CC BY-NC-SA 4.0 — ideas only, no wording) — used in: agent-security
 - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-managed-context,harness-engineering,self-improvement-loops} (MIT) — used in: agent-security
@@ -34,6 +37,7 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/compound-engineering-plugin/skills/ce-code-review/references/{personas/*,action-class-rubric.md,subagent-template.md} (MIT) — correctness, security, performance and reliability lenses; P0–P3; check callers, guards and framework defaults — used in: code-review
 - upstream/compound-engineering-plugin/skills/ce-simplify-code/references/personas/efficiency-reviewer.md (MIT) — unbounded structures, listener leaks — used in: code-review
 - upstream/gstack/review (MIT) — sideways sweep, gate-integrity inventory, quote-or-cap confidence — used in: code-review
+- upstream/villetakanen-asdlc-io (MIT) — the repo's own instruction files as a review contract; stale specs as missing work — used in: code-review
 - upstream/mattpocock-skills/skills/engineering/code-review (MIT) — spec and standards as separate axes, smell vocabulary as fallback, repo conventions override — used in: code-review
 - upstream/superpowers/skills/systematic-debugging (MIT) — root cause first, read the full error, one change at the source, three failed fixes means stop — used in: debugging
 - upstream/compound-engineering-plugin/skills/ce-debug/references/{investigate,fix}.md (MIT) — observation-cited hypotheses, explicit invalidation — used in: debugging

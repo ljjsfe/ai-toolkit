@@ -12,7 +12,7 @@ see [CREDITS.md](CREDITS.md).
 | area | skills |
 |---|---|
 | engineering | `system-design` (numbers before boxes; design reviews) · `debugging` · `verification` · `code-review` · `app-security` · `production-ops` (safe changes and incidents) · `architecture-diagram` |
-| AI agents | `agent-architecture` · `agent-orchestration` · `agent-evals` · `agent-security` |
+| AI agents | `agent-architecture` · `agent-orchestration` · `agent-evals` · `agent-security` · `agent-instructions` (CLAUDE.md / AGENTS.md) |
 | research and market | `verified-research` · `market-scan` (competitors and unmet demand) · `macro-regime` |
 | product | `adopt-or-build` · `product-scoping` |
 | strategy | `liu-ayi` — a strategic-analysis framework built on order-and-institution checks, base rates and calibrated decisions |

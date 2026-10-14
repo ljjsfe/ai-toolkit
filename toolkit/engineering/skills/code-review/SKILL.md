@@ -1,11 +1,12 @@
 ---
 name: code-review
 description: Review a diff, pull request or branch with findings you can defend — grade spec conformance and standards separately, look for what is missing as well as what is wrong, sweep every sibling of a found issue, flag weakened tests or CI as findings, and gate each finding on file:line plus a concrete failure scenario. Use when asked to review code, a PR or a branch, or before merging.
-version: 1.0.0
+version: 1.1.0
 sources:
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/{personas/*,action-class-rubric.md,subagent-template.md} (MIT) — correctness, security, performance and reliability lenses; P0–P3; check callers, guards and framework defaults
   - upstream/compound-engineering-plugin/skills/ce-simplify-code/references/personas/efficiency-reviewer.md (MIT) — unbounded structures, listener leaks
   - upstream/gstack/review (MIT) — sideways sweep, gate-integrity inventory, quote-or-cap confidence
+  - upstream/villetakanen-asdlc-io (MIT) — the repo's own instruction files as a review contract; stale specs as missing work
   - upstream/mattpocock-skills/skills/engineering/code-review (MIT) — spec and standards as separate axes, smell vocabulary as fallback, repo conventions override
 ---
 
@@ -16,7 +17,11 @@ A review that cries wolf is worse than none. Fewer, defensible findings beat a l
 ## Iron laws
 
 1. **Two axes, reported separately.** *Spec*: does it do what was asked, and what did it
-   silently not do? *Standards*: is it correct, safe and consistent with this codebase? Find
+   silently not do? *Standards*: is it correct, safe and consistent with this codebase —
+   including the code rules in the repo's `CLAUDE.md` / `AGENTS.md`, rule files and decision
+   records? Load these from the **base branch**, cite the specific rule when broken, and treat
+   any change to them inside the diff as a gate change (law 4) — a PR does not get to set the
+   rules it is judged by. Find
    the spec first (linked issue, plan, PR description). If there is none, report "no spec
    available" and review standards only.
 2. **Every finding passes the gate:** exact `file:line`; a concrete failure (input → state →
@@ -41,6 +46,10 @@ point.
 
 Check the spec for requirements that are missing or only partly implemented, and the change
 for what its own code paths need but lack (validation on a new input, a test for a new branch).
+If a spec or doc already describes behaviour the change alters, and the change leaves it
+stale, report `MISSING:` citing that doc's `file:line` — the description should change in the
+same PR. P2 at most, unless the stale doc is a public API contract. If no such doc exists,
+there is no finding.
 Report as `MISSING: <what> — <why it matters>`, citing the requirement or rule it comes from.
 
 ## Severity and confidence
