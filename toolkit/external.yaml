@@ -85,6 +85,59 @@
     Chinese counterpart of humanizer: template phrasing, padding and inflated claims, while
     keeping facts, how certain each claim is, and the author's voice.
 
+- name: webapp-testing
+  category: engineering
+  repo: https://github.com/anthropics/skills
+  license: Apache-2.0
+  tools: claude, codex
+  install:
+    - npx -y skills@latest add anthropics/skills -g -a claude-code -a codex -s webapp-testing -y
+  covers: >
+    Drives a local web app in a real browser with Playwright: starts the server(s), navigates,
+    screenshots, reads console logs. The evidence `verification` asks for when the claim is
+    "the UI works".
+
+- name: mcp-builder
+  category: ai-agents
+  repo: https://github.com/anthropics/skills
+  license: Apache-2.0
+  tools: claude, codex
+  optional: true
+  install:
+    - npx -y skills@latest add anthropics/skills -g -a claude-code -a codex -s mcp-builder -y
+  covers: >
+    Building an MCP server: tool design for agents, TypeScript and Python SDK patterns, and an
+    evaluation harness. Install when building MCP servers.
+
+- name: mcp-server-dev
+  category: ai-agents
+  repo: https://github.com/anthropics/claude-plugins-official
+  license: Apache-2.0
+  tools: claude
+  optional: true
+  install:
+    - claude plugin marketplace add anthropics/claude-plugins-official
+    - claude plugin install mcp-server-dev@claude-plugins-official
+    - claude plugin update mcp-server-dev@claude-plugins-official
+  covers: >
+    Designing MCP servers for Claude: deployment model, search-then-execute tool pattern, auth
+    (DCR / CIMD), MCP apps and bundles. Claude Code only.
+
+- name: claude-security
+  category: engineering
+  repo: https://github.com/anthropics/claude-plugins-official
+  license: proprietary (Anthropic, all rights reserved) — install only, never copied or rewritten here
+  tools: claude
+  optional: true
+  install:
+    - claude plugin marketplace add anthropics/claude-plugins-official
+    - claude plugin install claude-security@claude-plugins-official
+    - claude plugin update claude-security@claude-plugins-official
+  covers: >
+    Multi-agent vulnerability scan of your own code whose verifiers reject a finding unless an
+    exploitation path is confirmed; SARIF output and a patch flow. The executable complement to
+    the app-security method. Claude Code only.
+
 - name: codex-plugin-cc
   category: ai-agents
   repo: https://github.com/openai/codex-plugin-cc

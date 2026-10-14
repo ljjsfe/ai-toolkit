@@ -1,7 +1,7 @@
 ---
 name: app-security
 description: Security-review a web, mobile or backend application the way attackers find real bugs — map actors, assets, trust and tenant boundaries and invariants before hunting, test authorisation with a second user or tenant, sweep every sibling route once a gap is found, trace webhooks end to end, and gate findings on a concrete attack path with severity, confidence and evidence kept separate. Use for security reviews, audits, or before shipping auth, payments, multi-tenant or integration code; for agents and LLM tools use agent-security.
-version: 1.0.0
+version: 1.0.1
 sources:
   - upstream/gstack/cso (MIT) — boundary and invariant census first, sibling propagation, exploitability gating, three separate judgements, independent re-derivation, webhook review order, two-user and two-tenant negative controls
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/security-reviewer.md (MIT) — confidence tied to attack-path traceability with a critical-impact override; feature-gate leaks
@@ -78,3 +78,7 @@ Findings:                 severity · confidence · evidence · attack path · s
 Unconfirmed (critical):   labelled hypotheses, with what would confirm them
 Not reviewed:             areas out of scope or not reachable in this review
 ```
+
+For an automated scan alongside this review in Claude Code, the optional `claude-security`
+plugin (see `toolkit/external.yaml`) runs one; treat its output as candidates for the gate
+above, not as findings.

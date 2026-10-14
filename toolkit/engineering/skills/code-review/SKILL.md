@@ -1,13 +1,14 @@
 ---
 name: code-review
-description: Review a diff, pull request or branch with findings you can defend — grade spec conformance and standards separately, look for what is missing as well as what is wrong, sweep every sibling of a found issue, flag weakened tests or CI as findings, and gate each finding on file:line plus a concrete failure scenario. Use when asked to review code, a PR or a branch, or before merging.
-version: 1.1.0
+description: Review a diff, pull request or branch with findings you can defend — grade spec and standards separately, find what is missing as well as what is wrong, sweep siblings of each issue, flag weakened tests or CI, read the history of changed lines, gate findings on file:line plus a failure scenario, and have an independent checker try to refute serious ones. Use when asked to review code, a PR or a branch, or before merging.
+version: 1.2.0
 sources:
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/{personas/*,action-class-rubric.md,subagent-template.md} (MIT) — correctness, security, performance and reliability lenses; P0–P3; check callers, guards and framework defaults
   - upstream/compound-engineering-plugin/skills/ce-simplify-code/references/personas/efficiency-reviewer.md (MIT) — unbounded structures, listener leaks
   - upstream/gstack/review (MIT) — sideways sweep, gate-integrity inventory, quote-or-cap confidence
   - upstream/villetakanen-asdlc-io (MIT) — the repo's own instruction files as a review contract; stale specs as missing work
   - upstream/mattpocock-skills/skills/engineering/code-review (MIT) — spec and standards as separate axes, smell vocabulary as fallback, repo conventions override
+  - upstream/claude-plugins-official/plugins/code-review/commands/code-review.md (Apache-2.0) — independent per-finding verification; untouched-line, pre-existing, tool-catchable and explicitly silenced issues are not findings; git history, earlier PR comments and in-code guidance as review lenses
 ---
 
 # Code Review
@@ -34,6 +35,21 @@ A review that cries wolf is worse than none. Fewer, defensible findings beat a l
 4. **Weakened gates are findings in their own right.** List every change to tests, snapshots,
    CI config, lint rules or type strictness in the diff and justify each one. A loosened
    assertion that makes the build pass is the most important line in the review.
+5. **Review the change, not the file.** A real problem that this change neither introduced nor
+   made reachable goes in the appendix marked `pre-existing`. "Made reachable" means the diff
+   adds a caller or an input source, or removes a guard — cite that changed line as the
+   finding's `file:line`. This law does not demote law 3's siblings of a finding in the change,
+   or Pass 2's stale docs. Not findings at all: what the compiler, type checker, linter or CI
+   already reports — unless the diff disables or loosens that check (law 4) — and anything
+   silenced by an ignore comment that existed before this change; an ignore this diff adds is a
+   gate change (law 4).
+6. **Serious findings survive an independent refutation.** Give every P0/P1 — and every finding
+   that rests on a repo rule — to a fresh subagent that did not produce it: the finding, the cited
+   rule from the base branch, and the repository at the change's head (so it can read callers,
+   guards and history), but not the reviewer's reasoning; tell it to disprove the finding. It
+   must confirm a rule-based finding against the rule's actual wording. Drop what it refutes;
+   move what it cannot confirm to the appendix at low confidence. Where no subagent is
+   available, re-check in a separate pass and label those findings `self-checked`.
 
 ## Pass 1 — What is present
 
@@ -51,6 +67,17 @@ stale, report `MISSING:` citing that doc's `file:line` — the description shoul
 same PR. P2 at most, unless the stale doc is a public API contract. If no such doc exists,
 there is no finding.
 Report as `MISSING: <what> — <why it matters>`, citing the requirement or rule it comes from.
+
+## Pass 3 — What the history says
+
+- **Blame and log of the changed lines:** was this code written this way to fix something? A
+  change that undoes an earlier fix, or reintroduces a reverted pattern, is a finding.
+- **Earlier pull requests touching these files** — find them with
+  `git log --format='%h %s' -- <path>`, then read `gh pr view <n> --comments` and the inline
+  review comments (`gh api repos/<owner>/<repo>/pulls/<n>/comments`): objections raised there
+  often apply again.
+- **Comments in the modified files** that state an invariant ("must be called before…", "not
+  thread-safe"): check the change still honours them.
 
 ## Severity and confidence
 

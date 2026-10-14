@@ -41,6 +41,7 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/gstack/review (MIT) — sideways sweep, gate-integrity inventory, quote-or-cap confidence — used in: code-review
 - upstream/villetakanen-asdlc-io (MIT) — the repo's own instruction files as a review contract; stale specs as missing work — used in: code-review
 - upstream/mattpocock-skills/skills/engineering/code-review (MIT) — spec and standards as separate axes, smell vocabulary as fallback, repo conventions override — used in: code-review
+- upstream/claude-plugins-official/plugins/code-review/commands/code-review.md (Apache-2.0) — independent per-finding verification; untouched-line, pre-existing, tool-catchable and explicitly silenced issues are not findings; git history, earlier PR comments and in-code guidance as review lenses — used in: code-review
 - upstream/superpowers/skills/systematic-debugging (MIT) — root cause first, read the full error, one change at the source, three failed fixes means stop — used in: debugging
 - upstream/compound-engineering-plugin/skills/ce-debug/references/{investigate,fix}.md (MIT) — observation-cited hypotheses, explicit invalidation — used in: debugging
 - upstream/mattpocock-skills/skills/engineering/diagnosing-bugs (MIT) — reproduction loop as the first deliverable — used in: debugging
@@ -126,16 +127,16 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - user-authored framework (v1, 2026-03), restructured — used in: liu-ayi
 - ideas from Liu Zhongjing (order output vs consumption, customary law, institutional capital, legitimacy before policy), paraphrased and restated as testable checks; his political programme and determinism are deliberately excluded — used in: liu-ayi
 - Hume, Burke and Hayek on evolved institutions; Tetlock on reference classes and calibration (public literature) — used in: liu-ayi
-- KKKKhazix/khazix-skills/khazix-writer (MIT) — first-hand observation is what a model cannot supply; ask the writer for it — used in: writing
-- marketingskills/skills/copywriting/references/ai-tells.md (MIT) — placeholder for missing proof instead of an invented fact; the swap test — used in: writing
-- ahao31196/ahao-writing-dna-distiller (MIT) — voice as ranges and verbatim samples by function, not averages; prescriptive rules over descriptions — used in: writing
-- everything-claude-code/skills/brand-voice (MIT) — a banned move must be observed in the writer's own corpus; report splits instead of averaging — used in: writing
-- mattpocock-skills/skills/in-progress/writing-shape (MIT) — 2–3 openings, each implying a different thesis; ground a concept before leaning on it — used in: writing
-- getsentry-skills/skills/blog-writing-guide (Apache-2.0) — open on the problem or the conclusion; voice throughout, not only at the ends; informative headings; name what was not chosen — used in: writing
-- marketingskills/skills/social/references/{platforms.md,x-algorithm.md} (MIT) — specific claim at the top of a post; no engagement bait; verified versus reported platform mechanics — used in: writing
-- xbtlin-ai-berkshire/codex-skills/wechat-article (MIT) — every formula or number gets a plain-language gloss; when editor and reader disagree, the reader wins — used in: writing
-- anthropics-skills/skills/doc-coauthoring (licence not stated for this skill; method only) — test the draft on a fresh agent that sees only the draft — used in: writing
-- blader/humanizer and op7418/Humanizer-zh (MIT) — the de-AI editing pass, installed as external skills (see toolkit/external.yaml) — used in: writing
+- upstream/khazix-skills/khazix-writer (MIT) — first-hand observation is what a model cannot supply; ask the writer for it — used in: writing
+- upstream/marketingskills/skills/copywriting/references/ai-tells.md (MIT) — placeholder for missing proof instead of an invented fact; the swap test — used in: writing
+- upstream/ahao-writing-dna-distiller (MIT) — voice as ranges and verbatim samples by function, not averages; prescriptive rules over descriptions — used in: writing
+- upstream/everything-claude-code/skills/brand-voice (MIT) — a banned move must be observed in the writer's own corpus; report splits instead of averaging — used in: writing
+- upstream/mattpocock-skills/skills/in-progress/writing-shape (MIT) — 2–3 openings, each implying a different thesis; ground a concept before leaning on it — used in: writing
+- upstream/getsentry-skills/skills/blog-writing-guide (Apache-2.0) — open on the problem or the conclusion; voice throughout, not only at the ends; informative headings; name what was not chosen — used in: writing
+- upstream/marketingskills/skills/social/references/{platforms.md,x-algorithm.md} (MIT) — specific claim at the top of a post; no engagement bait; verified versus reported platform mechanics — used in: writing
+- upstream/xbtlin-ai-berkshire/codex-skills/wechat-article (MIT) — every formula or number gets a plain-language gloss; when editor and reader disagree, the reader wins — used in: writing
+- upstream/anthropics-skills/skills/doc-coauthoring (licence not stated for this skill; method only) — test the draft on a fresh agent that sees only the draft — used in: writing
+- upstream/{blader-humanizer,op7418-humanizer-zh} (MIT) — the de-AI editing pass, installed as external skills (see toolkit/external.yaml) — used in: writing
 
 ## Adopted external projects (installed from their own source; not included)
 
@@ -144,5 +145,9 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - emil-design-engineering (MIT) — https://github.com/emilkowalski/skills
 - humanizer (MIT) — https://github.com/blader/humanizer
 - humanizer-zh (MIT) — https://github.com/op7418/Humanizer-zh
+- webapp-testing (Apache-2.0) — https://github.com/anthropics/skills
+- mcp-builder (Apache-2.0) — https://github.com/anthropics/skills
+- mcp-server-dev (Apache-2.0) — https://github.com/anthropics/claude-plugins-official
+- claude-security (proprietary (Anthropic, all rights reserved) — install only, never copied or rewritten here) — https://github.com/anthropics/claude-plugins-official
 - codex-plugin-cc (Apache-2.0) — https://github.com/openai/codex-plugin-cc
 - claude-code-hooks (MIT) — https://github.com/karanb192/claude-code-hooks

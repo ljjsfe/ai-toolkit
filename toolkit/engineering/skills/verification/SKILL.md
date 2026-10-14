@@ -1,7 +1,7 @@
 ---
 name: verification
 description: Back completion claims with fresh evidence — the command that proves it, where it ran, re-run after the checked content changes, and an independent reviewer that sees only the artifact. Use before saying done, fixed, passing or deployed, and whenever a result is challenged.
-version: 1.0.0
+version: 1.0.1
 sources:
   - upstream/superpowers/skills/verification-before-completion (MIT) — fresh evidence before claims, partial evidence, what each claim needs
   - authored for this toolkit from a stated need (results challenged as unverified) — state how and where; answer challenges with evidence
@@ -35,6 +35,7 @@ produced earlier.
 | builds | build command exit 0 | lint or type-check alone |
 | bug fixed | the original reproduction now passes | "code changed" |
 | deployed | the running version or commit hash read from the target, plus a live check | "the pipeline finished" |
+| UI works | the page driven in a real browser (e.g. the `webapp-testing` skill): screenshot plus console with no errors | the component compiling, a passing unit test |
 | requirement met | each requirement checked off against observed behaviour | tests passing |
 | delegated work done | the diff or artifact, inspected | the worker's report |
 
