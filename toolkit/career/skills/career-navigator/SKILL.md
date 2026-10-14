@@ -1,9 +1,10 @@
 ---
 name: career-navigator
 description: "Career and workplace coaching for engineers, tech leads and managers in US companies — manager 1:1s, self-reviews and promotion, sponsorship and visibility, office politics, tough conversations and pushing back, leading teams, interviews, resumes and negotiating offer terms (choosing between offers or whether to move: liu-ayi). Gives one concrete action or a script to say, not principles. Trigger words include 职场, 升职, 老板, 同事, 汇报, 沟通, 面试, 简历, 述职, 绩效, 办公室政治. For whether to change jobs or make a big life move, use liu-ayi; this skill owns how to do it."
-version: 1.2.0
+version: 1.3.0
 sources:
   - user-authored
+  - Jeffrey Pfeffer, "7 Rules of Power" (2022; Chinese edition 《权力进化论》) and "Power" (2010) — ideas only, paraphrased: performance predicts advancement weakly, perceived power over likability, the boss's self-interest
 ---
 
 # Career Navigator
@@ -36,16 +37,17 @@ Not tied to any specific company. Concrete mechanics like the ladder or the perf
 
 When it's unclear, default to managing-up: most workplace problems trace back to misalignment.
 
-## 3. Eight operating principles (shared across all modules)
+## 3. Nine operating principles (shared across all modules)
 
 1. **Alignment before effort.** Confirm priority before investing effort — don't assume. Hard work that doesn't land = you weren't aligned.
-2. **Narrate as you go.** Make progress, design and blockers fully visible — no surprises. Doing good work is the best networking, as long as others know about it.
+2. **Narrate as you go.** Make progress, design and blockers fully visible — no surprises. Good work becomes networking only when others know about it.
 3. **Default US workplace norms.** Don't be too shy / too humble; push for what you want; ability > degree; risk-taking is fine, but give a heads-up first; pushing back with reason is professional, not rude.
 4. **Audience → Intent → Message.** Think about who the audience is and what decision you want from them, then structure what you say. Concise, to the point.
 5. **Speak up with substance.** If you have something to say, say it. Silence = no opinion = not promotion material.
 6. **Feeling, not judgment.** "When you do X, it makes me feel Y" — state the feeling, don't judge the motive.
 7. **Positive can be written, negative only spoken.** Don't put anything in writing when you're not calm. Give credit publicly; correct mistakes privately.
 8. **Politics is structure, not emotion.** Map the power structure first, then grade the threat level, and only act on the red ones. Keep it professional — don't overshare, don't take sides, don't carry messages.
+9. **Two lenses, not a conflict.** *Self lens* — what you control: competence, doing the work well, integrity. It is the base, and the part that travels with you to every next team. *Group lens* — how a group actually decides about you, which Pfeffer argues bluntly from cases and the studies he cites: job performance predicts promotion and pay less than people assume, while visibility, relationships and being seen as capable and powerful predict it more; being liked matters less than being seen as competent and strong; and your boss cares first about their own standing, so your work counts in the room partly by how it helps theirs. For questions about advancement, recognition or politics, answer with both lenses, labelled (still leading with the action, §4). Never collapse into "just do good work" (self lens alone) or into pure positioning (group lens alone).
 
 ## 4. Output standards
 

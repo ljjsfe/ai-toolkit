@@ -62,6 +62,29 @@
   notes: >
     Do not install his `animate` skill alongside impeccable's animate command — they overlap.
 
+- name: humanizer
+  category: writing
+  repo: https://github.com/blader/humanizer
+  license: MIT
+  tools: claude, codex
+  install:
+    - npx -y skills@latest add blader/humanizer -g -a claude-code -a codex -y
+  covers: >
+    English de-AI editing pass: 26 patterns of AI prose ranked by how much evidence each needs,
+    a writing sample that overrides the rules, and a check that the rewrite added no facts.
+    Used by the writing skill as its editing step.
+
+- name: humanizer-zh
+  category: writing
+  repo: https://github.com/op7418/Humanizer-zh
+  license: MIT
+  tools: claude, codex
+  install:
+    - npx -y skills@latest add op7418/Humanizer-zh -g -a claude-code -a codex -y
+  covers: >
+    Chinese counterpart of humanizer: template phrasing, padding and inflated claims, while
+    keeping facts, how certain each claim is, and the author's voice.
+
 - name: codex-plugin-cc
   category: ai-agents
   repo: https://github.com/openai/codex-plugin-cc

@@ -45,7 +45,7 @@ stamp = time.strftime("%Y%m%d-%H%M%S")
 backup = home / ".toolkit-backup" / stamp
 MARK_START, MARK_END = "<!-- toolkit:start -->", "<!-- toolkit:end -->"
 KEEP = {"synced"}
-EXTERNAL_PREFIXES = ("impeccable", "last30days", "review-animations", "mobile-native", "break-ui")
+EXTERNAL_PREFIXES = ("impeccable", "last30days", "review-animations", "mobile-native", "break-ui", "humanizer")
 keep_file = home / ".toolkit-keep"
 if keep_file.is_file():
     KEEP |= {l.strip() for l in keep_file.read_text().splitlines() if l.strip()}
@@ -111,8 +111,15 @@ core_rules = [r for r in rules if r not in path_rules]
 
 
 def personal_for(skill_dir):
-    p = skill_dir.parent.parent / "personal.local.md"
-    return p if p.is_file() else None
+    """Personal preferences for a category: personal/<category>.md (private, portable) or
+    toolkit/<category>/personal.local.md (machine-local)."""
+    category = skill_dir.parent.parent
+    if category == personal:
+        return None
+    found = [p for p in (personal / f"{category.name}.md", category / "personal.local.md") if p.is_file()]
+    if len(found) > 1:
+        print(f"warning: both {found[0]} and {found[1]} exist; using the first")
+    return found[0] if found else None
 
 
 def install_skill(name, src, dest_root):
