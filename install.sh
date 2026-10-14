@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # Install the toolkit for Claude Code and/or Codex.
 #
-#   ./install.sh claude|codex|both [--apply] [--replace-legacy]
+#   ./install.sh claude|codex|both [--apply] [--replace-legacy] [--external]
 #
 # Without --apply nothing is written: the plan is printed (dry run).
+# --external also installs the externally maintained components in toolkit/external.yaml
+# (skipping entries marked optional), using their own installers.
 # --replace-legacy (Claude Code) moves previously installed skills and rules into
 # ~/.toolkit-backup/<timestamp>/ before installing — except claude.ai-synced skills, names in
 # KEEP below or in ~/.toolkit-keep (one per line), and anything external installers added.
@@ -15,23 +17,26 @@ ROOT="$(cd "$(dirname "$0")" && pwd)"
 TARGET="${1:-}"
 APPLY=0
 REPLACE=0
+EXTERNAL=0
 for arg in "${@:2}"; do
   case "$arg" in
     --apply) APPLY=1 ;;
     --replace-legacy) REPLACE=1 ;;
+    --external) EXTERNAL=1 ;;
     *) echo "unknown option: $arg" >&2; exit 2 ;;
   esac
 done
 case "$TARGET" in
   claude|codex|both) ;;
-  *) sed -n '2,9p' "$0"; exit 2 ;;
+  *) sed -n '2,11p' "$0"; exit 2 ;;
 esac
 
-exec python3 - "$ROOT" "$TARGET" "$APPLY" "$REPLACE" <<'PY'
-import json, re, shlex, shutil, sys, time
+exec python3 - "$ROOT" "$TARGET" "$APPLY" "$REPLACE" "$EXTERNAL" <<'PY'
+import json, re, shlex, shutil, subprocess, sys, tempfile, time
 from pathlib import Path
 
 root, target, apply, replace = Path(sys.argv[1]), sys.argv[2], sys.argv[3] == "1", sys.argv[4] == "1"
+external = sys.argv[5] == "1"
 home = Path.home()
 toolkit = root / "toolkit"
 stamp = time.strftime("%Y%m%d-%H%M%S")
@@ -225,22 +230,51 @@ if target in ("claude", "both"):
 if target in ("codex", "both"):
     install_codex()
 
-print("\nExternal components (install from their own source; see toolkit/external.yaml):")
-name, in_install = None, False
-for line in (toolkit / "external.yaml").read_text().splitlines():
-    if line.startswith("- name:"):
-        name, in_install = line.split(":", 1)[1].strip(), False
-    elif line.startswith("  install:"):
-        cmd = line.split(":", 1)[1].strip()
-        in_install = cmd == "|"
-        if not in_install:
-            print(f"  {name}: {cmd}")
-        else:
-            print(f"  {name}:")
-    elif in_install and line.startswith("    "):
-        print(f"      {line.strip()}")
-    elif in_install:
-        in_install = False
+def external_entries():
+    """Parse toolkit/external.yaml (a fixed subset of YAML, so no library is needed)."""
+    entries, cur, in_install = [], None, False
+    for line in (toolkit / "external.yaml").read_text(encoding="utf-8").splitlines():
+        if line.startswith("- name:"):
+            cur = {"name": line.split(":", 1)[1].strip(), "install": [], "tools": [], "optional": False}
+            entries.append(cur)
+            in_install = False
+        elif cur is None or not line.strip() or line.lstrip().startswith("#"):
+            continue
+        elif in_install and line.startswith("    - "):
+            cur["install"].append(line[6:].strip())
+        elif line.startswith("  ") and not line.startswith("   "):
+            in_install = False
+            key, _, val = line.strip().partition(":")
+            val = val.strip()
+            if key == "install":
+                in_install = True
+            elif key == "tools":
+                cur["tools"] = [t.strip() for t in val.split(",") if t.strip()]
+            elif key == "optional":
+                cur["optional"] = val == "true"
+    for e in entries:
+        if not e["install"] or not e["tools"]:
+            sys.exit(f"external.yaml: entry {e['name']} needs tools: and an install: list")
+    return entries
+
+
+wanted = {"claude", "codex"} if target == "both" else {target}
+print("\nExternal components (toolkit/external.yaml):")
+failed = []
+for e in external_entries():
+    if not wanted & set(e["tools"]):
+        continue
+    run = external and not e["optional"]
+    label = "optional — install yourself when decided" if e["optional"] else ("installing" if run and apply else "would install" if run else "run with --external")
+    print(f"  {e['name']} ({label}):")
+    for cmd in e["install"]:
+        print(f"      {cmd}")
+        if run and apply and e["name"] not in failed:
+            # Run outside any project: some installers also write per-project hooks into the cwd.
+            if subprocess.run(cmd, shell=True, cwd=tempfile.mkdtemp()).returncode != 0:
+                failed.append(e["name"])
+if failed:
+    print(f"\nExternal installs that failed: {', '.join(failed)} — rerun their commands by hand.")
 print(f"\n{len(skills)} skills, {len(rules)} rule files." + ("" if apply else "  Re-run with --apply to write."))
 if apply and backup.exists():
     print(f"Backups in {backup}")

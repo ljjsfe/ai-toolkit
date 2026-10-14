@@ -1,12 +1,20 @@
-# Externally maintained components, installed from their own source by install.sh.
-# Adopted only when best-in-class for a category, actively maintained, and installable
-# for both Claude Code and Codex. Our toolkit never restates what these cover.
+# Externally maintained components, installed from their own source by
+# `./install.sh <tool> --apply --external`. Adopted only when best-in-class for a category and
+# actively maintained. Our toolkit never restates what these cover.
+#
+# Format (read by install.sh without a YAML library — keep to this shape):
+#   tools:    which targets the entry applies to (claude, codex)
+#   optional: true → listed but not installed by --external; install it yourself when decided
+#   install:  one shell command per "- " line, run in order
+#   folded fields (`>`) are documentation only
 
 - name: impeccable
   category: design
   repo: https://github.com/pbakaus/impeccable
   license: Apache-2.0
-  install: npx -y impeccable install --providers=claude,codex --scope=global
+  tools: claude, codex
+  install:
+    - npx -y impeccable install --providers=claude,codex --scope=global
   update: npx impeccable update
   covers: >
     Frontend design taste end to end: surface modes (persuade/operate/read/experience),
@@ -27,7 +35,9 @@
   category: research
   repo: https://github.com/mvanhorn/last30days-skill
   license: MIT
-  install: npx -y skills@latest add mvanhorn/last30days-skill -g -a claude-code,codex -y
+  tools: claude, codex
+  install:
+    - npx -y skills@latest add mvanhorn/last30days-skill -g -a claude-code -a codex -y
   update: npx skills update last30days -g
   covers: >
     Recency-windowed signal collection across Reddit, Hacker News, arXiv, Techmeme,
@@ -38,32 +48,13 @@
     Use one install method per machine; Claude Code shows duplicates if both the plugin and
     the npx skills copy are installed.
 
-- name: claude-code-hooks
-  category: hooks
-  repo: https://github.com/karanb192/claude-code-hooks
-  license: MIT
-  install: |
-    /plugin marketplace add karanb192/claude-code-hooks
-    /plugin install guard-pack@claude-code-hooks
-    /plugin install instructions-audit@claude-code-hooks
-    /plugin install cache-tax@claude-code-hooks
-    /plugin install subagent-spawn-cap@claude-code-hooks
-  update: /plugin marketplace update claude-code-hooks
-  covers: >
-    guard-pack (dangerous commands, secret files, git safety, test tampering, guardrail-config
-    tampering — seven guards in one process); instructions-audit (hidden directives in loaded
-    CLAUDE.md / rules); cache-tax (cold prompt-cache cost warning); subagent-spawn-cap.
-    Tested upstream (1,900+ tests). Claude Code only.
-  notes: >
-    Installed from inside Claude Code (slash commands), not by install.sh. git-safety blocks
-    direct changes on main/master at the default level; set HOOK_SAFETY_LEVEL or work on a
-    branch. Codex relies on its own sandbox and approval policy instead.
-
 - name: emil-design-engineering
   category: design
   repo: https://github.com/emilkowalski/skills
   license: MIT
-  install: npx -y skills@latest add emilkowalski/skills -g -a claude-code,codex -s review-animations -s mobile-native -s break-ui -y
+  tools: claude, codex
+  install:
+    - npx -y skills@latest add emilkowalski/skills -g -a claude-code -a codex -s review-animations -s mobile-native -s break-ui -y
   update: npx -y skills@latest update -g
   covers: >
     Three skills that complement impeccable where it is thin: review-animations (motion
@@ -72,3 +63,39 @@
     break-ui (plausible worst-case data behind a dev-only toggle; report before fixing).
   notes: >
     Do not install his `animate` skill alongside impeccable's animate command — they overlap.
+
+- name: codex-plugin-cc
+  category: ai-agents
+  repo: https://github.com/openai/codex-plugin-cc
+  license: Apache-2.0
+  tools: claude
+  install:
+    - claude plugin marketplace add openai/codex-plugin-cc
+    - claude plugin install codex@openai-codex
+  update: claude plugin update codex@openai-codex
+  covers: >
+    Hands a task, a second opinion or a stuck investigation from Claude Code to Codex
+    (codex:codex-rescue agent and /codex commands). Needs the Codex CLI installed and signed in.
+
+- name: claude-code-hooks
+  category: hooks
+  repo: https://github.com/karanb192/claude-code-hooks
+  license: MIT
+  tools: claude
+  optional: true
+  install:
+    - claude plugin marketplace add karanb192/claude-code-hooks
+    - claude plugin install guard-pack@claude-code-hooks
+    - claude plugin install instructions-audit@claude-code-hooks
+    - claude plugin install cache-tax@claude-code-hooks
+    - claude plugin install subagent-spawn-cap@claude-code-hooks
+  update: claude plugin marketplace update claude-code-hooks
+  covers: >
+    guard-pack (dangerous commands, secret files, git safety, test tampering, guardrail-config
+    tampering — seven guards in one process); instructions-audit (hidden directives in loaded
+    CLAUDE.md / rules); cache-tax (cold prompt-cache cost warning); subagent-spawn-cap.
+    Tested upstream (1,900+ tests). Claude Code only.
+  notes: >
+    Optional because guard-pack's git-safety blocks direct changes on main/master at the
+    default level; set HOOK_SAFETY_LEVEL or work on branches first. Codex relies on its own
+    sandbox and approval policy instead.

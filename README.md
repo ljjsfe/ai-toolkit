@@ -24,7 +24,8 @@ see [CREDITS.md](CREDITS.md).
 Design taste is delegated to [impeccable](https://github.com/pbakaus/impeccable) plus three of
 [emilkowalski/skills](https://github.com/emilkowalski/skills) (motion review, mobile-web feel, worst-case data), trend signals to
 [last30days](https://github.com/mvanhorn/last30days-skill), and safety hooks to
-[claude-code-hooks](https://github.com/karanb192/claude-code-hooks) — installed from their own
+[claude-code-hooks](https://github.com/karanb192/claude-code-hooks) (optional), and handoff to Codex
+to [codex-plugin-cc](https://github.com/openai/codex-plugin-cc) — installed from their own
 sources (see `toolkit/external.yaml`).
 
 ## Install
@@ -34,7 +35,12 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
 ./install.sh claude|codex|both                 # dry run: prints what would change
 ./install.sh claude --apply                    # install for Claude Code
 ./install.sh claude --apply --replace-legacy   # also move your existing skills/rules to ~/.toolkit-backup/
+./install.sh both --apply --external           # new machine: toolkit + the external components
 ```
+
+- `--external` runs each installer listed in `toolkit/external.yaml` (impeccable, last30days,
+  emilkowalski/skills, the Codex plugin for Claude Code). Entries marked `optional` — currently
+  claude-code-hooks — are printed, not installed.
 
 - Skills install to `~/.claude/skills/` (Claude Code) and `~/.codex/skills/` (Codex).
 - `--replace-legacy` never touches claude.ai-synced skills, externally installed ones, your
