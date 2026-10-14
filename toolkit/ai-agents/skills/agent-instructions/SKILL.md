@@ -1,9 +1,10 @@
 ---
 name: agent-instructions
 description: Write or audit a repository's agent instruction files (CLAUDE.md, AGENTS.md, rules) so they stay short and earn their cost — put anything a linter, CI, hook or skill can enforce there instead, keep only what the agent cannot infer, treat every corrective line as a sign of codebase friction to fix, and trim generated drafts (such as init-command output) before keeping them. Use when creating, generating, reviewing or trimming CLAUDE.md, AGENTS.md or agent rules for a project; for security vetting of a cloned repo's agent files use agent-security.
-version: 1.0.0
+version: 1.1.0
 sources:
   - upstream/villetakanen-asdlc-io (MIT) — toolchain-first decision rule, instruction files as a friction diagnostic, generated files as a list of what to leave out, map only hidden knowledge, skills listed by name
+  - Claude Code memory docs, https://code.claude.com/docs/en/memory — native AGENTS.md loading and its precedence with CLAUDE.md (checked 2026-10-14)
   - Gloaguen et al., "Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?" (2026), https://arxiv.org/abs/2602.11988 — context files did not generally improve task success and raised inference cost by over 20%; agents follow the instructions; repository overviews were not helpful
 ---
 
@@ -51,8 +52,13 @@ carries something the agent could not work out itself.
 
 ## Layout across tools
 
-- Write the shared content once in `AGENTS.md`; make `CLAUDE.md` a one-line `@AGENTS.md`
-  import, adding Claude-only notes below it if needed.
+- Default to a single `AGENTS.md`. Codex reads it, and Claude Code reads it natively
+  (v2.1.277+) when no `CLAUDE.md` or `CLAUDE.local.md` exists in the directory or above it.
+- **If a `CLAUDE.md` exists, Claude Code reads it instead of `AGENTS.md`.** Add one only for
+  Claude-specific notes, and start it with `@AGENTS.md` so the shared content still loads. A
+  `CLAUDE.md` without that import silently hides `AGENTS.md`; so does a personal
+  `CLAUDE.local.md` unless Project instructions is set to load both. The import is also the
+  fallback in sessions where native `AGENTS.md` loading is unavailable.
 - Put a short file in a subdirectory only when that directory has its own conventions.
 - Language-specific rules go in path-scoped rule files that load only for matching files
   (Claude Code); in Codex use a nested `AGENTS.md` in that directory or a skill.

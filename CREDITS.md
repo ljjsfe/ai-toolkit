@@ -17,6 +17,7 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/anthropics-skills/skills/claude-api/shared/evals/{eval-audit,build-eval,eval-hillclimb}.md — grade the end state, start from real failures, report spread, held-out split — used in: agent-evals
 - upstream/compound-engineering-plugin/docs (MIT) — blinded arms, small-n paired evals — used in: agent-evals
 - upstream/villetakanen-asdlc-io (MIT) — toolchain-first decision rule, instruction files as a friction diagnostic, generated files as a list of what to leave out, map only hidden knowledge, skills listed by name — used in: agent-instructions
+- Claude Code memory docs, https://code.claude.com/docs/en/memory — native AGENTS.md loading and its precedence with CLAUDE.md (checked 2026-10-14) — used in: agent-instructions
 - {'Gloaguen et al., "Evaluating AGENTS.md': 'Are Repository-Level Context Files Helpful for Coding Agents?" (2026), https://arxiv.org/abs/2602.11988 — context files did not generally improve task success and raised inference cost by over 20%; agents follow the instructions; repository overviews were not helpful'} — used in: agent-instructions
 - upstream/superpowers/skills/{subagent-driven-development,dispatching-parallel-agents} (MIT) — used in: agent-orchestration
 - upstream/oh-my-claudecode/skills/team (MIT) — used in: agent-orchestration
