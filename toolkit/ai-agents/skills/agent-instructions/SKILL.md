@@ -1,22 +1,21 @@
 ---
 name: agent-instructions
 description: Write or audit a repository's agent instruction files (CLAUDE.md, AGENTS.md, rules) so they stay short and earn their cost — put each rule in the cheapest place that enforces it (linter, CI, hook, skill), keep only what the agent cannot infer, verify every command and path, treat corrective or ignored lines as friction to fix, and trim generated drafts (such as init-command output). Use when creating, generating, reviewing or trimming CLAUDE.md, AGENTS.md or agent rules for a project; for security vetting of a cloned repo's agent files use agent-security.
-version: 1.2.0
+version: 1.3.0
 sources:
   - upstream/villetakanen-asdlc-io/src/content/practices/agents-md-spec.md, src/content/recipes/write-agents-md.md (MIT) — enforcement ladder, corrective lines as friction, init output as candidates
   - upstream/claude-plugins-official/plugins/claude-md-management (Apache-2.0) — command and path currency check; generic and one-off cut tests
   - upstream/karanb192-claude-code-hooks/plugins/dead-rules-audit (MIT) — promote repeatedly violated rules to a hook
   - upstream/compound-engineering-plugin/docs/solutions/{developer-experience/always-on-agents-md.md, workflow/measuring-a-packs-effect-needs-non-inferable-rules.md, skill-design/authoring-auto-invoke-standing-instructions.md} (MIT) — load-when notes, sample output for helpers, standing-instruction phrasing
   - Claude Code memory docs, https://code.claude.com/docs/en/memory — AGENTS.md versus CLAUDE.md loading (checked 2026-10-15)
+  - Codex AGENTS.md docs, https://learn.chatgpt.com/docs/agent-configuration/agents-md — discovery from project root to launch directory (checked 2026-10-15)
   - 'Gloaguen et al., "Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?" (2026), https://arxiv.org/abs/2602.11988 — context files cost over 20% more without general gains; overviews unhelpful'
 ---
 
 # Agent Instructions
 
-An always-on instruction file is paid for on every turn and obeyed on every task. A line is
-worth that only if it changes what the agent does and the agent could not have found it out.
-Measured on real repositories, context files raised cost by over a fifth without generally
-raising success, and repository overviews did not help (Gloaguen et al. 2026).
+Every line is paid for on every turn. Measured on real repositories, context files raised cost
+by over a fifth without generally raising success, and overviews did not help (Gloaguen et al. 2026).
 
 ## 1. Place each rule before writing it
 
@@ -40,7 +39,8 @@ Where a tool already enforces something, the file names the command and does not
 Cut it if any answer is no:
 
 - **Hidden?** Code, configs, directory names and existing docs do not already reveal it. A rule
-  whose helper or pattern is already in the tree gets followed without the file.
+  whose helper or pattern is already in the tree may be inferable, but not for every model:
+  check whether a fresh agent finds and follows it before cutting.
 - **Specific?** It is about this project, not advice any competent engineer would apply.
 - **Recurring?** It applies to future tasks, not to one bug that is already fixed.
 - **Stable?** It will still be true next month. Content that churns belongs in a spec, a task brief or a skill.
@@ -56,11 +56,11 @@ list skills itself, which skill to use when.
 - Say what to do. A line that names the forbidden option keeps it in front of the agent.
 - A rule that names a helper or format also gives one sample output (`u_1a1b2fjc3mq7`), so a
   recreated helper can be checked against it.
-- A standing instruction to run a skill on its own fires at a boundary the agent can see
-  ("before commit or handoff", never "after each edit" or "at session end"), lists the change
-  kinds it skips (docs-only, lockfile, generated), and names the skill rather than a slash
-  command another tool cannot call.
-- One line per fact. If it needs a paragraph, it is a notes file or a skill.
+- A standing instruction to run a skill on its own names the skill, not a slash command another
+  tool cannot call. If the skill's value lands when work is finished, it fires at a boundary the
+  agent can see ("before commit or handoff", never "after each edit" or "at session end"); if
+  some change kinds never yield anything for it, list them as exclusions, taken from that skill's
+  scope (a docs reviewer must not skip docs). Cheap or always-relevant skills need neither.
 
 ## 4. Treat corrections as friction
 
@@ -72,6 +72,8 @@ list skills itself, which skill to use when.
 
 ## Layout across tools
 
+Under Claude Code's default Project instructions setting (it can be set to load both files):
+
 - Default to a single `AGENTS.md`. Codex reads it, and Claude Code reads it natively
   (v2.1.277+) when no `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` exists in the
   directory or above it.
@@ -80,8 +82,8 @@ list skills itself, which skill to use when.
   `CLAUDE.md` without that import silently hides `AGENTS.md`; so does a personal
   `CLAUDE.local.md` unless Project instructions is set to load both. The import also covers
   sessions where native `AGENTS.md` loading is unavailable.
-- A nested `AGENTS.md` is unreliable. Codex reads only from the project root down to the
-  directory it was launched in, never below; Claude Code reads a subdirectory's `AGENTS.md` only
+- A nested `AGENTS.md` is unreliable. Codex discovers files automatically only from the project
+  root down to the directory it was launched in, not below it; Claude Code reads a subdirectory's `AGENTS.md` only
   when no `CLAUDE.md` exists, and `@AGENTS.md` imports just the root file. For per-path rules
   prefer a path-scoped rule (Claude Code only) or a skill.
 
@@ -91,7 +93,9 @@ list skills itself, which skill to use when.
 line as a candidate and run it through sections 1–2. Expect most to go.
 
 **Audit an existing file:**
-1. Run every command and resolve every path; record what fails.
+1. Resolve every path and validate every command: read-only ones may run; for anything that
+   deploys, migrates or deletes, inspect it, use a dry run or an isolated environment, and keep
+   to the session's approval rules. Record what fails.
 2. Mark each line **keep**, **move** (where, per section 1), **fix** (friction to remove, then
    delete) or **cut** (fails section 2, with the reason).
 3. Give a fresh agent that did not write the file a question only the file can answer; it should
@@ -105,5 +109,5 @@ File:      the proposed file, as short as it can be (diff when auditing)
 Moved:     each rule moved out, and to which linter, CI job, hook, skill or notes file
 Fix list:  codebase friction behind each corrective line still kept
 Cut:       each removed line and the failed test (hidden, specific, recurring, stable, true)
-Broken:    commands that did not run and paths that do not exist
+Broken:    commands that failed validation and paths that do not exist
 ```

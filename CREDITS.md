@@ -22,6 +22,7 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/karanb192-claude-code-hooks/plugins/dead-rules-audit (MIT) — promote repeatedly violated rules to a hook — used in: agent-instructions
 - upstream/compound-engineering-plugin/docs/solutions/{developer-experience/always-on-agents-md.md, workflow/measuring-a-packs-effect-needs-non-inferable-rules.md, skill-design/authoring-auto-invoke-standing-instructions.md} (MIT) — load-when notes, sample output for helpers, standing-instruction phrasing — used in: agent-instructions
 - Claude Code memory docs, https://code.claude.com/docs/en/memory — AGENTS.md versus CLAUDE.md loading (checked 2026-10-15) — used in: agent-instructions
+- Codex AGENTS.md docs, https://learn.chatgpt.com/docs/agent-configuration/agents-md — discovery from project root to launch directory (checked 2026-10-15) — used in: agent-instructions
 - Gloaguen et al., "Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?" (2026), https://arxiv.org/abs/2602.11988 — context files cost over 20% more without general gains; overviews unhelpful — used in: agent-instructions
 - upstream/superpowers/skills/{subagent-driven-development,dispatching-parallel-agents,executing-plans} (MIT) — explicit model per worker, fix rounds, a ledger that survives compaction — used in: agent-orchestration
 - upstream/oh-my-claudecode/skills/team (MIT) — used in: agent-orchestration
@@ -83,21 +84,21 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - authored for this toolkit from a stated need (results challenged as unverified) — state how and where; answer challenges with evidence — used in: verification
 - upstream/addyosmani-agent-skills/skills/doubt-driven-development (MIT) — artifact-only adversarial review, bounded cycles, "doubt theater" — used in: verification
 - upstream/gstack/ship (MIT) — freshness by content, not by commit count — used in: verification
-- upstream/yennanliu-investskill/prompts/thesis-tracker.md (MIT) — structure from this source; ledger fields, four statuses and their bars, 3–5 KPIs, pre-mortem, next check — used in: thesis-ledger
-- upstream/yennanliu-investskill/prompts/10k-digest.md (MIT) — commitment scoring; restatements stale data — used in: thesis-ledger
+- upstream/yennanliu-investskill/prompts/thesis-tracker.md (MIT) — structure from this source; ledger fields, four statuses and their bars, last-confirmed vs check outcome, 3–5 KPIs, pre-mortem, next check — used in: thesis-ledger
+- upstream/yennanliu-investskill/prompts/10k-digest.md (MIT) — commitment scoring; rerun after a restatement (the stale-data rule is toolkit policy) — used in: thesis-ledger
 - upstream/yennanliu-investskill/prompts/result-validator.md (MIT) — provenance block; memory is low confidence — used in: thesis-ledger
 - upstream/xbtlin-ai-berkshire/skills/thesis-drift.md (MIT) — fact / price / wording buckets; no baseline, no check — used in: thesis-ledger
 - upstream/anthropics-financial-services/plugins/vertical-plugins/equity-research/skills/thesis-tracker/SKILL.md (Apache-2.0) — long/short side, catalysts tied to claims, trend column, track disconfirming evidence — used in: thesis-ledger
-- upstream/tradermonty-claude-trading-skills/skills/trader-memory-core/SKILL.md (MIT) — append-only status history; closed vs invalidated — used in: thesis-ledger
+- upstream/tradermonty-claude-trading-skills/skills/trader-memory-core/SKILL.md (MIT) — event-history appends; closed vs invalidated (never editing past rows is toolkit policy) — used in: thesis-ledger
 - upstream/b-m-capital-research-honeclaw/skills/company-thesis-ratings/SKILL.md (MIT) — fact / inference / unknown tags — used in: thesis-ledger
 - Gary Klein, "Performing a Project Premortem", HBR 2007, https://hbr.org/2007/09/performing-a-project-premortem (public literature) — failure taken as certain; user's causes first (order adapted) — used in: thesis-ledger
 - Annie Duke, Thinking in Bets (2018) (public literature) — grade the thesis apart from the P&L — used in: thesis-ledger
 - authored for this toolkit from a stated need (options positions) — claim dates vs expiry — used in: thesis-ledger
-- upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — structure of §1 (snapshot rows, red flags); 3%, 5%, 25%, ±30% thresholds; same-family rule; return split; no-rerating case — used in: valuation-audit
+- upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — structure of §1 (snapshot rows, red flags); method-by-business pairings (reorganised); 3%, 5%, 25%, ±30% thresholds; same-family rule; joint-upgrade and double-count checks; DCF shown only when its inputs can be written out; return split incl. EV path; no-rerating case — used in: valuation-audit
 - Mauboussin and Rappaport, "Expectations Investing" (2001; rev. 2021), https://www.expectationsinvesting.com/ — §2, price-implied drivers and forecast period — used in: valuation-audit
-- Damodaran, valuation teaching material, https://pages.stern.nyu.edu/~adamodar/ — g near risk-free, reinvestment = g/ROIC, ROIC fade — used in: valuation-audit
-- upstream/xbtlin-ai-berkshire/codex-skills/investment-research/SKILL.md (MIT) — terminal multiple from economics not peers; r−g spread; same-basis r and g; discrete-risk scenario — used in: valuation-audit
-- upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/dcf-model/SKILL.md (Apache-2.0) — TV below 40% check; grid centre equals base — used in: valuation-audit
+- Damodaran, valuation teaching material, https://pages.stern.nyu.edu/~adamodar/ — FCFF vs equity models for financials; g near risk-free; reinvestment = g/ROIC; ROIC fade; ROIC = WACC makes growth worthless — used in: valuation-audit
+- upstream/xbtlin-ai-berkshire/codex-skills/investment-research/SKILL.md (MIT) — terminal multiple from economics not peers; 5-point r−g heuristic; same-basis r and g; discrete-risk scenario — used in: valuation-audit
+- upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/dcf-model/SKILL.md (Apache-2.0) — PV(TV) share below 40% check; grid centre equals base — used in: valuation-audit
 - upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/comps-analysis/SKILL.md (Apache-2.0) — median, drop doubtful peers, quartiles, 10% source gap — used in: valuation-audit
 - upstream/yennanliu-investskill/prompts/dcf-valuation.md (MIT) — g below r; TV above 80% flag — used in: valuation-audit
 - upstream/yennanliu-investskill/prompts/stock-valuation.md (MIT) — SBC-adjusted FCF; no EV bridge for P/E price — used in: valuation-audit
@@ -112,10 +113,10 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/wanshuiyin-auto-claude-code-research-in-sleep/skills/novelty-check (MIT) — name the prior work before killing an idea — used in: market-scan
 - upstream/ferdinandobons-startup-skill/startup-competitors/references/honesty-protocol.md (MIT) — sentiment weighted by volume — used in: market-scan
 - authored for this toolkit from a stated need — dated pricing history from web archives; price compared for a typical buyer — used in: market-scan
-- upstream/compound-engineering-plugin/skills/ce-pov (MIT) — two evidence floors, reversibility-tiered effort, keep-incumbent and do-nothing skepticism, Hold / Reject / Not-our-problem vocabulary, frozen view before a second opinion, "either is viable" — used in: adopt-or-build
-- Thoughtworks Technology Radar, https://www.thoughtworks.com/radar/faq — four-ring ladder, Assess as a learn-only step — used in: adopt-or-build
+- upstream/compound-engineering-plugin/skills/ce-pov (MIT) — two evidence floors, reversibility-tiered effort with a consequence override, precedent first, keep-incumbent and do-nothing skepticism, Hold / Reject / Not-our-problem vocabulary, frozen view before a second opinion, "either is viable" — used in: adopt-or-build
+- Thoughtworks Technology Radar, https://www.thoughtworks.com/radar/faq — Radar-inspired labels; eligibility and production gates adapted for this toolkit — used in: adopt-or-build
 - upstream/wondelai-skills/pragmatic-programmer/references/reversibility.md (MIT) — switching cost measured from fan-out, coupling, tests and config — used in: adopt-or-build
-- upstream/optimnow-cloud-finops-skills/plugins/cloud-finops/skills/cloud-finops/references/finops-ai-self-hosted-vs-managed.md (CC BY-SA 4.0 — ideas only, no wording) — operating cost and team maturity as the self-hosting risk — used in: adopt-or-build
+- upstream/optimnow-cloud-finops-skills/plugins/cloud-finops/skills/cloud-finops/references/finops-ai-self-hosted-vs-managed.md (CC BY-SA 4.0 — ideas only, no wording) — readiness factors for self-hosting, generalised here as toolkit policy — used in: adopt-or-build
 - upstream/sreshtalluri-mom-test/skills/mom-test (MIT) — past-behaviour rule, reflexes for bad data, evidence ladder — used in: customer-discovery
 - upstream/sreshtalluri-mom-test/skills/mom-test-check-questions (MIT) — question failure tests and reframe shapes — used in: customer-discovery
 - upstream/sreshtalluri-mom-test/skills/mom-test-debrief (MIT) — 19-rung ladder, facts vs interpretations, assumption statuses, segment split in batch mode — used in: customer-discovery
@@ -141,11 +142,10 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/phuryn-pm-skills/pm-product-discovery/skills/opportunity-solution-tree (MIT) — opportunities not features, three solutions per opportunity, opportunity score — used in: product-scoping
 - upstream/phuryn-pm-skills/pm-execution/skills/create-prd (MIT) — value proposition with an explicit alternatives slot; findings enter the PRD only if they change a decision — used in: product-scoping
 - upstream/phuryn-pm-skills/pm-execution/skills/strategy-red-team (MIT) — load-bearing claims, steelman then attack, "fails if", ranked cheapest tests, no manufactured doubt — used in: product-scoping
-- upstream/jalald-verified-research/skills/verified-research/SKILL.md (MIT) — research budgets, escalation triggers, origin counting, claims-only checker, one top-up round — used in: verified-research
-- upstream/seanellyjames-deep-research-skill/SKILL.en.md (MIT) — premise framing, hypotheses, claim headings, stand-alone prose, no nested workers — used in: verified-research
+- upstream/jalald-verified-research/skills/verified-research/SKILL.md (MIT) — research budgets, top-up size, escalation triggers, origin counting, claims-only checker — used in: verified-research
+- upstream/seanellyjames-deep-research-skill/SKILL.en.md (MIT) — premise framing, falsifiable hypotheses, claim headings — used in: verified-research
 - upstream/wanshuiyin-auto-claude-code-research-in-sleep/skills/citation-audit/SKILL.md (MIT) — wrong-context verdict — used in: verified-research
 - upstream/everything-claude-code/skills/research-ops/SKILL.md (MIT) — sorting user material; statement-type tags — used in: verified-research
-- upstream/everything-claude-code/skills/deep-research/SKILL.md (MIT) — page text treated as data — used in: verified-research
 - Mike Caulfield, SIFT ("the four moves"), https://hapgood.us/2019/06/19/sift-the-four-moves/ — lateral reading, tracing claims (method only) — used in: verified-research
 - user-authored framework (v1, 2026-03), restructured — used in: liu-ayi
 - ideas from Liu Zhongjing (order output vs consumption, customary law, institutional capital, legitimacy before policy), paraphrased and restated as testable checks; his political programme and determinism are deliberately excluded — used in: liu-ayi
