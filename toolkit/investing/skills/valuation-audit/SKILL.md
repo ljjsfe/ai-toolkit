@@ -1,7 +1,7 @@
 ---
 name: valuation-audit
 description: "Audit a stock valuation, yours or someone else's, for the errors that make it wrong — no price or cheap/expensive call without a dated quote and diluted share count, read what today's price implies before valuing, two independent method families, terminal value checked against growth, reinvestment and the discount rate, each peer premium stated once, and return split into fundamentals vs multiple change. Use for 'is X cheap', fair value, DCF or multiple checks; to track a thesis use thesis-ledger. Also for 估值, 贵不贵, 合理价值, \"should I buy X\" (answered as a valuation audit, never as advice)."
-version: 1.2.1
+version: 1.2.2
 sources:
   - upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — structure of §1 (snapshot rows, red flags); method-by-business pairings (reorganised); 3%, 5%, 25%, ±30% thresholds; same-family rule; joint-upgrade and double-count checks; DCF shown only when its inputs can be written out; return split incl. EV path; no-rerating case
   - Mauboussin and Rappaport, "Expectations Investing" (2001; rev. 2021), https://www.expectationsinvesting.com/ — §2, price-implied drivers and forecast period
@@ -103,8 +103,10 @@ check it from a different family:
   threshold; past it the gap is a modelling disagreement, not noise), swap the suspect
   assumption across the two methods and recompute, but only an assumption both actually use
   (growth, discount rate, normalised margin). Where the two rest on different bases, bridge
-  them through their own inputs instead — P/TBV = P/E × ROTE, so a bank whose two views
-  disagree is carrying an implied return on tangible equity; test that number. Whatever
+  them through their own inputs instead — P/TBV = P/E × ROTE when all three use the same
+  earnings, share count and closing tangible equity (reported ROTE often uses the average;
+  restate it first), so a bank whose two views disagree is carrying an implied return on
+  tangible equity; test that number. Whatever
   closes most of the gap is the finding.
   Report both values; the base case uses the view whose weak input you can defend, and the
   other stays beside it. An average of the two is never the answer.

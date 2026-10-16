@@ -1,7 +1,7 @@
 ---
 name: thesis-ledger
 description: "Write an investment thesis as dated, falsifiable claims and track it — tie each claim to a KPI with a threshold and date, grade it intact / weakened / broken / insufficient evidence, refuse intact on stale data, treat price moves as non-evidence, split each update into fact, price and wording changes, and fix a 12-month pre-mortem and kill criteria at entry. Use to write, check or review a stock or options thesis; for valuation use valuation-audit, for macro use macro-regime. Also for 投资逻辑, 持仓复盘, 季报对照."
-version: 1.2.1
+version: 1.2.2
 sources:
   - upstream/yennanliu-investskill/prompts/thesis-tracker.md (MIT) — structure from this source;
     ledger fields, four statuses and their bars, last-confirmed vs check outcome, 3–5 KPIs,
@@ -65,8 +65,9 @@ as a baseline.
 
 1. **Admit only facts.** Split each item into single changes, then ask of every one: is it new,
    dated, checkable and about the business itself? A yes is *fact* and feeds the steps below.
-   A no goes under *price* (a move in the quote or multiple) or *wording* (old evidence, new
-   phrasing) — listed, and it moves nothing. Example: "shares fell 12% after the CFO left and
+   A no goes under *price* (a move in the quote or multiple), *wording* (old evidence, new
+   phrasing) or *unverified* (a claim about the business with no date or source yet, held
+   until it is sourced) — listed, and it moves nothing. Example: "shares fell 12% after the CFO left and
    guidance was cut" is two facts (the departure, the cut) and one price item (the 12%).
 2. **Refresh each claim**: new value, source, as-of date, and trend since last check (better /
    flat / worse). With no newer figure, record "no new figure"; step 6
@@ -78,8 +79,9 @@ as a baseline.
 5. **Write down the strongest fact against the thesis**, even when everything holds. If none
    exists, say what you searched.
 6. **Grade each claim**: *holding* or *breached* (on a figure dated after the previous check),
-   *stale* (its date has come but no fresh figure exists), or *pending* (its by-date is ahead
-   and nothing can test it yet; pending claims neither help nor hurt). Report coverage, e.g.
+   *stale* (it has been testable, by an earlier figure or a passed date, and no fresh figure
+   exists now), or *pending* (it has never yet been testable and its by-date is ahead; pending
+   claims neither help nor hurt). Report coverage, e.g.
    "tested 2/5 · pending 3 · stale 0 · kill criteria clear 3/4, unassessed 1".
 7. **Set this check's outcome** — walk the list top-down and stop at the first that applies:
    1. **broken** — a kill criterion fired; two or more claims breached on current data; or a
@@ -120,7 +122,7 @@ Coverage: tested <n>/<N> · pending <n> · stale <n> · kill criteria clear <n>/
 Thesis: <change · why unpriced · why now>   Horizon / expiry: <…>
 | # | claim | KPI | threshold | by | previous | current (source, as-of) | trend | holding / breached / stale / pending |
 | kill criterion | not fired / fired / cannot assess | evidence |
-Changes since <last check>: fact: <…> | price: <…, no effect> | wording: <…, no effect>
+Changes since <last check>: fact: <…> | price: <…, no effect> | wording: <…, no effect> | unverified: <…, held until sourced>
 Promises (<source, date>): <delivered / partial / missed / not yet due>
 Strongest contrary fact: <…>   Inferences (marked): <…>   Unknown: <…>
 Calculations: <script output, or formula with inputs>
