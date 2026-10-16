@@ -4,7 +4,7 @@ description: "Career and workplace coaching for engineers, tech leads and manage
 version: 1.3.0
 sources:
   - user-authored
-  - Jeffrey Pfeffer, "7 Rules of Power" (2022; Chinese edition 《权力进化论》) and "Power" (2010) — ideas only, paraphrased: performance predicts advancement weakly, perceived power over likability, the boss's self-interest
+  - 'Jeffrey Pfeffer, "7 Rules of Power" (2022; Chinese edition 《权力进化论》) and "Power" (2010) — ideas only, paraphrased: performance predicts advancement weakly, perceived power over likability, the boss''s self-interest'
 ---
 
 # Career Navigator

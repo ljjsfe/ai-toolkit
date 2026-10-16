@@ -1,10 +1,11 @@
 ---
 name: agent-security
 description: Threat-model and harden an agent that reads untrusted content or holds real permissions — treat every external text and the agent's own notes as data, enforce authority in code outside the model, deny-by-default, gate destructive actions, and check supply chain, filesystem, network, secrets and caches. Use when building, reviewing or deploying an agent with tools, MCP servers, file or network access, credentials, or money; for the surrounding application use app-security.
-version: 1.0.0
+version: 1.0.1
 sources:
   - upstream/everything-claude-code/skills/{agent-security-hardening,mcp-dependency-review,prompt-caching-strategy,llm-trading-agent-security,agent-architecture-audit} (MIT)
   - upstream/vila-lab/README.md, docs/architecture.md (CC BY-NC-SA 4.0 — ideas only, no wording)
+  - upstream/everything-claude-code/the-security-guide.md (MIT) — Simon Willison's "lethal trifecta" (private data, untrusted content, an outbound channel), behind "The dangerous combination"
   - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-managed-context,harness-engineering,self-improvement-loops} (MIT)
   - Gambit Security, "AI Agents Are Hacking Online Retailers for $25 a Company" (2026), https://gambit.security/blog-posts/autonomous-ai-agents-online-retailers-25-a-company
 ---
@@ -56,7 +57,9 @@ leg — split the agent, drop the outbound channel, or require approval on outbo
 **Before the trust prompt**
 - A cloned or downloaded repository's agent files — `CLAUDE.md`, `AGENTS.md`, settings, hooks,
   MCP configs, extensions — are untrusted code. Read them before opening the folder with an
-  agent; some run at startup before any trust dialog appears.
+  agent, and do not rely on the trust dialog as the boundary: past releases let parts of a
+  repository's configuration act before the user accepted it, and a fix in one version says
+  nothing about the version you run.
 
 **Supply chain (MCP servers, plugins, tools)**
 

@@ -7,6 +7,8 @@
 #   optional: true → listed but not installed by --external; install it yourself when decided
 #   install:  one shell command per "- " line, run in order. Commands must be safe to rerun
 #             and leave the latest version installed: ./update.sh simply reruns them.
+#   watch:    optional, comma-separated paths in the repo that scripts/upstream-check.py follows
+#             (default: the whole repo); install.sh ignores it
 #   folded fields (`>`) are documentation only
 
 - name: impeccable
@@ -25,11 +27,38 @@
     Read 2026-10-13 against the other design upstreams (anthropics-skills frontend-design,
     gstack design-*, everything-claude-code frontend-design-direction, taste-skill): its craft
     floor and calibration already include their distinctive rules, and it adds an edit-time
-    detector we cannot reproduce in prose. 650+ commits in the last month.
+    detector we cannot reproduce in prose. 650+ commits in the last month. Re-read 2026-10-15
+    against taste-skill v2: still the default, because it covers product UI as well as pages and
+    already has dealt directions, verified imagery, multi-viewport screenshots and an independent
+    finish reviewer; taste-skill is kept as an optional alternative for marketing pages.
   notes: >
-    The edit-time detector hook is installed per project, not globally: run
-    `npx -y impeccable install` inside each project that should have it. Codex asks to
-    approve that project hook (/hooks).
+    The edit-time detector hook is meant to run in every project on Claude Code: from the
+    release after npm 4.5.2 (upstream #986), the --scope=global install above registers it in
+    ~/.claude/settings.json, so ./update.sh turns it on. Up to 4.5.2 it does not land there;
+    run `npx -y impeccable install` inside a project to get it sooner. Codex hooks are per
+    project only (.codex/hooks.json) and need approval via /hooks.
+
+- name: taste-skill
+  category: design
+  repo: https://github.com/Leonxlnx/taste-skill
+  license: MIT
+  tools: claude, codex
+  optional: true
+  watch: skills/taste-skill
+  install:
+    - npx -y skills@latest add Leonxlnx/taste-skill -g -a claude-code -a codex -s design-taste-frontend -y
+  covers: >
+    v2 (install name design-taste-frontend): art direction for landing pages, marketing sites and
+    portfolios only, not app screens. Deals three of 20 directions from a 247-site study, then
+    builds with real open-licence pictures and footage found and credited by script (Openverse,
+    Wikimedia, AIC, the Met), gates the page in a real browser at 1440/768/390 and fixes from its
+    own screenshots. Its picture search is the part impeccable lacks.
+  notes: >
+    Optional: install it when a marketing page is the job, and use one design system per
+    project, because its house rules (no hairlines, no monospace, no eyebrows) contradict
+    impeccable's. A run costs 30-45 minutes and a few hundred thousand tokens. Needs Node 22+
+    and Chrome/Chromium. Its own final blind round scored v2 7.7 vs no skill 7.8 (one model
+    juror, three briefs), so treat it as a better process, not a proven better result.
 
 - name: last30days
   category: research
@@ -90,6 +119,7 @@
   repo: https://github.com/anthropics/skills
   license: Apache-2.0
   tools: claude, codex
+  watch: skills/webapp-testing
   install:
     - npx -y skills@latest add anthropics/skills -g -a claude-code -a codex -s webapp-testing -y
   covers: >
@@ -103,6 +133,7 @@
   license: Apache-2.0
   tools: claude, codex
   optional: true
+  watch: skills/mcp-builder
   install:
     - npx -y skills@latest add anthropics/skills -g -a claude-code -a codex -s mcp-builder -y
   covers: >
@@ -115,6 +146,7 @@
   license: Apache-2.0
   tools: claude
   optional: true
+  watch: plugins/mcp-server-dev
   install:
     - claude plugin marketplace add anthropics/claude-plugins-official
     - claude plugin install mcp-server-dev@claude-plugins-official
@@ -129,6 +161,7 @@
   license: proprietary (Anthropic, all rights reserved) — install only, never copied or rewritten here
   tools: claude
   optional: true
+  watch: plugins/claude-security
   install:
     - claude plugin marketplace add anthropics/claude-plugins-official
     - claude plugin install claude-security@claude-plugins-official

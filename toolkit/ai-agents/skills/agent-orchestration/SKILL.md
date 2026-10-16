@@ -3,7 +3,7 @@ name: agent-orchestration
 description: Run a team of subagents inside Claude Code or Codex without losing work — keep progress in a ledger that survives compaction, pin models, assign file ownership, serialise single-writer operations, and verify every "done" against an artifact. Use when dispatching more than one subagent or delegating multi-step work.
 version: 1.1.0
 sources:
-  - upstream/superpowers/skills/{subagent-driven-development,dispatching-parallel-agents} (MIT)
+  - upstream/superpowers/skills/{subagent-driven-development,dispatching-parallel-agents,executing-plans} (MIT) — explicit model per worker, fix rounds, a ledger that survives compaction
   - upstream/oh-my-claudecode/skills/team (MIT)
   - upstream/compound-engineering-plugin/skills/ce-work/references/execution-strategy.md (MIT) — exclusive file ownership, orchestrator-only git, bounded batch concurrency
   - upstream/anthropics-skills/skills/claude-api/shared/managed-agents-multiagent.md — when delegation fits

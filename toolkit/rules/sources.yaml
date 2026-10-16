@@ -1,0 +1,16 @@
+# Sources for toolkit/rules/*.md. Kept out of the rule files themselves because rules are
+# loaded into context and every token there is paid each session. Same format as a skill's
+# `sources:`; read by scripts/upstream-check.py, scripts/copy-check.py and the CREDITS export.
+core:
+  - upstream/everything-claude-code/rules/common/{git-workflow,coding-style}.md (MIT) — commit type list, immutable updates, validation at system boundaries
+data-and-containers:
+  - upstream/everything-claude-code/agents/database-reviewer.md (MIT) — structure from this source and the next; cursor pagination instead of OFFSET
+  - upstream/everything-claude-code/skills/{postgres-patterns,docker-patterns} (MIT) — RLS auth call wrapped in a subquery; pinned tags, non-root, no secrets in layers, ports bound to 127.0.0.1
+flutter:
+  - upstream/everything-claude-code/agents/flutter-reviewer.md (MIT) — mounted check after await, cancel subscriptions and controllers in dispose
+  - upstream/everything-claude-code/rules/dart/coding-style.md (MIT) — sealed classes with exhaustive switches
+java:
+  - upstream/jeffallan-claude-skills/skills/spring-boot-engineer (MIT) — WebSecurityConfigurerAdapter removal, no block() in WebFlux
+typescript-web:
+  - upstream/everything-claude-code/skills/nextjs-turbopack (MIT) — proxy.ts is not a misnamed middleware.ts
+  - upstream/everything-claude-code/rules/react/security.md (MIT) — Server Actions are public endpoints

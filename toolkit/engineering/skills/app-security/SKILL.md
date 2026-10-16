@@ -1,7 +1,7 @@
 ---
 name: app-security
 description: Security-review a web, mobile or backend application the way attackers find real bugs — map actors, assets, trust and tenant boundaries and invariants before hunting, test authorisation with a second user or tenant, sweep every sibling route once a gap is found, trace webhooks end to end, and gate findings on a concrete attack path with severity, confidence and evidence kept separate. Use for security reviews, audits, or before shipping auth, payments, multi-tenant or integration code; for agents and LLM tools use agent-security.
-version: 1.0.1
+version: 1.0.2
 sources:
   - upstream/gstack/cso (MIT) — boundary and invariant census first, sibling propagation, exploitability gating, three separate judgements, independent re-derivation, webhook review order, two-user and two-tenant negative controls
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/security-reviewer.md (MIT) — confidence tied to attack-path traceability with a critical-impact override; feature-gate leaks
@@ -25,13 +25,14 @@ pattern. Find the boundaries first, then attack them.
    resource. An unguessable ID is not authorisation.
 3. **One gap means look for its siblings** (as in `code-review`): search the same pattern at
    every other route, handler, job and command in scope; severity follows the worst sibling.
-4. **A finding needs an attack path from attacker-controlled input.** Restate each suspected
-   bug precisely (claim, trigger, impact, attacker's starting privilege) — many collapse at
-   this step. Then trace the whole validation chain from source to sink. Values set by
+4. **A finding needs an attack path from attacker-controlled input.** Before verifying, write
+   each suspected bug as four fields — claim, trigger, impact, and what the attacker can
+   already do; a large share of false alarms cannot be written that way and end there. Then
+   follow the input from where it enters to where it is used, through every check between. Values set by
    operators (settings, environment, config, constants) are not attacker-controlled; a pattern
    the framework already neutralises is not a finding; a missing header or rate limit needs a
-   concrete scenario. Looking dangerous is not evidence — models over-report and over-rate
-   severity. Unknown reachability stays "unknown", never "unreachable".
+   concrete scenario. A suspicious-looking pattern proves nothing by itself — models
+   over-report and over-rate severity. Unknown reachability stays "unknown", never "unreachable".
 5. **Severity, confidence and evidence are separate judgements.** A critical-impact issue with
    unconfirmed exploitability is still reported as critical, labelled unconfirmed; a confirmed
    trivial issue stays trivial.
@@ -48,8 +49,9 @@ pattern. Find the boundaries first, then attack them.
 
 ## Reviewing a change
 
-Rank by risk, not size: auth, crypto, money movement, external calls and tenant scoping first —
-a two-line change can be the critical one. For removed or loosened security code, read the
+Order the files by what they can break, not by how much changed: authentication, tenant
+scoping, payments, cryptography and calls to other systems come first — a two-line change can
+be the critical one. For removed or loosened security code, read the
 history (`git blame`, the commit that added it) to learn why it existed. Count the callers of
 changed security-relevant functions instead of guessing the blast radius, and treat untested
 changes to them as higher risk.
@@ -58,8 +60,8 @@ changes to them as higher risk.
 
 Give a second reviewer the location, the invariant and the rubric — not your conclusion — and
 have it re-derive the result from the callers, middleware and config. If no second reviewer is
-available, do a labelled challenge pass against your own finding. After triage, check whether
-findings rejected one by one combine into a viable chain.
+available, do a labelled challenge pass against your own finding. After triage, ask whether two
+or more of the findings you dropped would together give an attacker a path none gives alone.
 
 ## Confidence
 

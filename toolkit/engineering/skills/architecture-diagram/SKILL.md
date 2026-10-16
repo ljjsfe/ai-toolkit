@@ -2,7 +2,7 @@
 name: architecture-diagram
 description: Create polished dark-themed architecture diagrams as standalone, self-contained HTML+SVG files. Use when the user asks for a standalone system, infrastructure, cloud, security or network topology diagram file — not for diagrams embedded in a document.
 sources:
-  - third-party skill by Cocoon AI, kept verbatim (MIT; see LICENSE in this folder)
+  - third-party skill by Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 — body and resources kept verbatim, description rewritten for routing (MIT; see LICENSE in this folder)
 ---
 
 # Architecture Diagram Skill

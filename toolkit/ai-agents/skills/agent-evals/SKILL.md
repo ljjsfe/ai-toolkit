@@ -1,15 +1,16 @@
 ---
 name: agent-evals
 description: Evaluate an agent, prompt, skill or model change so the result can be trusted — define and freeze the eval before running, keep the evaluator hidden from what it judges, require a deterministic check, grade live behaviour from artifacts, and size and price the run before scaling. Use when measuring whether an agent or LLM change is better, building a regression suite, or comparing agents or models.
-version: 1.0.0
+version: 1.1.0
 sources:
   - upstream/everything-claude-code/skills/{eval-harness,agent-eval,gan-style-harness} (MIT)
   - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-improvement-loops,harness-engineering,evaluation,advanced-evaluation} (MIT) — incl. judge position bias
   - upstream/anthropics-skills/skills/skill-creator, skills/mcp-builder/reference/evaluation.md (Apache-2.0)
   - upstream/gstack/eval-plan (MIT)
   - upstream/compound-engineering-plugin/.agents/skills/ce-skill-work/references/evaluate.md (MIT)
-  - upstream/anthropics-skills/skills/claude-api/shared/evals/{eval-audit,build-eval,eval-hillclimb}.md — grade the end state, start from real failures, report spread, held-out split
+  - upstream/anthropics-skills/skills/claude-api/shared/evals/{eval-audit,build-eval,eval-hillclimb}.md (Apache-2.0) — grade the end state, start from real failures, report spread, held-out split
   - upstream/compound-engineering-plugin/docs (MIT) — blinded arms, small-n paired evals
+  - upstream/compound-engineering-plugin/docs/solutions/skill-design/callee-skill-evals-need-caller-shaped-tasks.md (MIT) — caller-shaped tasks, overreach grading, pre-existing items in touched files
 ---
 
 # Agent Evals
@@ -55,6 +56,12 @@ gate, a refusal), stop each run at that step instead of running the whole workfl
   solvable by keyword search (paraphrase, don't quote); stable over time (never "the current
   count"); and resolved to a single string that can be compared exactly.
 - **Hold some cases out.** Anything used to tune the change is not evidence that it worked.
+- **A skill that other skills or standing instructions invoke is tested the way it is called.**
+  The task text is what the caller passes (a mode token, a scope, one line of context), not a
+  user's request — a loose task invites extra work and the eval then measures the task text.
+  Grade overreach as well as the intended result: fail runs that edit outside the scope, commit,
+  or add files nobody asked for. Put pre-existing items inside the files the work touches, or a
+  "change only the current work" rule passes trivially.
 
 ## Step 3 — Run it so the comparison is fair
 

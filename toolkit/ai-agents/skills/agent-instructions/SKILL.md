@@ -1,80 +1,109 @@
 ---
 name: agent-instructions
-description: Write or audit a repository's agent instruction files (CLAUDE.md, AGENTS.md, rules) so they stay short and earn their cost — put anything a linter, CI, hook or skill can enforce there instead, keep only what the agent cannot infer, treat every corrective line as a sign of codebase friction to fix, and trim generated drafts (such as init-command output) before keeping them. Use when creating, generating, reviewing or trimming CLAUDE.md, AGENTS.md or agent rules for a project; for security vetting of a cloned repo's agent files use agent-security.
-version: 1.1.0
+description: Write or audit a repository's agent instruction files (CLAUDE.md, AGENTS.md, rules) so they stay short and earn their cost — put each rule in the cheapest place that enforces it (linter, CI, hook, skill), keep only what the agent cannot infer, verify every command and path, treat corrective or ignored lines as friction to fix, and trim generated drafts (such as init-command output). Use when creating, generating, reviewing or trimming CLAUDE.md, AGENTS.md or agent rules for a project; for security vetting of a cloned repo's agent files use agent-security.
+version: 1.2.0
 sources:
-  - upstream/villetakanen-asdlc-io (MIT) — toolchain-first decision rule, instruction files as a friction diagnostic, generated files as a list of what to leave out, map only hidden knowledge, skills listed by name
-  - Claude Code memory docs, https://code.claude.com/docs/en/memory — native AGENTS.md loading and its precedence with CLAUDE.md (checked 2026-10-14)
-  - Gloaguen et al., "Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?" (2026), https://arxiv.org/abs/2602.11988 — context files did not generally improve task success and raised inference cost by over 20%; agents follow the instructions; repository overviews were not helpful
+  - upstream/villetakanen-asdlc-io/src/content/practices/agents-md-spec.md, src/content/recipes/write-agents-md.md (MIT) — enforcement ladder, corrective lines as friction, init output as candidates
+  - upstream/claude-plugins-official/plugins/claude-md-management (Apache-2.0) — command and path currency check; generic and one-off cut tests
+  - upstream/karanb192-claude-code-hooks/plugins/dead-rules-audit (MIT) — promote repeatedly violated rules to a hook
+  - upstream/compound-engineering-plugin/docs/solutions/{developer-experience/always-on-agents-md.md, workflow/measuring-a-packs-effect-needs-non-inferable-rules.md, skill-design/authoring-auto-invoke-standing-instructions.md} (MIT) — load-when notes, sample output for helpers, standing-instruction phrasing
+  - Claude Code memory docs, https://code.claude.com/docs/en/memory — AGENTS.md versus CLAUDE.md loading (checked 2026-10-15)
+  - 'Gloaguen et al., "Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?" (2026), https://arxiv.org/abs/2602.11988 — context files cost over 20% more without general gains; overviews unhelpful'
 ---
 
 # Agent Instructions
 
-An instruction file is loaded into every session and its instructions are followed. Each line
-therefore costs tokens and steers behaviour on every task — which is only worth it when the line
-carries something the agent could not work out itself.
+An always-on instruction file is paid for on every turn and obeyed on every task. A line is
+worth that only if it changes what the agent does and the agent could not have found it out.
+Measured on real repositories, context files raised cost by over a fifth without generally
+raising success, and repository overviews did not help (Gloaguen et al. 2026).
 
-## Iron laws
+## 1. Place each rule before writing it
 
-1. **Only what the agent cannot infer.** If it is visible from the code, the configs, the directory layout or existing docs, leave it
-   out. Repository overviews, though widely recommended, did not help in the study above.
-2. **Toolchain first.** Before adding a rule, ask in order, and put it in the first place that
-   can enforce it:
+Walk down this ladder and stop at the first place that can carry the rule:
 
-   | can it be enforced by… | put it in |
-   |---|---|
-   | a formatter, linter or type checker | that tool's config |
-   | CI | the pipeline |
-   | a hook | the hook |
-   | a task-specific procedure | a skill, named in the file |
-   | none of these — it needs judgement | the instruction file |
-
-   Never restate what a tool already enforces; point to the command instead.
-3. **A corrective line is a symptom.** A line added to stop a specific repeated mistake —
-   "always import from X, not Y" — means the codebase makes the
-   wrong choice easy. Fix the cause — delete the legacy path, add a lint rule, rename — then
-   delete the line. Prefer stating what to use over naming what to avoid; a named alternative
-   stays salient.
-4. **Generated files are drafts to cut.** Output from an init command is a list of candidates,
-   most of which fail law 1. Keep only the lines that pass.
-5. **Stable content only.** If the file changes often, its content belongs in a spec, a task
-   brief or a skill.
-
-## What belongs
-
-| section | content |
+| the rule is… | it goes in |
 |---|---|
-| purpose | 2–4 sentences: what the project is for and the domain constraints the code does not show |
-| commands | how to build, test, run and lint — one line each, especially anything non-standard |
-| judgement rules | what to ask before doing (new dependencies, schema changes, public API changes), architectural preferences a tool cannot check |
-| skills | only for tools that do not discover skills themselves: names and when to use them, never their procedures (Claude Code and Codex already list installed skills) |
-| hidden map | only locations that would surprise someone who knows the framework: where business rules live, which doc answers which question |
+| checkable by a formatter, linter or type checker | that tool's config |
+| checkable on every change | CI |
+| an action to block or require at a tool call | a hook |
+| a procedure for one kind of task | a skill; at most its name and trigger in the file |
+| needed only in one directory or file type | a path-scoped rule (Claude Code) or a skill; see layout for nested files |
+| needed only for some tasks | a notes file, pointed to by a one-line "read X when Y" |
+| one person's preference | the user-level file (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`); `CLAUDE.local.md` only where a `CLAUDE.md` already exists |
+| a project-wide invariant that needs judgement | the root instruction file |
+
+Where a tool already enforces something, the file names the command and does not restate the rule.
+
+## 2. Test each line that reaches the root file
+
+Cut it if any answer is no:
+
+- **Hidden?** Code, configs, directory names and existing docs do not already reveal it. A rule
+  whose helper or pattern is already in the tree gets followed without the file.
+- **Specific?** It is about this project, not advice any competent engineer would apply.
+- **Recurring?** It applies to future tasks, not to one bug that is already fixed.
+- **Stable?** It will still be true next month. Content that churns belongs in a spec, a task brief or a skill.
+- **True now?** Every command in it runs, and every path in it exists. Check, do not assume.
+
+What usually passes: non-default build, test and run commands; decisions that need a human first
+(new dependency, schema change, public API change); domain constraints the code cannot express;
+places that are not where the framework convention puts them; and, for a tool that does not
+list skills itself, which skill to use when.
+
+## 3. Phrase what survives
+
+- Say what to do. A line that names the forbidden option keeps it in front of the agent.
+- A rule that names a helper or format also gives one sample output (`u_1a1b2fjc3mq7`), so a
+  recreated helper can be checked against it.
+- A standing instruction to run a skill on its own fires at a boundary the agent can see
+  ("before commit or handoff", never "after each edit" or "at session end"), lists the change
+  kinds it skips (docs-only, lockfile, generated), and names the skill rather than a slash
+  command another tool cannot call.
+- One line per fact. If it needs a paragraph, it is a notes file or a skill.
+
+## 4. Treat corrections as friction
+
+- A line written to stop a repeated mistake ("import from X, not Y") shows the code makes the
+  wrong path easy. Remove the cause — delete the old path, add a lint rule, rename — then the line.
+- A rule the agent keeps breaking despite being loaded will not be fixed by bolder wording. Move
+  it to a hook or CI check. If you can, count violations over a few sessions first, so the move
+  is based on evidence rather than one memorable miss.
 
 ## Layout across tools
 
 - Default to a single `AGENTS.md`. Codex reads it, and Claude Code reads it natively
-  (v2.1.277+) when no `CLAUDE.md` or `CLAUDE.local.md` exists in the directory or above it.
+  (v2.1.277+) when no `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` exists in the
+  directory or above it.
 - **If a `CLAUDE.md` exists, Claude Code reads it instead of `AGENTS.md`.** Add one only for
-  Claude-specific notes, and start it with `@AGENTS.md` so the shared content still loads. A
+  Claude-specific notes, and open it with `@AGENTS.md` so the shared content still loads. A
   `CLAUDE.md` without that import silently hides `AGENTS.md`; so does a personal
-  `CLAUDE.local.md` unless Project instructions is set to load both. The import is also the
-  fallback in sessions where native `AGENTS.md` loading is unavailable.
-- Put a short file in a subdirectory only when that directory has its own conventions.
-- Language-specific rules go in path-scoped rule files that load only for matching files
-  (Claude Code); in Codex use a nested `AGENTS.md` in that directory or a skill.
+  `CLAUDE.local.md` unless Project instructions is set to load both. The import also covers
+  sessions where native `AGENTS.md` loading is unavailable.
+- A nested `AGENTS.md` is unreliable. Codex reads only from the project root down to the
+  directory it was launched in, never below; Claude Code reads a subdirectory's `AGENTS.md` only
+  when no `CLAUDE.md` exists, and `@AGENTS.md` imports just the root file. For per-path rules
+  prefer a path-scoped rule (Claude Code only) or a skill.
 
-## Audit an existing file
+## Procedures
 
-For each line, mark: **keep** (judgement, not inferable) · **move** (to which tool or skill) ·
-**fix** (friction to remove in the code, then delete) · **cut** (inferable or stale). Then test with a fresh-context agent that did not write the
-file: ask a question only the file can answer, and check it finds the answer without reading
-the whole repository. A claim that the new file improves results needs `agent-evals`.
+**New file or generated draft** (init command, template, another agent's output): treat every
+line as a candidate and run it through sections 1–2. Expect most to go.
+
+**Audit an existing file:**
+1. Run every command and resolve every path; record what fails.
+2. Mark each line **keep**, **move** (where, per section 1), **fix** (friction to remove, then
+   delete) or **cut** (fails section 2, with the reason).
+3. Give a fresh agent that did not write the file a question only the file can answer; it should
+   find the answer without reading through the repository.
+4. Any claim that the new file improves results goes through `agent-evals`, with a no-file arm.
 
 ## Output
 
 ```
-File:         the proposed AGENTS.md / CLAUDE.md, as short as it can be
-Moved:        each rule moved to a linter, CI, hook or skill, and where
-Fix list:     codebase friction behind any corrective line kept for now
-Cut:          what was removed and why
+File:      the proposed file, as short as it can be (diff when auditing)
+Moved:     each rule moved out, and to which linter, CI job, hook, skill or notes file
+Fix list:  codebase friction behind each corrective line still kept
+Cut:       each removed line and the failed test (hidden, specific, recurring, stable, true)
+Broken:    commands that did not run and paths that do not exist
 ```

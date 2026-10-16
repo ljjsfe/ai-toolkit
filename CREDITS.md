@@ -14,12 +14,16 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/anthropics-skills/skills/skill-creator, skills/mcp-builder/reference/evaluation.md (Apache-2.0) — used in: agent-evals
 - upstream/gstack/eval-plan (MIT) — used in: agent-evals
 - upstream/compound-engineering-plugin/.agents/skills/ce-skill-work/references/evaluate.md (MIT) — used in: agent-evals
-- upstream/anthropics-skills/skills/claude-api/shared/evals/{eval-audit,build-eval,eval-hillclimb}.md — grade the end state, start from real failures, report spread, held-out split — used in: agent-evals
+- upstream/anthropics-skills/skills/claude-api/shared/evals/{eval-audit,build-eval,eval-hillclimb}.md (Apache-2.0) — grade the end state, start from real failures, report spread, held-out split — used in: agent-evals
 - upstream/compound-engineering-plugin/docs (MIT) — blinded arms, small-n paired evals — used in: agent-evals
-- upstream/villetakanen-asdlc-io (MIT) — toolchain-first decision rule, instruction files as a friction diagnostic, generated files as a list of what to leave out, map only hidden knowledge, skills listed by name — used in: agent-instructions
-- Claude Code memory docs, https://code.claude.com/docs/en/memory — native AGENTS.md loading and its precedence with CLAUDE.md (checked 2026-10-14) — used in: agent-instructions
-- {'Gloaguen et al., "Evaluating AGENTS.md': 'Are Repository-Level Context Files Helpful for Coding Agents?" (2026), https://arxiv.org/abs/2602.11988 — context files did not generally improve task success and raised inference cost by over 20%; agents follow the instructions; repository overviews were not helpful'} — used in: agent-instructions
-- upstream/superpowers/skills/{subagent-driven-development,dispatching-parallel-agents} (MIT) — used in: agent-orchestration
+- upstream/compound-engineering-plugin/docs/solutions/skill-design/callee-skill-evals-need-caller-shaped-tasks.md (MIT) — caller-shaped tasks, overreach grading, pre-existing items in touched files — used in: agent-evals
+- upstream/villetakanen-asdlc-io/src/content/practices/agents-md-spec.md, src/content/recipes/write-agents-md.md (MIT) — enforcement ladder, corrective lines as friction, init output as candidates — used in: agent-instructions
+- upstream/claude-plugins-official/plugins/claude-md-management (Apache-2.0) — command and path currency check; generic and one-off cut tests — used in: agent-instructions
+- upstream/karanb192-claude-code-hooks/plugins/dead-rules-audit (MIT) — promote repeatedly violated rules to a hook — used in: agent-instructions
+- upstream/compound-engineering-plugin/docs/solutions/{developer-experience/always-on-agents-md.md, workflow/measuring-a-packs-effect-needs-non-inferable-rules.md, skill-design/authoring-auto-invoke-standing-instructions.md} (MIT) — load-when notes, sample output for helpers, standing-instruction phrasing — used in: agent-instructions
+- Claude Code memory docs, https://code.claude.com/docs/en/memory — AGENTS.md versus CLAUDE.md loading (checked 2026-10-15) — used in: agent-instructions
+- Gloaguen et al., "Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?" (2026), https://arxiv.org/abs/2602.11988 — context files cost over 20% more without general gains; overviews unhelpful — used in: agent-instructions
+- upstream/superpowers/skills/{subagent-driven-development,dispatching-parallel-agents,executing-plans} (MIT) — explicit model per worker, fix rounds, a ledger that survives compaction — used in: agent-orchestration
 - upstream/oh-my-claudecode/skills/team (MIT) — used in: agent-orchestration
 - upstream/compound-engineering-plugin/skills/ce-work/references/execution-strategy.md (MIT) — exclusive file ownership, orchestrator-only git, bounded batch concurrency — used in: agent-orchestration
 - upstream/anthropics-skills/skills/claude-api/shared/managed-agents-multiagent.md — when delegation fits — used in: agent-orchestration
@@ -27,15 +31,16 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/villetakanen-asdlc-io (MIT) — declared dependencies and a divergence rule in the task brief — used in: agent-orchestration
 - upstream/everything-claude-code/skills/{agent-security-hardening,mcp-dependency-review,prompt-caching-strategy,llm-trading-agent-security,agent-architecture-audit} (MIT) — used in: agent-security
 - upstream/vila-lab/README.md, docs/architecture.md (CC BY-NC-SA 4.0 — ideas only, no wording) — used in: agent-security
+- upstream/everything-claude-code/the-security-guide.md (MIT) — Simon Willison's "lethal trifecta" (private data, untrusted content, an outbound channel), behind "The dangerous combination" — used in: agent-security
 - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-managed-context,harness-engineering,self-improvement-loops} (MIT) — used in: agent-security
 - Gambit Security, "AI Agents Are Hacking Online Retailers for $25 a Company" (2026), https://gambit.security/blog-posts/autonomous-ai-agents-online-retailers-25-a-company — used in: agent-security
 - user-authored — used in: career-navigator
-- {'Jeffrey Pfeffer, "7 Rules of Power" (2022; Chinese edition 《权力进化论》) and "Power" (2010) — ideas only, paraphrased': "performance predicts advancement weakly, perceived power over likability, the boss's self-interest"} — used in: career-navigator
+- Jeffrey Pfeffer, "7 Rules of Power" (2022; Chinese edition 《权力进化论》) and "Power" (2010) — ideas only, paraphrased: performance predicts advancement weakly, perceived power over likability, the boss's self-interest — used in: career-navigator
 - upstream/gstack/cso (MIT) — boundary and invariant census first, sibling propagation, exploitability gating, three separate judgements, independent re-derivation, webhook review order, two-user and two-tenant negative controls — used in: app-security
 - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/security-reviewer.md (MIT) — confidence tied to attack-path traceability with a critical-impact override; feature-gate leaks — used in: app-security
 - upstream/trailofbits-skills/plugins/{fp-check,differential-review} (CC BY-SA 4.0 — ideas only, no wording) — restate the claim before verifying, trace the validation chain, risk not size, git blame on removed security code, counted blast radius, exploit chains across rejected findings — used in: app-security
 - upstream/getsentry-skills/skills/security-review (Apache-2.0) — attacker-controlled vs server-controlled input; do-not-flag list — used in: app-security
-- third-party skill by Cocoon AI, kept verbatim (MIT; see LICENSE in this folder) — used in: architecture-diagram
+- third-party skill by Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 — body and resources kept verbatim, description rewritten for routing (MIT; see LICENSE in this folder) — used in: architecture-diagram
 - upstream/compound-engineering-plugin/skills/ce-code-review/references/{personas/*,action-class-rubric.md,subagent-template.md} (MIT) — correctness, security, performance and reliability lenses; P0–P3; check callers, guards and framework defaults — used in: code-review
 - upstream/compound-engineering-plugin/skills/ce-simplify-code/references/personas/efficiency-reviewer.md (MIT) — unbounded structures, listener leaks — used in: code-review
 - upstream/gstack/review (MIT) — sideways sweep, gate-integrity inventory, quote-or-cap confidence — used in: code-review
@@ -78,13 +83,25 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - authored for this toolkit from a stated need (results challenged as unverified) — state how and where; answer challenges with evidence — used in: verification
 - upstream/addyosmani-agent-skills/skills/doubt-driven-development (MIT) — artifact-only adversarial review, bounded cycles, "doubt theater" — used in: verification
 - upstream/gstack/ship (MIT) — freshness by content, not by commit count — used in: verification
-- upstream/yennanliu-investskill/prompts/thesis-tracker.md (MIT) — mechanism / mispricing / why-now test, 3–5 KPIs with thresholds, ordered status rules, stale data cannot support intact, next-check timing, dated pre-mortem, memory figures low confidence — used in: thesis-ledger
-- upstream/yennanliu-investskill/prompts/10k-digest.md (MIT) — prior commitments scored delivered / partial / missed; restatement or auditor change makes earlier figures stale — used in: thesis-ledger
-- upstream/yennanliu-investskill/prompts/result-validator.md (MIT) — provenance header first; memory figures above low confidence are a red flag — used in: thesis-ledger
-- upstream/xbtlin-ai-berkshire/skills/thesis-drift.md (MIT) — fact / price / wording separation, compare evidence not prose, no change without new evidence, no mental arithmetic, kill criteria outrank a cheap multiple, no baseline means no drift check — used in: thesis-ledger
+- upstream/yennanliu-investskill/prompts/thesis-tracker.md (MIT) — structure from this source; ledger fields, four statuses and their bars, 3–5 KPIs, pre-mortem, next check — used in: thesis-ledger
+- upstream/yennanliu-investskill/prompts/10k-digest.md (MIT) — commitment scoring; restatements stale data — used in: thesis-ledger
+- upstream/yennanliu-investskill/prompts/result-validator.md (MIT) — provenance block; memory is low confidence — used in: thesis-ledger
+- upstream/xbtlin-ai-berkshire/skills/thesis-drift.md (MIT) — fact / price / wording buckets; no baseline, no check — used in: thesis-ledger
+- upstream/anthropics-financial-services/plugins/vertical-plugins/equity-research/skills/thesis-tracker/SKILL.md (Apache-2.0) — long/short side, catalysts tied to claims, trend column, track disconfirming evidence — used in: thesis-ledger
+- upstream/tradermonty-claude-trading-skills/skills/trader-memory-core/SKILL.md (MIT) — append-only status history; closed vs invalidated — used in: thesis-ledger
+- upstream/b-m-capital-research-honeclaw/skills/company-thesis-ratings/SKILL.md (MIT) — fact / inference / unknown tags — used in: thesis-ledger
+- Gary Klein, "Performing a Project Premortem", HBR 2007, https://hbr.org/2007/09/performing-a-project-premortem (public literature) — failure taken as certain; user's causes first (order adapted) — used in: thesis-ledger
+- Annie Duke, Thinking in Bets (2018) (public literature) — grade the thesis apart from the P&L — used in: thesis-ledger
 - authored for this toolkit from a stated need (options positions) — claim dates vs expiry — used in: thesis-ledger
-- upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — reconciliation table, 3% market-cap tolerance, no quote no price, two method families, divergence handling, market-implied valuation, premium counted once, ±30% anchor rule, e + r + e×r return split, no-rerating case — used in: valuation-audit
-- upstream/yennanliu-investskill/prompts/dcf-valuation.md (MIT) — terminal growth below the discount rate; flag terminal value above 80% of enterprise value — used in: valuation-audit
+- upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — structure of §1 (snapshot rows, red flags); 3%, 5%, 25%, ±30% thresholds; same-family rule; return split; no-rerating case — used in: valuation-audit
+- Mauboussin and Rappaport, "Expectations Investing" (2001; rev. 2021), https://www.expectationsinvesting.com/ — §2, price-implied drivers and forecast period — used in: valuation-audit
+- Damodaran, valuation teaching material, https://pages.stern.nyu.edu/~adamodar/ — g near risk-free, reinvestment = g/ROIC, ROIC fade — used in: valuation-audit
+- upstream/xbtlin-ai-berkshire/codex-skills/investment-research/SKILL.md (MIT) — terminal multiple from economics not peers; r−g spread; same-basis r and g; discrete-risk scenario — used in: valuation-audit
+- upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/dcf-model/SKILL.md (Apache-2.0) — TV below 40% check; grid centre equals base — used in: valuation-audit
+- upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/comps-analysis/SKILL.md (Apache-2.0) — median, drop doubtful peers, quartiles, 10% source gap — used in: valuation-audit
+- upstream/yennanliu-investskill/prompts/dcf-valuation.md (MIT) — g below r; TV above 80% flag — used in: valuation-audit
+- upstream/yennanliu-investskill/prompts/stock-valuation.md (MIT) — SBC-adjusted FCF; no EV bridge for P/E price — used in: valuation-audit
+- upstream/tradermonty-claude-trading-skills/skills/kanchi-dividend-sop/references/valuation-and-one-off-checks.md (MIT) — REIT row; one-off profit checks — used in: valuation-audit
 - upstream/yennanliu-investskill/plugins/us-stock-analysis/skills/economics-analysis (MIT) — never use remembered readings; provenance header; memory means low confidence; conflicting sources shown, never averaged — used in: macro-regime
 - upstream/anthropics-financial-services/plugins/partner-built/lseg/skills/macro-rates-monitor (Apache-2.0) — fixed dashboard; real rate = nominal − breakeven; 2s10s and 3M-10Y slopes; cycle, policy, real-rate and financial-conditions synthesis — used in: macro-regime
 - upstream/tradermonty-claude-trading-skills/skills/macro-regime-detector (MIT) — fail closed on missing inputs; require a sustained signal before calling a regime change — used in: macro-regime
@@ -95,7 +112,10 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/wanshuiyin-auto-claude-code-research-in-sleep/skills/novelty-check (MIT) — name the prior work before killing an idea — used in: market-scan
 - upstream/ferdinandobons-startup-skill/startup-competitors/references/honesty-protocol.md (MIT) — sentiment weighted by volume — used in: market-scan
 - authored for this toolkit from a stated need — dated pricing history from web archives; price compared for a typical buyer — used in: market-scan
-- upstream/compound-engineering-plugin/skills/ce-pov (MIT) — project floor and external floor, grade vocabulary, skeptic stance, reversibility-tiered effort, freeze-before-panel, "either is viable" — used in: adopt-or-build
+- upstream/compound-engineering-plugin/skills/ce-pov (MIT) — two evidence floors, reversibility-tiered effort, keep-incumbent and do-nothing skepticism, Hold / Reject / Not-our-problem vocabulary, frozen view before a second opinion, "either is viable" — used in: adopt-or-build
+- Thoughtworks Technology Radar, https://www.thoughtworks.com/radar/faq — four-ring ladder, Assess as a learn-only step — used in: adopt-or-build
+- upstream/wondelai-skills/pragmatic-programmer/references/reversibility.md (MIT) — switching cost measured from fan-out, coupling, tests and config — used in: adopt-or-build
+- upstream/optimnow-cloud-finops-skills/plugins/cloud-finops/skills/cloud-finops/references/finops-ai-self-hosted-vs-managed.md (CC BY-SA 4.0 — ideas only, no wording) — operating cost and team maturity as the self-hosting risk — used in: adopt-or-build
 - upstream/sreshtalluri-mom-test/skills/mom-test (MIT) — past-behaviour rule, reflexes for bad data, evidence ladder — used in: customer-discovery
 - upstream/sreshtalluri-mom-test/skills/mom-test-check-questions (MIT) — question failure tests and reframe shapes — used in: customer-discovery
 - upstream/sreshtalluri-mom-test/skills/mom-test-debrief (MIT) — 19-rung ladder, facts vs interpretations, assumption statuses, segment split in batch mode — used in: customer-discovery
@@ -114,16 +134,19 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/wondelai-skills/monetizing-innovation/SKILL.md (MIT) — value metric before level, segment by willingness to pay, zero pushback as the under-pricing signature — used in: pricing
 - upstream/wondelai-skills/monetizing-innovation/references/wtp-conversations.md (MIT) — top-box scoring, haircut stated numbers, curve not average, red flags in answers — used in: pricing
 - upstream/wondelai-skills/monetizing-innovation/references/packaging-tiers.md (MIT) — leader/filler/killer thresholds, killers never inside a tier price — used in: pricing
-- upstream/aidevgtm-gtm-cofounder/skills/12-pricing/SKILL.md (MIT) — deflected payment requests as the strongest signal, metric then packaging then number, value-multiple heuristic — used in: pricing
+- upstream/aidevgtm-gtm-cofounder/skills/12-pricing/SKILL.md (MIT) — deflected payment requests as the strongest signal, value-metric decision tree, the free/paid line (give away individual value), metric then packaging then number, value-multiple heuristic — used in: pricing
 - upstream/marketingskills/skills/pricing/SKILL.md (MIT) — new-customers-first rollout, small existing cohort, grandfathering as a transition, the ultra-low-price trap — used in: pricing
 - upstream/marketingskills/skills/pricing/references/pricing-page-teardown.md (MIT) — reviewing the page for AI agents as well as humans — used in: pricing
 - upstream/gstack/plan-ceo-review (MIT) — four explicit scope modes chosen before review — used in: product-scoping
 - upstream/phuryn-pm-skills/pm-product-discovery/skills/opportunity-solution-tree (MIT) — opportunities not features, three solutions per opportunity, opportunity score — used in: product-scoping
 - upstream/phuryn-pm-skills/pm-execution/skills/create-prd (MIT) — value proposition with an explicit alternatives slot; findings enter the PRD only if they change a decision — used in: product-scoping
 - upstream/phuryn-pm-skills/pm-execution/skills/strategy-red-team (MIT) — load-bearing claims, steelman then attack, "fails if", ranked cheapest tests, no manufactured doubt — used in: product-scoping
-- upstream/seanellyjames-deep-research-skill/SKILL.md (MIT) — question-the-question phase, argument-chain test, subagent cap — used in: verified-research
-- upstream/jalald-verified-research/skills/verified-research/ (MIT) — opened-only citations, origin counting, independent verifier, tiered budgets, one gap-filling round — used in: verified-research
-- upstream/wanshuiyin-auto-claude-code-research-in-sleep/skills/citation-audit (MIT) — wrong-context citation check — used in: verified-research
+- upstream/jalald-verified-research/skills/verified-research/SKILL.md (MIT) — research budgets, escalation triggers, origin counting, claims-only checker, one top-up round — used in: verified-research
+- upstream/seanellyjames-deep-research-skill/SKILL.en.md (MIT) — premise framing, hypotheses, claim headings, stand-alone prose, no nested workers — used in: verified-research
+- upstream/wanshuiyin-auto-claude-code-research-in-sleep/skills/citation-audit/SKILL.md (MIT) — wrong-context verdict — used in: verified-research
+- upstream/everything-claude-code/skills/research-ops/SKILL.md (MIT) — sorting user material; statement-type tags — used in: verified-research
+- upstream/everything-claude-code/skills/deep-research/SKILL.md (MIT) — page text treated as data — used in: verified-research
+- Mike Caulfield, SIFT ("the four moves"), https://hapgood.us/2019/06/19/sift-the-four-moves/ — lateral reading, tracing claims (method only) — used in: verified-research
 - user-authored framework (v1, 2026-03), restructured — used in: liu-ayi
 - ideas from Liu Zhongjing (order output vs consumption, customary law, institutional capital, legitimacy before policy), paraphrased and restated as testable checks; his political programme and determinism are deliberately excluded — used in: liu-ayi
 - Hume, Burke and Hayek on evolved institutions; Tetlock on reference classes and calibration (public literature) — used in: liu-ayi
@@ -137,10 +160,19 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/xbtlin-ai-berkshire/codex-skills/wechat-article (MIT) — every formula or number gets a plain-language gloss; when editor and reader disagree, the reader wins — used in: writing
 - upstream/anthropics-skills/skills/doc-coauthoring (licence not stated for this skill; method only) — test the draft on a fresh agent that sees only the draft — used in: writing
 - upstream/{blader-humanizer,op7418-humanizer-zh} (MIT) — the de-AI editing pass, installed as external skills (see toolkit/external.yaml) — used in: writing
+- upstream/everything-claude-code/rules/common/{git-workflow,coding-style}.md (MIT) — commit type list, immutable updates, validation at system boundaries — used in: rule core
+- upstream/everything-claude-code/agents/database-reviewer.md (MIT) — structure from this source and the next; cursor pagination instead of OFFSET — used in: rule data-and-containers
+- upstream/everything-claude-code/skills/{postgres-patterns,docker-patterns} (MIT) — RLS auth call wrapped in a subquery; pinned tags, non-root, no secrets in layers, ports bound to 127.0.0.1 — used in: rule data-and-containers
+- upstream/everything-claude-code/agents/flutter-reviewer.md (MIT) — mounted check after await, cancel subscriptions and controllers in dispose — used in: rule flutter
+- upstream/everything-claude-code/rules/dart/coding-style.md (MIT) — sealed classes with exhaustive switches — used in: rule flutter
+- upstream/jeffallan-claude-skills/skills/spring-boot-engineer (MIT) — WebSecurityConfigurerAdapter removal, no block() in WebFlux — used in: rule java
+- upstream/everything-claude-code/skills/nextjs-turbopack (MIT) — proxy.ts is not a misnamed middleware.ts — used in: rule typescript-web
+- upstream/everything-claude-code/rules/react/security.md (MIT) — Server Actions are public endpoints — used in: rule typescript-web
 
 ## Adopted external projects (installed from their own source; not included)
 
 - impeccable (Apache-2.0) — https://github.com/pbakaus/impeccable
+- taste-skill (MIT) — https://github.com/Leonxlnx/taste-skill
 - last30days (MIT) — https://github.com/mvanhorn/last30days-skill
 - emil-design-engineering (MIT) — https://github.com/emilkowalski/skills
 - humanizer (MIT) — https://github.com/blader/humanizer
