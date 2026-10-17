@@ -10,6 +10,8 @@ Rehearse any conversation where you are asking for something, pushing back, or u
   there.
 - What you want from this conversation: one decision, stated as the sentence you would accept.
 - Your leverage, from the inventory, and the card you are willing to play — or not.
+- The objections they are likely to raise, each with a one-line answer (a fact, a number, or
+  someone they trust). The counterpart raises these in play, plus one the user did not list.
 
 ## Play
 
