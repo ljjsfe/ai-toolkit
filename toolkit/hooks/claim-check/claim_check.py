@@ -4,6 +4,8 @@
 Fires when, in the current turn, the assistant edited or wrote files, ran no command after
 the last edit, and its final message claims success. Blocks once per stop (respects
 stop_hook_active) and tells the agent to verify. Fails open on any error.
+
+A tripwire, not proof: any Bash call after the last edit satisfies it, whatever it ran.
 """
 from __future__ import annotations
 
@@ -21,6 +23,10 @@ CLAIM = re.compile(
     r"|(完成了|已完成|修好了|已修复|搞定|测试通过|都通过|部署好了|已部署)",
     re.IGNORECASE,
 )
+# A claim preceded closely by a negation ("not verified", "haven't fixed", "还没完成") is a
+# report of what is unfinished, not a success claim.
+NEGATION_EN = re.compile(r"\b(not|never|no|yet|cannot)\b|n't\b", re.IGNORECASE)
+NEGATION_ZH = re.compile(r"[没未不尚]")
 INJECTED_PREFIXES = ("<", "Caveat:", "[Request interrupted")
 REASON = (
     "You edited files this turn and ran no command after the last edit, but your message "
@@ -28,6 +34,16 @@ REASON = (
     "a live check), then report what ran, where, and the result. If it cannot be run, say "
     "explicitly that it is unverified."
 )
+
+
+def _negated(text: str, start: int) -> bool:
+    """True when one of the three words (or three CJK characters) before start negates it."""
+    before = re.split(r"[.!?;:\n。！？；：]", text[:start])[-1]
+    return bool(NEGATION_EN.search(" ".join(before.split()[-3:])) or NEGATION_ZH.search(before[-3:]))
+
+
+def claims_success(text: str) -> bool:
+    return any(not _negated(text, m.start()) for m in CLAIM.finditer(text))
 
 
 def _entries(path: Path) -> list[dict]:
@@ -78,7 +94,7 @@ def should_block(entries: list[dict], final_text: str | None = None) -> bool:
             elif c.get("type") == "text":
                 transcript_text = c.get("text", "")
     text = final_text if final_text is not None else transcript_text
-    return last_edit >= 0 and last_run < last_edit and bool(CLAIM.search(text))
+    return last_edit >= 0 and last_run < last_edit and claims_success(text)
 
 
 def main() -> int:

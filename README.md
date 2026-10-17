@@ -44,12 +44,18 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
   emilkowalski/skills, the Codex plugin for Claude Code). Entries marked `optional` — currently
   claude-code-hooks — are printed, not installed.
 
-- Skills install to `~/.claude/skills/` (Claude Code) and `~/.codex/skills/` (Codex).
+- Skills are stored once in `~/.agents/skills/`, which Codex reads directly; Claude Code gets a
+  symlink per skill in `~/.claude/skills/`. Copies left in `~/.codex/skills/` by older versions
+  are removed. Rules and the hook stay tool-specific.
 - `--replace-legacy` never touches claude.ai-synced skills, externally installed ones, your
   agents, or names listed in `~/.toolkit-keep`.
 - Personal parameters: put them in `toolkit/<category>/personal.local.md` (gitignored; e.g. a writing voice profile in `toolkit/writing/`); they are
   merged into that category's skills as `PERSONAL.md` at install time.
-- Hook tests: `cd toolkit/hooks/claim-check && python3 -m pytest -q`.
+- Hook tests (need `pytest`, e.g. `python3 -m pip install pytest`):
+  `cd toolkit/hooks/claim-check && python3 -m pytest -q`.
+- `claim-check` is a cheap tripwire, not proof of verification: it checks that *some* command
+  ran after the last edit, not which one, and it ignores claims negated just before them
+  ("not verified", "还没完成").
 
 ## Principles
 
