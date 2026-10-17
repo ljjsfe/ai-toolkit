@@ -57,6 +57,18 @@ later, as long as you report it exactly as it happened.
 When handed a severance agreement:
 > "Thanks. I'd like to take a few days to review this properly before I sign."
 
+## After a layoff: rewrite the story
+
+Most layoffs are about the company's money, not your ability — so don't tell the market a story
+about your ability. Translate each fear fact into a value fact:
+
+- "22 years at one nonprofit" (fear: outdated) → "rose from entry level to executive director,
+  learned a new domain every few years, led the team through three reorganisations" (value: rare)
+- "12 years out of the workforce" (fear: rusty) → "ran an unpredictable operation on a fixed
+  budget, on call 24/7" — plus the course, certificate or project done during the gap
+
+The gap itself is the window to change cards: a new skill, a credential, and meeting people.
+
 ## Don'ts
 
 - Don't resign before you have negotiated; resigning gives away all four points of leverage.

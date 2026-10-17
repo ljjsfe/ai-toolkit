@@ -59,10 +59,27 @@ Branding = create positive visibility, become the go-to person. Doing the work i
 - Opener: "I'm new to the team — I'd love 30 min to learn how your team works with ours and what you've seen work well."
 - These are the people who can be your +1 in the calibration room
 
-**Finding the right sponsors**
-- People who support you + people you admire
-- Most important: **similar values** (right fit), not just the most powerful person
-- Can be anyone you encounter
+**What qualifies a sponsor — all three, or they can't help**
+1. **A seat at the table**: they are in the closed-door meetings where promotions, ratings and
+   scope are decided.
+2. **They know your work specifically**: when they speak for you, they can say what you did, not
+   "she's great".
+3. **Real clout**: their word moves the room. A seat with no weight is a wasted vote.
+Values and fit decide *which* qualified person to approach, never whether an unqualified one will do.
+
+**Getting close without being heavy**
+Skip the dinners, gifts and résumés — too heavy, and it scares people off. A relationship is
+contact frequency: grab a coffee and ask one question, ask about Friday's weekend plans and
+Monday how it went, bring a specific problem and ask for their read. Three months of that, and
+you are a different species from the colleague with their head down.
+
+**Ask directly — after the work is visible**
+> "You know me and you know my work. I'd like you to sponsor me."
+
+The worst case is a no — and then they owe you the reason, which is worth more than the yes:
+it is the gap list from someone in the room. Ask in the year that matters, and only once your
+record clears the leverage inventory in `tough-conversations.md`; asking before the work is
+visible spends the relationship for nothing.
 
 **Sponsor map (update every quarter)**
 ```
@@ -75,6 +92,20 @@ Name | Role | Which room they have a voice in | What they know about my work | W
 - **Earn respect** — domain knowledge, execution, leadership. Results earn respect
 - **Do what you said, every time** — one missed commitment costs more trust than three delivered ones earn; meet people when you don't need anything yet, so the first ask isn't the first contact
 - Find a good mentor — someone to help you navigate a complex environment (one outside the company, and one inside who's two levels above you)
+
+## Designing how you are perceived
+
+Perception is built on purpose, not left to happen. When a senior leader told Carla Harris she
+wasn't "tough" enough, she ran a 90-day plan and wired toughness into every behaviour until the
+label stuck.
+
+1. Pick **three adjectives** you want people to use about you. Each must be true of you and
+   valued for the role you want (e.g. decisive, technically deep, calm under pressure).
+2. For 90 days, make every visible behaviour prove them: how you walk into the meeting, what you
+   say first, every email, how you react when something breaks.
+3. Consistency is the method. Doing it some days teaches people nothing.
+4. It is an amplifier, not a photocopier: it makes visible a trait you already have. A false
+   persona falls apart under pressure and takes your credibility with it.
 
 ## Executive presence
 

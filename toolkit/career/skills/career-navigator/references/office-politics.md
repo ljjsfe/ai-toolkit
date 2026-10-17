@@ -58,6 +58,29 @@ Figures below are one former Amazon VP's observations; your company's differ —
   or HR their version sets the frame everyone else is measured against — more than half the
   battle. If a conflict is coming, get your facts in first, spoken, calm, delivery-focused.
 
+## Getting inside the circle
+
+Insiders are the people decision-makers already trust and consult before deciding. You get there
+by being useful to power, early and repeatedly — not by being liked.
+
+- **Pre-wire every decision.** Before the meeting where something is decided, talk one-on-one
+  with each stakeholder: "Before Thursday, I wanted to get your read on this." People who were
+  consulted feel respected and arrive as allies; people surprised in the room arrive as critics.
+  Executives are anxious about anything that could make them look bad, and the person who
+  removes surprises becomes the one they trust when it matters.
+- **Solve the power holder's problem**, not just yours — see `managing-up.md`. Usefulness to the
+  person with power is the entry ticket.
+- **Show up in the crisis.** Trust at senior levels is built in outages and escalations
+  (`review-and-promotion.md`). The inner circle is mostly people who were there when it broke.
+- **Use chaos.** Order protects incumbents; a reorg, a leader leaving or a new AI mandate resets
+  the board. In the first weeks, volunteer for the orphaned scope and the problem nobody owns —
+  that is when the new leader decides who they can count on.
+- **Attach early to a rising leader.** Backing someone before they are powerful costs little and
+  is remembered; backing them after costs the same as everyone else's flattery.
+- **Keep a favour ledger.** Note what you have done for each ally and what they have done for you
+  (the "What I've helped them with" column of the sponsor map). Allies are kept by reciprocity,
+  not by affection.
+
 ## Turf: defending and taking scope
 
 **When another org wants to absorb yours:**
