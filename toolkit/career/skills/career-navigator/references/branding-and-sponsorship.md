@@ -21,6 +21,21 @@ Branding = create positive visibility, become the go-to person. Doing the work i
 - When someone else has a good idea, credit them publicly ("Building on what X said…") — this also puts you in the discussion
 - Don't undersell yourself: when describing your own work, drop "just," "small," "simple"
 
+## Taking the credit you earned
+
+- **Send the first note.** When something ships, be the first to send the congratulations to
+  leadership and the team. Even with "together with A and B" in it, the sender gets the largest
+  share of the credit.
+- **If someone beat you to it, be the colour commentator.** Never stay silent after the PM's
+  announcement — reply with the technical half: "Adding to [PM]'s note — in case it's useful for
+  leadership, here's a short write-up of how we solved the scaling problem underneath." The
+  announcer calls the play; the colour commentator explains why it worked. Nobody objects to
+  that.
+- **Name it at its biggest true size.** Pick the shortest, strongest label that is true under a
+  fair reading: "the first engineer on Prime Video" rather than "an engineer on Amazon's first
+  video product", even if it wasn't called Prime yet. The test: it survives anyone who was there
+  checking it. Past that line it is a lie, and one exposed lie costs every label after it.
+
 ## Opportunities to share your work (goal checklist for the first 6 months in a new environment)
 
 - [ ] One tech talk within the team (a recent project, a design decision, a lesson learned)
@@ -56,10 +71,22 @@ Name | Role | Which room they have a voice in | What they know about my work | W
 
 ## Improving yourself (the prerequisite for a sponsor to invest in you)
 
-- Develop soft skills (especially communication / presentation)
+- Practise the one presentation skill that is costing you: record your next update and fix the worst habit (filler words, rushing, burying the ask)
 - **Earn respect** — domain knowledge, execution, leadership. Results earn respect
-- **Be authentic** — follow through on what you say; connect without an agenda (that's what actually builds trust)
+- **Do what you said, every time** — one missed commitment costs more trust than three delivered ones earn; meet people when you don't need anything yet, so the first ask isn't the first contact
 - Find a good mentor — someone to help you navigate a complex environment (one outside the company, and one inside who's two levels above you)
+
+## Executive presence
+
+Roughly: 60% gravitas (your record — what you've delivered and survived), 30% communication, 10%
+appearance. So the fastest lever is the record; the delivery only amplifies it.
+
+- Lower pitch, slower pace, a deliberate pause after the key sentence. Calm under pressure — the
+  room reads panic before it reads content.
+- State conclusions, not hedges: "We should do B" rather than "I think maybe B could work."
+- Use a specific number you can source: "in 3 of the last 4 launches", "this cut p99 by 40%".
+  Specificity raises confidence; a made-up figure ("studies show 62%...") collapses at the first
+  "source?" and takes your credibility with it.
 
 ## Fitting in (a common gap for engineers whose home workplace culture differs from US norms, for example many immigrant engineers)
 
@@ -68,4 +95,4 @@ Name | Role | Which room they have a voice in | What they know about my work | W
 - Speak up with substance
 - Give credit when credit is due (different from kissing up)
 - Fit in with the local culture; support and help each other grow
-- Multicultural EQ
+- Learn the local unwritten rules from someone who has succeeded there: ask a senior peer "what do people here get wrong in their first year?"

@@ -46,6 +46,11 @@ How you play is this skill; whether to move is `liu-ayi`. Three ways to need les
 - **Work too hard to replace.** Go deep on the problems few people can solve; that kind of
   expert is shielded from most of the game.
 
+**The big-company speedrun.** Speedrunning to VP inside a big company that has stopped growing is
+a fantasy — promotion there is a slow crawl. The faster route: spend 18–24 months taking its
+brand and its hardest, most valuable technology (the AWS-type core), then use that to join a
+high-growth company in a role where you can swing for a home run.
+
 ## Negotiating an offer / level
 
 This skill owns how to negotiate; whether to accept or move at all is `liu-ayi`.

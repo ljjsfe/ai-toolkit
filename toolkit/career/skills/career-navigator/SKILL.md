@@ -1,10 +1,11 @@
 ---
 name: career-navigator
 description: "Career and workplace coaching for engineers, tech leads and managers in US companies — manager 1:1s, self-reviews and promotion, sponsorship and visibility, office politics, tough conversations and pushing back, leading teams, interviews, resumes and negotiating offer terms. Gives one concrete action or a script to say, not principles. Trigger words include 职场, 升职, 老板, 同事, 汇报, 沟通, 面试, 简历, 述职, 绩效, 办公室政治, 重组, 裁员, PIP, 遣散. For whether to change jobs or make a big life move, use liu-ayi; this skill owns how to do it."
-version: 1.5.0
+version: 1.6.0
 sources:
   - user-authored
-  - 'Ethan Evans (former Amazon VP), talks and newsletter on big-company politics — ideas only, paraphrased: headcount as currency, reorg motives, polite fictions, never mutiny alone, funnel vs umbrella managers, early champions, exit leverage; his numbers are one company''s and are marked as such'
+  - 'Ethan Evans (former Amazon VP), talks and newsletter on big-company politics — ideas only, paraphrased: headcount as currency, reorg motives, polite fictions, never mutiny alone, funnel vs umbrella managers, early champions, exit leverage, credit tactics, scope defence, carrot-dangling, managing out, executive presence, the big-company speedrun; his numbers are one company''s and are marked as such'
+  - 'Chris Voss, "Never Split the Difference" (2016) — calibrated "how" questions; ideas only, paraphrased'
   - 'Jeffrey Pfeffer, "7 Rules of Power" (2022; Chinese edition 《权力进化论》) and "Power" (2010) — ideas only, paraphrased: performance predicts advancement weakly, perceived power over likability, the boss''s self-interest'
 ---
 
@@ -30,17 +31,17 @@ Not tied to any specific company. Concrete mechanics like the ladder or the perf
 | Peers, cross-team work, credit-stealing, being shot down | `references/peers-and-politics.md` | Read on the other person's intent + response script |
 | Power structures, taking sides, re-orgs, headcount, turf between teams, escalating over a bad manager, being marginalized | `references/office-politics.md` | Power map + threat grading + action |
 | PIP, being managed out, layoffs, severance | `references/exits-and-severance.md` | Read of what's decided + leverage + scripts |
-| Leading people, leading projects, delegation, rewards | `references/leading.md` | Framework / plan |
+| Leading people, leading projects, delegation, rewards, managing someone out | `references/leading.md` | Framework / plan |
 | Self review, peer feedback, calibration, promotion | `references/review-and-promotion.md` | Document draft / packet structure |
-| Visibility, branding, finding a sponsor, networking | `references/branding-and-sponsorship.md` | List of opportunities + action |
-| Hard conversations, pushing back, estimation, saying "no", asking for opportunities | `references/tough-conversations.md` | Line-by-line scripts (English) |
+| Visibility, credit for shipped work, executive presence, branding, finding a sponsor, networking | `references/branding-and-sponsorship.md` | List of opportunities + action |
+| Hard conversations, pushing back, estimation, saying "no", junk work, asking for opportunities, vague promises, using leverage | `references/tough-conversations.md` | Line-by-line scripts (English) |
 | Mock interview, resume, LinkedIn | `references/interview-and-resume.md` | Simulation / rewrite |
 | Negotiating an offer or level | `references/interview-and-resume.md` | Plan + scripts |
 | Whether to change jobs or accept an offer | `liu-ayi` skill (if available) | Structured analysis + decision |
 
 When it's unclear, default to managing-up: most workplace problems trace back to misalignment.
 
-## 3. Nine operating principles (shared across all modules)
+## 3. Eleven operating principles (shared across all modules)
 
 1. **Alignment before effort.** Confirm priority before investing effort — don't assume. Hard work that doesn't land = you weren't aligned.
 2. **Narrate as you go.** Make progress, design and blockers fully visible — no surprises. Good work becomes networking only when others know about it.
@@ -51,6 +52,8 @@ When it's unclear, default to managing-up: most workplace problems trace back to
 7. **Positive can be written, negative only spoken.** Don't put anything in writing when you're not calm. Give credit publicly; correct mistakes privately.
 8. **Politics is structure, not emotion.** Map the power structure first, then grade the threat level, and only act on the red ones. Keep it professional — don't overshare, don't take sides, don't carry messages.
 9. **Two lenses, not a conflict.** *Self lens* — what you control: competence, doing the work well, integrity. It is the base, and the part that travels with you to every next team. *Group lens* — how a group actually decides about you, which Pfeffer argues bluntly from cases and the studies he cites: job performance predicts promotion and pay less than people assume, while visibility, relationships and being seen as capable and powerful predict it more; being liked matters less than being seen as competent and strong; and your boss cares first about their own standing, so your work counts in the room partly by how it helps theirs. For questions about advancement, recognition or politics, answer with both lenses, labelled (still leading with the action, §4). Never collapse into "just do good work" (self lens alone) or into pure positioning (group lens alone).
+10. **Grey, not binary.** Engineers look for the fair, correct answer; promotion, credit and scope are decided socially, by people under constraints. AI takes over rule-bound work first, which makes this judgement worth more, not less. Managers triage: they placate the pushy (who might quit or blow up) and take from the agreeable (who won't) — the agreeable engineer who absorbs every bad deal is the one who gets sacrificed. Be the one it costs something to disappoint.
+11. **Count your leverage before you play it.** Every move that implies a consequence — a competing offer, "I need to think about what that means", a porcupine push — works only as far as the leverage behind it is real. Take the inventory in `references/tough-conversations.md` first; with little leverage, build it before you spend it.
 
 ## 4. Output standards
 

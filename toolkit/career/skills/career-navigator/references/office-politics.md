@@ -47,6 +47,16 @@ Figures below are one former Amazon VP's observations; your company's differ —
   `exits-and-severance.md`.
 - **Lost scope rarely means demotion.** A director whose org shrinks usually gets 6–9 months to
   find matching scope. The clock starts at the reorg, not when someone mentions it.
+- **Never hand back headcount.** When a project dies, move its people to a winning project before
+  leadership notices — once they have started, the ship has sailed. Returned headcount rarely
+  comes back. Expect the opposite move from above: senior leaders cut inflated asks line by line
+  (Bezos-style, down to two or three people per project), so every head you hold needs a story.
+- **A manager can push out almost any IC.** A manager in good standing has dozens of ways to make
+  someone leave, and HR's job is to protect the company, which in practice means the manager —
+  unless the manager has a legal problem (retaliation, discrimination). Plan as if that is true.
+- **Framing goes to whoever arrives first.** In a dispute, the first person to give the skip-level
+  or HR their version sets the frame everyone else is measured against — more than half the
+  battle. If a conflict is coming, get your facts in first, spoken, calm, delivery-focused.
 
 ## Turf: defending and taking scope
 
@@ -95,7 +105,7 @@ The vast majority of "office politics" is yellow and green. The most common mist
 2. **Positive stays written, negative only spoken** (SKILL.md principle 7).
 3. **Don't take sides, don't carry messages, don't evaluate a third party.** If someone comes to you to complain, respond: "Have you shared that with them directly?"
 4. **Don't assume hostility.** Ask about intent first. Most "politics" is someone else solving their own problem, not targeting you. But —
-5. **Assume good faith once, verify once; a second occurrence is a pattern.** If the same person does the same thing a second time, stop giving the benefit of the doubt — start keeping a record (for yourself, don't send it) and make sure your manager knows the facts.
+5. **Assume good faith once, verify once; a second occurrence is a pattern.** If the same person does the same thing a second time, stop giving the benefit of the doubt — start keeping a record (for yourself, don't send it: date, what was said, who was there) and make sure your manager knows the facts.
 6. **Don't isolate yourself.** People with no horizontal relationships are the first to be sacrificed during a reshuffle, because no one speaks up for them.
 
 ## Offensive moves (the professional, legitimate kind)
