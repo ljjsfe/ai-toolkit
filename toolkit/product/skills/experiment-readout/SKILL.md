@@ -1,7 +1,7 @@
 ---
 name: experiment-readout
 description: "Design and read product A/B tests and post-launch metric changes so the conclusion survives scrutiny — fix decision rules and primary and guardrail metrics before looking, halt on sample ratio mismatch, check power and progress against the planned sample, separate bias from noise, classify guardrails, and correct for many metrics or segments. Use for test design, sample size, readouts, ship decisions and 'did this launch work?'; for evaluating AI agents use agent-evals. Also for 实验结果, AB测试 读数."
-version: 1.0.0
+version: 1.0.1
 sources:
   - upstream/ai-analyst-lab-ai-analyst/.claude/skills/srm-check (MIT) — SRM as a blocking gate, per-period SRM, investigation paths
   - upstream/ai-analyst-lab-ai-analyst/.claude/skills/guardrails (MIT) — clear / trade-off / degraded verdicts, net impact in shared units
@@ -87,9 +87,11 @@ shown; it is not significance.
   independent metrics at α = 0.05 give about a 23% chance of at least one false positive. An
   unplanned metric that turns significant is a hypothesis for the next test, not a ship reason.
 - **Guardrails**, each classified:
-  Classify on the confidence-interval bound, not the point estimate (a non-inferiority check):
-  - **clear** — the bound shows no harm beyond noise; the win stands.
-  - **trade-off** — the bound stays within the pre-agreed tolerance; ship with both sides stated.
+  Pass or fail on the confidence-interval bound, not the point estimate (a non-inferiority check):
+  - **clear** — the harm-side bound stays within the pre-agreed tolerance and the point estimate
+    shows no harm; the win stands.
+  - **trade-off** — the harm-side bound stays within the tolerance but the point estimate shows
+    harm; ship with both sides stated.
   - **degraded** — the bound crosses the tolerance; not a win. Investigate or keep control.
   The ai-analyst default tolerance is 10% relative — a heuristic; tighten it for churn, safety
   or margin. Then a **net-impact line**: gain and loss in the same unit (revenue, users), with
@@ -115,5 +117,5 @@ Primary: <metric> <effect> [<interval>] p=<p> (adjusted: <p_adj>)
 Guardrails: <metric> <change> → clear / trade-off / degraded  …
 Net impact: +<gain> − <loss> = <net> in <unit>
 Issues: <each> — bias / noise / time effect — evidence: <source>
-Outcome: ship / investigate / abort / learn / invalid — <one-line reason>
+Outcome: ship / ship with trade-off / investigate / abort / learn / invalid — <one-line reason>
 ```

@@ -1,7 +1,7 @@
 ---
 name: design-discussion
-description: "Hold an in-depth design conversation before any plan exists — ask one question at a time with a guess attached, pin the goal, constraints and what \"good\" means before proposing, lay out 2-3 approaches that differ in mechanism, sharpen vague terms, keep a decision log so nothing is re-argued, and stop when no open question would change the design. Use for an open-ended design conversation while the goal and constraints are still unsettled — \"let's discuss the design\", API or data-model options, 讨论方案, 聊设计; once the shape is clear use system-design (sizing, review) or agent-architecture (agent systems)."
-version: 1.0.0
+description: "Hold an in-depth design conversation before any plan exists — one question at a time, goal and constraints pinned before proposing, 2-3 approaches that differ in mechanism, and a decision log. Use for an open-ended design conversation while the goal and constraints are still unsettled — \"let's discuss the design\", API or data-model options, 讨论方案, 聊设计; once the shape is clear use system-design (sizing, review) or agent-architecture (agent systems)."
+version: 1.0.1
 sources:
   - upstream/superpowers/skills/brainstorming (MIT) — think wide privately, play back in chunks, builder check by a fresh reader, nothing built before approval
   - upstream/addyosmani-agent-skills/skills/interview-me (MIT) — one question with a guess attached, "want vs should want" probe, predict-the-next-three stop test, bare assent is not a yes

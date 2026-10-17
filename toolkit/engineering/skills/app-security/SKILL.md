@@ -1,7 +1,7 @@
 ---
 name: app-security
-description: Security-review a web, mobile or backend application the way attackers find real bugs — map actors, assets, trust and tenant boundaries and invariants before hunting, test authorisation with a second user or tenant, sweep every sibling route once a gap is found, trace webhooks end to end, and gate findings on a concrete attack path with severity, confidence and evidence kept separate. Use for security reviews, audits, or before shipping auth, payments, multi-tenant or integration code; for agents and LLM tools use agent-security.
-version: 1.0.2
+description: "Security-review a web, mobile or backend application the way attackers find real bugs — map trust and tenant boundaries first, test authorisation with a second user or tenant, and report only findings with a concrete attack path. Use for security reviews, audits, or before shipping auth, payments, multi-tenant or integration code (a diff review of the same change: code-review); for agents and LLM tools use agent-security."
+version: 1.0.3
 sources:
   - upstream/gstack/cso (MIT) — boundary and invariant census first, sibling propagation, exploitability gating, three separate judgements, independent re-derivation, webhook review order, two-user and two-tenant negative controls
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/security-reviewer.md (MIT) — confidence tied to attack-path traceability with a critical-impact override; feature-gate leaks
@@ -67,7 +67,7 @@ or more of the findings you dropped would together give an attacker a path none 
 
 | level | meaning | report? |
 |---|---|---|
-| verified | literally visible in code or reproduced | yes |
+| verified | reproduced: a request, exploit or test shows it happening | yes |
 | traced | the full attack path is traceable | yes |
 | plausible | pattern present, exploitability unconfirmed | only if impact is critical — label it |
 | speculative | — | no |

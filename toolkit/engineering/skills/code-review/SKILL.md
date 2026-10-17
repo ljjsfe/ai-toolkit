@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: Review a diff, pull request or branch with findings you can defend — grade spec and standards separately, find what is missing as well as what is wrong, sweep siblings of each issue, flag weakened tests or CI, read the history of changed lines, gate findings on file:line plus a failure scenario, and have an independent checker try to refute serious ones. Use when asked to review code, a PR or a branch, or before merging.
-version: 1.2.0
+version: 1.2.1
 sources:
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/{personas/*,action-class-rubric.md,subagent-template.md} (MIT) — correctness, security, performance and reliability lenses; P0–P3; check callers, guards and framework defaults
   - upstream/compound-engineering-plugin/skills/ce-simplify-code/references/personas/efficiency-reviewer.md (MIT) — unbounded structures, listener leaks
@@ -56,7 +56,7 @@ A review that cries wolf is worse than none. Fewer, defensible findings beat a l
 The usual correctness, security and performance lenses, plus the one most often skipped —
 **lifecycle**, the bugs that pass tests and fail later: collections that only grow, handles not
 released on every error path, listeners never removed — and authorisation on every new entry
-point.
+point. When the change touches auth, tenancy, payments or webhooks, also apply `app-security`.
 
 ## Pass 2 — What is missing
 

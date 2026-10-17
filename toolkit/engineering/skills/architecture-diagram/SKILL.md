@@ -34,7 +34,7 @@ Use JetBrains Mono for all text (monospace, technical aesthetic):
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 ```
 
-Font sizes: 12px for component names, 9px for sublabels, 8px for annotations, 7px for tiny labels.
+Font sizes: 11px for component names, 9px for sublabels, 8px for annotations, 7px for tiny labels.
 
 ### Visual Elements
 
@@ -174,6 +174,6 @@ Copy and customize the template at `resources/template.html`. Key customization 
 Always produce a single self-contained `.html` file with:
 - Embedded CSS (no external stylesheets except Google Fonts)
 - Inline SVG (no external images)
-- No JavaScript required (pure CSS animations)
+- Animations are pure CSS; JavaScript is used only by the export toolbar
 
-The file should render correctly when opened directly in any modern browser. The export toolbar uses two CDN scripts (html2canvas and jsPDF) — no other JavaScript dependencies.
+The file should render correctly when opened directly in any modern browser. It needs network access for Google Fonts and for the two CDN scripts the export toolbar uses (html2canvas and jsPDF) — no other JavaScript dependencies.

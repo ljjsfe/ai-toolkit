@@ -38,7 +38,7 @@ The vast majority of "office politics" is yellow and green. The most common mist
 ## Hard rules for self-protection
 
 1. **Keep it professional, don't overshare** — personal life, complaints about the company or people, salary, thoughts about leaving, visa anxiety — none of it gets said. Any overshare can be used against you.
-2. **Positive stays written, negative only spoken.** Don't put anything in writing when you're not calm.
+2. **Positive stays written, negative only spoken** (SKILL.md principle 7).
 3. **Don't take sides, don't carry messages, don't evaluate a third party.** If someone comes to you to complain, respond: "Have you shared that with them directly?"
 4. **Don't assume hostility.** Ask about intent first. Most "politics" is someone else solving their own problem, not targeting you. But —
 5. **Assume good faith once, verify once; a second occurrence is a pattern.** If the same person does the same thing a second time, stop giving the benefit of the doubt — start keeping a record (for yourself, don't send it) and make sure your manager knows the facts.

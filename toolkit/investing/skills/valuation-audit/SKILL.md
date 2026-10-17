@@ -1,7 +1,7 @@
 ---
 name: valuation-audit
 description: "Audit a stock valuation, yours or someone else's, for the errors that make it wrong — no price or cheap/expensive call without a dated quote and diluted share count, read what today's price implies before valuing, two independent method families, terminal value checked against growth, reinvestment and the discount rate, each peer premium stated once, and return split into fundamentals vs multiple change. Use for 'is X cheap', fair value, DCF or multiple checks; to track a thesis use thesis-ledger. Also for 估值, 贵不贵, 合理价值, \"should I buy X\" (answered as a valuation audit, never as advice)."
-version: 1.2.2
+version: 1.2.3
 sources:
   - upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — structure of §1 (snapshot rows, red flags); method-by-business pairings (reorganised); 3%, 5%, 25%, ±30% thresholds; same-family rule; joint-upgrade and double-count checks; DCF shown only when its inputs can be written out; return split incl. EV path; no-rerating case
   - Mauboussin and Rappaport, "Expectations Investing" (2001; rev. 2021), https://www.expectationsinvesting.com/ — §2, price-implied drivers and forecast period
@@ -39,7 +39,7 @@ is removed. Then build this table, each row with source and date:
 
 | row | what to check |
 |---|---|
-| shares | latest diluted count (options, RSUs, convertibles in the money); say so if you use fully diluted instead |
+| shares | latest basic count (10-Q / 10-K cover page) plus dilution at today's price: options and warrants by the treasury stock method, unvested RSUs, in-the-money convertibles if-converted; say so if you use the reported diluted average or fully diluted instead |
 | market cap | price × diluted shares, compared with the quoted cap. Over 3% apart (honeclaw's tolerance, roughly the gap stock compensation alone can open between basic and diluted counts) means explain it before going on. Example: 42.00 × 310m = 13.02bn against a quoted 12.4bn is 5% off; the quote used 296m basic shares (42.00 × 296m = 12.43bn), so the gap is explained |
 | EV bridge | market cap + debt (state whether leases are in) − cash + preferred + minority interests − equity-method stakes. EV multiples pair with EV, P/E and FCF yield with market cap; a P/E-derived price is already per share and is not bridged again |
 | denominators | revenue, EBIT(DA), EPS, FCF: each with period (TTM / FY1 / FY2), GAAP or adjusted, and status (reported, guided, consensus, own assumption) |
@@ -97,6 +97,10 @@ check it from a different family:
 
 - Swapping the period or accounting basis of a denominator leaves you in the same method. Only
   a different family counts as the second view; with one family, the verdict is withheld.
+  Families, by what the denominator measures: equity earnings (P/E), enterprise operating profit
+  (EV/EBIT), free cash (FCF yield, DCF), assets (P/TBV, NAV, cap rate), sales (EV/Sales). For the
+  business types in the table, its cross-check column is the accepted second view. P/TBV and P/E are tied through
+  ROTE, so that pair counts only with ROTE taken from reported figures, not backed out.
 - Peer multiples go on the target's own basis. Drop a doubtful peer rather than average it in,
   use the median, and place the target in the peer quartiles.
 - **Disagreement test.** When the two midpoints sit more than about 25% apart (honeclaw's

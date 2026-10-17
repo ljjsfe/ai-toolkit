@@ -3,8 +3,9 @@
 A small, opinionated set of skills, rules and hooks for **Claude Code** and **Codex**, for building
 full-stack products and agent systems.
 
-Every skill exists because a current frontier model skips the behaviour it enforces, or does not
-know it. Generic advice the model already follows was left out. Each skill lists its sources;
+Each skill is a curated, complete statement of how to do its job right — a small set of tools
+chosen for being correct, not for being exhaustive. Models keep improving and will do more of
+this on their own; the toolkit as a whole still has to be right. Each skill lists its sources;
 see [CREDITS.md](CREDITS.md).
 
 ## What is inside
@@ -59,7 +60,8 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
 
 ## Principles
 
-1. Only what the model would not do on its own.
+1. Correct first. A skill states the right way to do its job end to end; it is not trimmed to
+   what today's model happens to skip. Few tools, each one right, and right together.
 2. One owner per behaviour; skills cross-reference instead of repeating each other.
 3. Rewrite, don't copy — upstream material is read and restated; licences are respected.
 4. Resident cost is a budget: descriptions are short, long rules load only when relevant.
