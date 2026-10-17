@@ -3,7 +3,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-from claim_check import should_block
+import pytest
+
+from claim_check import claims_success, should_block
 
 HOOK = Path(__file__).with_name("claim_check.py")
 
@@ -90,6 +92,28 @@ def test_done_inside_a_sentence_is_not_a_claim():
 def test_edit_and_run_in_same_message_are_ordered():
     t = [user("fix it"), asst(tool("Bash"), tool("Edit")), tool_result(), asst(text("Fixed."))]
     assert should_block(t)
+
+
+@pytest.mark.parametrize("msg", [
+    "I have not verified this yet.",
+    "Not fixed — the test still fails.",
+    "I haven't fixed the flaky test.",
+    "The migration is not done.",
+    "还没完成了一半。",
+    "这个 bug 还未修复，测试没有都通过。",
+])
+def test_negated_claims_are_not_claims(msg):
+    assert not claims_success(msg)
+
+
+@pytest.mark.parametrize("msg", [
+    "The refactor is done.",
+    "Not the prettiest code, but it's fixed.",
+    "I couldn't reproduce it at first; it's fixed now.",
+    "已修复，测试通过。",
+])
+def test_unnegated_claims_still_count(msg):
+    assert claims_success(msg)
 
 
 def _run(tmp_path, entries, active=False):

@@ -7,8 +7,8 @@
 #   optional: true → listed but not installed by --external; install it yourself when decided
 #   install:  one shell command per "- " line, run in order. Commands must be safe to rerun
 #             and leave the latest version installed: ./update.sh simply reruns them.
-#   watch:    optional, comma-separated paths in the repo that scripts/upstream-check.py follows
-#             (default: the whole repo); install.sh ignores it
+#   watch:    optional, comma-separated paths in the upstream repo worth re-reading when it
+#             changes (default: the whole repo); documentation only, install.sh ignores it
 #   folded fields (`>`) are documentation only
 
 - name: impeccable

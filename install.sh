@@ -3,6 +3,9 @@
 #
 #   ./install.sh claude|codex|both [--apply] [--replace-legacy] [--external]
 #
+# Skills are stored once in ~/.agents/skills/ (the shared directory Codex reads, also used by
+# the `skills` CLI for the external components); Claude Code gets a symlink per skill in
+# ~/.claude/skills/. Rules and hooks stay tool-specific.
 # Without --apply nothing is written: the plan is printed (dry run).
 # --external also installs the externally maintained components in toolkit/external.yaml
 # (skipping entries marked optional), using their own installers.
@@ -34,7 +37,7 @@ case "$TARGET" in
 esac
 
 exec python3 - "$ROOT" "$TARGET" "$APPLY" "$REPLACE" "$EXTERNAL" <<'PY'
-import json, re, shlex, shutil, subprocess, sys, tempfile, time
+import json, os, re, shlex, shutil, subprocess, sys, tempfile, time
 from pathlib import Path
 
 root, target, apply, replace = Path(sys.argv[1]), sys.argv[2], sys.argv[3] == "1", sys.argv[4] == "1"
@@ -134,6 +137,18 @@ def install_skill(name, src, dest_root):
                 f.write(PERSONAL_NOTE)
 
 
+def link(path, target):
+    """Point path at target (relative symlink), replacing a copy or link left by an older run."""
+    rel = Path(os.path.relpath(target, path.parent))
+    if path.is_symlink() and Path(os.readlink(path)) == rel:
+        return
+    say(f"link {path} -> {rel}")
+    if apply:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        remove(path)
+        path.symlink_to(rel)
+
+
 def rule_to_skill(rule):
     text = rule.read_text()
     m = re.match(r"---\n(.*?)\n---\n(.*)", text, re.S)
@@ -165,7 +180,21 @@ def sync_manifest(base, names):
             if apply:
                 remove(target)
     if apply:
+        base.mkdir(parents=True, exist_ok=True)
         manifest.write_text(json.dumps(sorted(names), indent=2) + "\n")
+
+
+# ---- shared skill store ----------------------------------------------------------------
+store = home / ".agents" / "skills"
+trap_names = [f"{r.stem}-traps" for r in path_rules]
+
+
+def install_store():
+    for name, src in skills.items():
+        install_skill(name, src, store)
+    for r in path_rules:
+        write(store / f"{r.stem}-traps" / "SKILL.md", rule_to_skill(r))
+    sync_manifest(store.parent, list(skills) + trap_names)
 
 
 # ---- Claude Code -----------------------------------------------------------------------
@@ -186,8 +215,8 @@ def install_claude():
         agents = sorted(p.name for p in (base / "agents").glob("*")) if (base / "agents").exists() else []
         if agents:
             print(f"note: {len(agents)} agents in {base / 'agents'} were left in place; move them yourself if unwanted")
-    for name, src in skills.items():
-        install_skill(name, src, base / "skills")
+    for name in skills:
+        link(base / "skills" / name, store / name)
     sync_manifest(base, skills)
     for r in rules:
         dst = base / "rules" / "toolkit" / r.name
@@ -217,11 +246,8 @@ def install_claude():
 # ---- Codex -----------------------------------------------------------------------------
 def install_codex():
     base = home / ".codex"
-    for name, src in skills.items():
-        install_skill(name, src, base / "skills")
-    for r in path_rules:
-        write(base / "skills" / f"{r.stem}-traps" / "SKILL.md", rule_to_skill(r))
-    sync_manifest(base, list(skills) + [f"{r.stem}-traps" for r in path_rules])
+    # Codex reads skills from the shared store; remove copies older runs put in ~/.codex/skills.
+    sync_manifest(base, [])
     core = "\n\n".join(r.read_text().strip() for r in core_rules)
     agents_md = base / "AGENTS.md"
     old = agents_md.read_text(encoding="utf-8") if agents_md.exists() else ""
@@ -235,6 +261,7 @@ def install_codex():
     say("hooks: Codex Stop-hook registration not automated; claim-check is Claude-only for now")
 
 
+install_store()
 if target in ("claude", "both"):
     install_claude()
 if target in ("codex", "both"):
