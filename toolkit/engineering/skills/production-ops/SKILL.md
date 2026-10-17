@@ -1,7 +1,7 @@
 ---
 name: production-ops
-description: Run production systems without the traps that pass review and fail live, and handle incidents in the right order — expand-migrate-contract migrations, dual-write rollbacks, atomic idempotency, retry budgets, deploy verification sized to the change, merge-shape-aware rollbacks, burn-rate and trend alerts; and during an incident stop the harm first, capture evidence in parallel, route by type and legal clock, and call it resolved only when the original signal recovers. Use for changes to schema, data, retries, deploys, rollbacks or alerting, and for live incidents or outages (users affected now); for non-urgent bugs use debugging.
-version: 1.0.0
+description: "Make production changes that pass review and also survive live (schema and data migrations, retries, deploys, rollbacks, alerting), and run incidents in the right order: stop the harm first, capture evidence, call it resolved only when the original signal recovers. Use for changes to schema, data, retries, deploys, rollbacks or alerting, and for live incidents or outages (users affected now); for non-urgent bugs use debugging."
+version: 1.0.1
 sources:
   - upstream/everything-claude-code/skills/{database-migrations,docker-patterns} (MIT) — expand-migrate-contract, CONCURRENTLY, batched backfills
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/data-migration-reviewer.md (MIT) — broken dual-write transitions
@@ -69,14 +69,17 @@ mistake that looks reasonable at the time.
 - Logs carry a correlation ID **and an entry-point field** (scheduler, API route, replay, CLI)
   set at the start of the run and propagated across boundaries.
 - Rate limiting or auditing by client IP: trust `X-Forwarded-For` only behind a configured,
-  trusted proxy chain, and take the right-most address added by your own proxy; otherwise use
+  trusted proxy chain, and take the right-most address that is not one of your trusted proxies (with N trusted
+  proxies, skip N−1 entries from the right); otherwise use
   the socket address.
 
 ## When something breaks — iron laws
 
 1. **Stop the harm first, find the cause second.** Prefer the fastest reversible mitigation:
    roll back (merge shape above), turn off a feature flag, shed load, fail over, or disable
-   the integration. Root cause comes after users are safe (then `debugging`).
+   the integration. Propose the mitigation and wait for the operator's go-ahead before running
+   it, unless the user has pre-authorised that action. Root cause comes after users are safe
+   (then `debugging`).
 2. **Capture evidence in parallel with mitigation; never delay mitigation for it.** Restarts,
    rollbacks and redeploys erase evidence, so alongside the action save timestamped logs,
    process and container state, current database sessions and locks, and recent deploys and

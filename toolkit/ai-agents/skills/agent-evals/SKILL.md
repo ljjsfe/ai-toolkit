@@ -1,7 +1,7 @@
 ---
 name: agent-evals
 description: Evaluate an agent, prompt, skill or model change so the result can be trusted — define and freeze the eval before running, keep the evaluator hidden from what it judges, require a deterministic check, grade live behaviour from artifacts, and size and price the run before scaling. Use when measuring whether an agent or LLM change is better, building a regression suite, or comparing agents or models.
-version: 1.1.0
+version: 1.1.1
 sources:
   - upstream/everything-claude-code/skills/{eval-harness,agent-eval,gan-style-harness} (MIT)
   - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-improvement-loops,harness-engineering,evaluation,advanced-evaluation} (MIT) — incl. judge position bias
@@ -86,7 +86,7 @@ gate, a refusal), stop each run at that step instead of running the whole workfl
   direction unless the separation is clean.
 - **Report the spread (min / median / max), not just the mean.**
 - **Accept a change only if no split regresses beyond a tolerance set in advance:** it improves
-  at least one held-in or held-out split and neither gets worse by more than that tolerance. A gain on one split paid for by a loss on the other is a reject.
+  the held-out split, and the held-in split gets no worse than that tolerance. A gain on one split paid for by a loss on the other is a reject.
 - **Feed the optimiser raw traces, not summaries.** Summarised traces lose the signal the
   next iteration needs.
 

@@ -1,7 +1,7 @@
 ---
 name: liu-ayi
-description: "刘阿姨 (Liu Ayi) strategic-analysis framework — use when the user says 刘阿姨, liu-ayi, 战略分析 or 局势研判, or must decide whether to change jobs, found, move or make a major life or business bet, or wants an organisational or geopolitical situation read through power, incentives and institutions. Anchors on a plain baseline and base rates, applies the order-and-institution checks (who produces order, institutional capital, inherited constraints, root before leaf), then runs a calibrated decision procedure or analogy discipline from its references. Not for workplace tactics (career-navigator), product plans (product-scoping), technology adoption (adopt-or-build) or competitor analysis (market-scan) or individual stocks (valuation-audit, thesis-ledger); for the facts behind a decision use verified-research."
-version: 2.1.0
+description: "刘阿姨 (Liu Ayi) strategic-analysis framework — use when the user says 刘阿姨, liu-ayi, 战略分析 or 局势研判, or must decide whether to change jobs, found, move or make a major life or business bet, or wants an organisational or geopolitical situation read through power, incentives and institutions. Not for workplace tactics (career-navigator), product plans (product-scoping), technology adoption (adopt-or-build) or competitor analysis (market-scan) or individual stocks (valuation-audit, thesis-ledger); for the facts behind a decision use verified-research."
+version: 2.1.1
 sources:
   - user-authored framework (v1, 2026-03), restructured
   - ideas from Liu Zhongjing (order output vs consumption, customary law, institutional capital, legitimacy before policy), paraphrased and restated as testable checks; his political programme and determinism are deliberately excluded
@@ -52,7 +52,7 @@ authority. These make conclusions unfalsifiable.
 
 | the question | read |
 |---|---|
-| a concrete decision under constraints ("should I…", job, move, found, invest) | `references/strategic-decision.md` — quick mode by default, full mode if hard to reverse |
+| a concrete decision under constraints ("should I…", job, move, found, a major business bet — never a buy/sell call on a security: `valuation-audit`, `thesis-ledger`) | `references/strategic-decision.md` — quick mode by default, full mode if hard to reverse |
 | a historical or cross-domain analogy, "this is like X", "why is this happening now" | `references/cross-domain-synthesis.md` |
 | a situation or power-structure assessment | the four checks above, then the geopolitical section of `references/strategic-decision.md` |
 | both a decision and an analogy | decision first, then test the analogy it leans on |

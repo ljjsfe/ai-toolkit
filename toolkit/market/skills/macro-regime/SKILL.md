@@ -1,7 +1,7 @@
 ---
 name: macro-regime
 description: Read the macroeconomic regime from the latest dated official data — a fixed nine-row dashboard, no classification when inputs are missing, and transmission to a specific business through named channels. Use for rates, inflation, recession risk or how macro conditions affect a business or plan.
-version: 1.0.0
+version: 1.0.1
 sources:
   - upstream/yennanliu-investskill/plugins/us-stock-analysis/skills/economics-analysis (MIT) — never use remembered readings; provenance header; memory means low confidence; conflicting sources shown, never averaged
   - upstream/anthropics-financial-services/plugins/partner-built/lseg/skills/macro-rates-monitor (Apache-2.0) — fixed dashboard; real rate = nominal − breakeven; 2s10s and 3M-10Y slopes; cycle, policy, real-rate and financial-conditions synthesis
@@ -20,7 +20,7 @@ that never reaches the decision it was meant to inform.
    `verified-research`). "Latest" means the most recent publication, whatever its frequency —
    GDP is quarterly, JOLTS lags about six weeks. Economic data is revised; remembered values are
    wrong more often than they look. A figure from model memory is marked **low confidence** and
-   flagged at the top.
+   flagged at the top; it counts as missing for rule 3.
 2. **Same dashboard every time.** Fill every row below, even when a row is unremarkable — the
    comparison across time is the point.
 3. **Missing inputs block the call.** If a dashboard row cannot be filled with its latest release, say which, and do not classify the regime on the remainder. A regime change needs the signal to

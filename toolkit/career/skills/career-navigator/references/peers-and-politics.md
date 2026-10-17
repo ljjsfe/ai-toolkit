@@ -1,6 +1,7 @@
 # Peers & Office Politics
 
-Where there are people, there is politics. People will use authority/power to push their own agenda — that's the norm, not an exception.
+Working with peers day to day. For power structures, taking sides and threat grading, see
+`office-politics.md`.
 
 ## Top tips
 
@@ -13,9 +14,9 @@ Where there are people, there is politics. People will use authority/power to pu
 ## Working with peers
 
 - **Understand the intent & goal**: ask, don't guess. "Help me understand what you're trying to get to with this?"
-- **Keep it professional**: don't overshare (personal life, complaints about the company, salary, thoughts of leaving — none of it). Set boundaries to avoid being taken advantage of ("I can help with X by Friday; Y I don't have bandwidth for this sprint")
-- **Build relationships, maintain a positive outlook**: when someone comes to complain about a third party, don't take sides — respond "Have you shared your concerns with them directly?" Everyone likes working with positive people
-- **Face to face over email/text**: don't send anything when you're not calm. Written words are hard to take back.
+- **Keep it professional**: don't overshare (office-politics hard rule 1). Set boundaries to avoid being taken advantage of ("I can help with X by Friday; Y I don't have bandwidth for this sprint")
+- **Build relationships, maintain a positive outlook**: when someone comes to complain about a third party, don't take sides (office-politics hard rule 3). Everyone likes working with positive people
+- **Face to face over email/text** for anything negative (SKILL.md principle 7).
 
 ## Rules for helping others
 
@@ -40,6 +41,6 @@ Where there are people, there is politics. People will use authority/power to pu
 
 ## Rules of evidence
 
-- Positive things: either spoken or written is fine (written is actually better — it can be forwarded)
-- Negative things: spoken only, never in writing
-- When you receive a negative email from someone: don't reply by email — set up a 15-minute call instead
+- Positive can be written, negative only spoken (SKILL.md principle 7). Written praise is better than
+  spoken — it can be forwarded.
+- Receiving a negative email: see the script in `tough-conversations.md`.

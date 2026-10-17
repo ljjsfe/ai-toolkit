@@ -23,10 +23,10 @@ Branding = create positive visibility, become the go-to person. Doing the work i
 
 ## Opportunities to share your work (goal checklist for the first 6 months in a new environment)
 
-- [ ] One tech talk within the team (eval-first / agent loop / a client case study)
+- [ ] One tech talk within the team (a recent project, a design decision, a lesson learned)
 - [ ] One cross-team share-out or brown bag
 - [ ] One internal doc that gets cited by another team
-- [ ] One presentation to client leadership (with your manager present or aware)
+- [ ] One presentation to senior leadership or a key stakeholder (with your manager present or aware)
 - [ ] One external activity: meetup / LinkedIn article / industry event
 
 ## Sponsorship

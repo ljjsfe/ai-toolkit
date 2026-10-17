@@ -1,7 +1,7 @@
 ---
 name: system-design
-description: "Design a new system or re-size one with numbers before boxes, and review an existing design or plan without inventing findings — state load, growth, an uptime target and separate RPO and RTO; estimate capacity and cost per request; choose stores and services against those numbers and grade their lock-in; name failure domains and hot spots. In review mode: check it does not already exist, apply named complexity tests (boring by default, essential vs accidental, deletion and seam tests), and allow \"fine as is\". Use for system design, architecture, capacity, cloud cost, and technical design or implementation-plan reviews such as \"is this over-complicated?\"; for a diff use code-review; for an open-ended design conversation use design-discussion."
-version: 1.0.0
+description: "Design a new system or re-size one with numbers before boxes (load, growth, uptime, RPO and RTO, capacity and cost per request), and review an existing design or plan without inventing findings, allowing \"fine as is\". Use for system design, architecture, capacity, cloud cost, and technical design or implementation-plan reviews such as \"is this over-complicated?\"; for a diff use code-review; for an open-ended design conversation use design-discussion."
+version: 1.0.1
 sources:
   - upstream/jeffallan-claude-skills/skills/architecture-designer/references/nfr-checklist.md (MIT) — numeric non-functional requirements before design; RPO and RTO as separate targets
   - upstream/everything-claude-code/skills/redis-patterns (MIT) — cache stampede named with a concrete fix

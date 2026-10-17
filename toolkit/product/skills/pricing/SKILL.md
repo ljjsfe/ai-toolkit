@@ -1,7 +1,7 @@
 ---
 name: pricing
 description: "Set, test and change a price from evidence — require willingness-to-pay evidence (payment requests, top-box purchase intent, a priced fake door) before naming a number, pick the value metric before tiers, never average willingness to pay across segments, sort features into leaders, fillers and killers, and roll increases out to new customers first. Use for what to charge, tiers, free vs paid, raising prices and pricing-page reviews; for competitor prices use market-scan. Also for 定价, 涨价, 收费方案."
-version: 1.0.0
+version: 1.0.1
 sources:
   - upstream/wondelai-skills/monetizing-innovation/SKILL.md (MIT) — value metric before level, segment by willingness to pay, zero pushback as the under-pricing signature
   - upstream/wondelai-skills/monetizing-innovation/references/wtp-conversations.md (MIT) — top-box scoring, haircut stated numbers, curve not average, red flags in answers
@@ -40,7 +40,7 @@ a hypothesis with evidence attached, decided in a fixed order, and changed like 
 |---|---|---|
 | strongest | payment already taken, or "can we pay you for X" requests received or turned away | reply to each: what does not having it cost them, and what could they get approved |
 | strong | a priced fake door, pre-order, deposit or pilot / letter of intent at a named price | behaviour at a stated price; count only completed commitments |
-| medium | 1–5 purchase-probability answers at a stated price | count only 5s, and discount those; 4s are maybes; 1–3 are no. Read how the share of 5s falls across 2–3 price points, not the raw share |
+| medium | 1–5 purchase-probability answers at a stated price | sets a price level only once commitment-tier demand exists (`customer-discovery`); never evidence of demand itself. Count only 5s, and discount those; 4s are maybes; 1–3 are no. Read how the share of 5s falls across 2–3 price points, not the raw share |
 | weak | stated acceptable / expensive / prohibitive prices | a ceiling, not a price: stated numbers run high, so haircut them and confirm with behaviour |
 | not evidence | team opinion, a competitor's list price, cost-plus | a competitor's price is a reference point in the buyer's head (market-scan), not their valuation |
 

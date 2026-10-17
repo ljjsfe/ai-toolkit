@@ -35,5 +35,13 @@ When the user says "mock interview" / "help me practice for an interview":
 
 ## Negotiating an offer / level
 
-- Call `liu-ayi` first for a structured analysis
+This skill owns how to negotiate; whether to accept or move at all is `liu-ayi`.
+
+- Negotiate level before money: the level sets the band, and a band is hard to leave later.
+- Compare total compensation, not base: base, bonus target, equity (grant value, vesting
+  schedule and cliff, refresh grants), sign-on (and its clawback), relocation.
+- Ask for the band and the components in writing before countering; counter once, with a
+  number and the reason (a competing offer, market data, scope).
+- A competing offer is leverage only if it is real and you would take it; never invent one.
+- Ask for a deadline extension rather than deciding under an exploding offer.
 - Scripting follows the same principle as tough-conversations: reason + alternative + ask, never "if possible"

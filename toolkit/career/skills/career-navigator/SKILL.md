@@ -1,7 +1,7 @@
 ---
 name: career-navigator
-description: "Career and workplace coaching for engineers, tech leads and managers in US companies — manager 1:1s, self-reviews and promotion, sponsorship and visibility, office politics, tough conversations and pushing back, leading teams, interviews, resumes and negotiating offer terms (choosing between offers or whether to move: liu-ayi). Gives one concrete action or a script to say, not principles. Trigger words include 职场, 升职, 老板, 同事, 汇报, 沟通, 面试, 简历, 述职, 绩效, 办公室政治. For whether to change jobs or make a big life move, use liu-ayi; this skill owns how to do it."
-version: 1.3.0
+description: "Career and workplace coaching for engineers, tech leads and managers in US companies — manager 1:1s, self-reviews and promotion, sponsorship and visibility, office politics, tough conversations and pushing back, leading teams, interviews, resumes and negotiating offer terms. Gives one concrete action or a script to say, not principles. Trigger words include 职场, 升职, 老板, 同事, 汇报, 沟通, 面试, 简历, 述职, 绩效, 办公室政治. For whether to change jobs or make a big life move, use liu-ayi; this skill owns how to do it."
+version: 1.4.0
 sources:
   - user-authored
   - 'Jeffrey Pfeffer, "7 Rules of Power" (2022; Chinese edition 《权力进化论》) and "Power" (2010) — ideas only, paraphrased: performance predicts advancement weakly, perceived power over likability, the boss''s self-interest'
@@ -33,7 +33,8 @@ Not tied to any specific company. Concrete mechanics like the ladder or the perf
 | Visibility, branding, finding a sponsor, networking | `references/branding-and-sponsorship.md` | List of opportunities + action |
 | Hard conversations, pushing back, estimation, saying "no", asking for opportunities | `references/tough-conversations.md` | Line-by-line scripts (English) |
 | Mock interview, resume, LinkedIn | `references/interview-and-resume.md` | Simulation / rewrite |
-| Whether to change jobs, accept an offer, negotiate with the company | This file + `liu-ayi` skill (if available) | Structured analysis + decision |
+| Negotiating an offer or level | `references/interview-and-resume.md` | Plan + scripts |
+| Whether to change jobs or accept an offer | `liu-ayi` skill (if available) | Structured analysis + decision |
 
 When it's unclear, default to managing-up: most workplace problems trace back to misalignment.
 

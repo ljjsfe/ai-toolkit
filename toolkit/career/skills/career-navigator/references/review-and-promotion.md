@@ -10,7 +10,10 @@ Peer feedback + self review (pre-work)
   → Official review released
 ```
 
-The rating distribution is fixed: roughly 5-15% Needs Improvement / 50-65% Achieves / 15-25% Exceeds. **Exceeds is a quota, not a standard** — you're competing for a slot against people at your level in your org.
+Many large companies calibrate to a target distribution (a typical shape: roughly 5-15% below
+expectations, 50-65% meets, 15-25% exceeds); labels, percentages and whether a curve exists at
+all vary. Ask the manager whether yours does. Where it does, **the top rating is a quota, not a
+standard** — you're competing for a slot against people at your level in your org.
 
 Promotion is easy at low levels and gets exponentially harder at each higher level. The bar for N+1 is "already doing N+1 work," not "doing N well."
 

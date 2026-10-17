@@ -1,7 +1,7 @@
 ---
 name: writing
-description: "Write posts, articles and social media content (X, LinkedIn, WeChat 公众号, technical blogs) that sound like the user and claim only what is sourced — mark missing facts [NEED: ...] instead of inventing them, ask for first-hand detail, draft competing openings, apply a per-platform contract, cut, then hand the prose to humanizer / humanizer-zh, and test it on a fresh reader. Use for 写文章, 发帖, 公众号, 推文, LinkedIn post, blog post, 写稿, or turning notes into a piece; for resumes and LinkedIn profiles use career-navigator; for CLAUDE.md / AGENTS.md use agent-instructions; for design docs use design-discussion."
-version: 1.0.1
+description: "Write posts, articles and social media content (X, LinkedIn, WeChat 公众号, technical blogs) that sound like the user and claim only what is sourced — mark missing facts [NEED: ...] instead of inventing them, ask for first-hand detail, draft competing openings, apply a per-platform contract, cut, then hand the prose to humanizer / humanizer-zh, and test it on a fresh reader. Use for 写文章, 发帖, 公众号, 推文, LinkedIn post, blog post, 写稿, or turning notes into a piece; for resumes and LinkedIn profiles use career-navigator; for CLAUDE.md / AGENTS.md use agent-instructions; for deciding a design use design-discussion or system-design."
+version: 1.0.2
 sources:
   - upstream/khazix-skills/khazix-writer (MIT) — first-hand observation is what a model cannot supply; ask the writer for it
   - upstream/marketingskills/skills/copywriting/references/ai-tells.md (MIT) — placeholder for missing proof instead of an invented fact; the swap test
