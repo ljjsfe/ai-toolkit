@@ -4,7 +4,7 @@ description: "Career and workplace coaching for engineers, tech leads and manage
 version: 1.8.0
 sources:
   - user-authored
-  - authored for this toolkit — getting inside the circle: attach early to a rising leader, the favour ledger; the staged roadmap, choosing whom to back, rehearsal protocol, dossier and after-action review
+  - "authored for this toolkit — getting inside the circle: attach early to a rising leader, the favour ledger; the staged roadmap, choosing whom to back, rehearsal protocol, dossier and after-action review"
   - 'Ethan Evans (former Amazon VP), talks and newsletter on big-company politics — ideas only, paraphrased: headcount as currency, reorg motives, polite fictions, never mutiny alone, funnel vs umbrella managers, early champions, exit leverage, credit tactics, scope defence, carrot-dangling, managing out, executive presence, the big-company speedrun; his numbers are one company''s and are marked as such'
   - 'Carla Harris (Vice Chairman, Morgan Stanley), "Expect to Win" and "Strategize to Win" and interviews — ideas only, paraphrased: sponsor vs mentor, the three sponsor conditions, the direct sponsor ask, designing your perception with three adjectives, interview and layoff narratives'
   - 'Chris Voss, "Never Split the Difference" (2016) — calibrated "how" questions; ideas only, paraphrased'
