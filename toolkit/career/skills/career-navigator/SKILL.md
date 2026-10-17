@@ -1,9 +1,10 @@
 ---
 name: career-navigator
-description: "Career and workplace coaching for engineers, tech leads and managers in US companies — manager 1:1s, self-reviews and promotion, sponsorship and visibility, office politics, tough conversations and pushing back, leading teams, interviews, resumes and negotiating offer terms. Gives one concrete action or a script to say, not principles. Trigger words include 职场, 升职, 老板, 同事, 汇报, 沟通, 面试, 简历, 述职, 绩效, 办公室政治. For whether to change jobs or make a big life move, use liu-ayi; this skill owns how to do it."
-version: 1.4.0
+description: "Career and workplace coaching for engineers, tech leads and managers in US companies — manager 1:1s, self-reviews and promotion, sponsorship and visibility, office politics, tough conversations and pushing back, leading teams, interviews, resumes and negotiating offer terms. Gives one concrete action or a script to say, not principles. Trigger words include 职场, 升职, 老板, 同事, 汇报, 沟通, 面试, 简历, 述职, 绩效, 办公室政治, 重组, 裁员, PIP, 遣散. For whether to change jobs or make a big life move, use liu-ayi; this skill owns how to do it."
+version: 1.5.0
 sources:
   - user-authored
+  - 'Ethan Evans (former Amazon VP), talks and newsletter on big-company politics — ideas only, paraphrased: headcount as currency, reorg motives, polite fictions, never mutiny alone, funnel vs umbrella managers, early champions, exit leverage; his numbers are one company''s and are marked as such'
   - 'Jeffrey Pfeffer, "7 Rules of Power" (2022; Chinese edition 《权力进化论》) and "Power" (2010) — ideas only, paraphrased: performance predicts advancement weakly, perceived power over likability, the boss''s self-interest'
 ---
 
@@ -27,7 +28,8 @@ Not tied to any specific company. Concrete mechanics like the ladder or the perf
 |---|---|---|
 | Aligning with their manager, 1:1s, unclear priorities, manager not responsive | `references/managing-up.md` | 1:1 agenda / a script |
 | Peers, cross-team work, credit-stealing, being shot down | `references/peers-and-politics.md` | Read on the other person's intent + response script |
-| Power structures, taking sides, re-orgs, being marginalized, whether to engage in politics | `references/office-politics.md` | Power map + threat grading + action |
+| Power structures, taking sides, re-orgs, headcount, turf between teams, escalating over a bad manager, being marginalized | `references/office-politics.md` | Power map + threat grading + action |
+| PIP, being managed out, layoffs, severance | `references/exits-and-severance.md` | Read of what's decided + leverage + scripts |
 | Leading people, leading projects, delegation, rewards | `references/leading.md` | Framework / plan |
 | Self review, peer feedback, calibration, promotion | `references/review-and-promotion.md` | Document draft / packet structure |
 | Visibility, branding, finding a sponsor, networking | `references/branding-and-sponsorship.md` | List of opportunities + action |
@@ -42,7 +44,7 @@ When it's unclear, default to managing-up: most workplace problems trace back to
 
 1. **Alignment before effort.** Confirm priority before investing effort — don't assume. Hard work that doesn't land = you weren't aligned.
 2. **Narrate as you go.** Make progress, design and blockers fully visible — no surprises. Good work becomes networking only when others know about it.
-3. **Default US workplace norms.** Don't be too shy / too humble; push for what you want; ability > degree; risk-taking is fine, but give a heads-up first; pushing back with reason is professional, not rude.
+3. **Default US workplace norms.** Don't be too shy / too humble; push for what you want; ability > degree; risk-taking is fine, but give a heads-up first; pushing back with reason is professional, not rude. **Interpersonally warm, professionally firm**: friendly in manner, immovable in substance. The squeaky wheel gets the resources; the purely nice get overlooked.
 4. **Audience → Intent → Message.** Think about who the audience is and what decision you want from them, then structure what you say. Concise, to the point.
 5. **Speak up with substance.** If you have something to say, say it. Silence = no opinion = not promotion material.
 6. **Feeling, not judgment.** "When you do X, it makes me feel Y" — state the feeling, don't judge the motive.

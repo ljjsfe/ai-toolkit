@@ -63,6 +63,34 @@ Never use "if possible," "maybe," "I was wondering if."
 
 Don't reply by email. Reply: "Thanks — let's grab 15 min to talk through this." Then resolve it verbally.
 
+## Polite fictions — leverage without a threat
+
+Say true things the other person cannot argue with, which carry your real position. They hear
+the leverage; there is nothing in it to accuse you of. Warm in tone, firm in substance. Never
+bluff: every one of these works only if what you imply is true and you would act on it.
+
+**A promotion that keeps slipping:**
+> "I need to understand how important my career growth is to the company. It's very important to
+> me. If it isn't important to the company, I need to think about what that means."
+
+No one can dispute that your career matters to you, and you have not said "promote me or I
+leave" — but the manager hears it.
+
+**A real competing internal offer, and a manager who keeps stalling** (use once, only with an
+offer you would take):
+> "The other team's SVP has made me an offer. If I give him my word, I have to keep it — I know
+> you'd do the same. I'd really rather stay and do this project with you, but I owe him an
+> answer tonight."
+
+It turns pressure on the manager into you keeping a promise, and forces a decision within hours.
+
+**Enlisting instead of demanding:** "How can you help me with X?" makes the other person a
+collaborator in solving it, and is harder to refuse than a request.
+
+**An overloaded funnel manager:** see "Umbrella or funnel manager" in `managing-up.md`.
+**A negative conversation sprung on you:** ask to pick it up tomorrow morning — script in
+`exits-and-severance.md`.
+
 ## General taboos
 
 - Any writing done while you're not calm
