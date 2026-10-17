@@ -36,6 +36,7 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-managed-context,harness-engineering,self-improvement-loops} (MIT) — used in: agent-security
 - Gambit Security, "AI Agents Are Hacking Online Retailers for $25 a Company" (2026), https://gambit.security/blog-posts/autonomous-ai-agents-online-retailers-25-a-company — used in: agent-security
 - user-authored — used in: career-navigator
+- Ethan Evans (former Amazon VP), talks and newsletter on big-company politics — ideas only, paraphrased: headcount as currency, reorg motives, polite fictions, never mutiny alone, funnel vs umbrella managers, early champions, exit leverage; his numbers are one company's and are marked as such — used in: career-navigator
 - Jeffrey Pfeffer, "7 Rules of Power" (2022; Chinese edition 《权力进化论》) and "Power" (2010) — ideas only, paraphrased: performance predicts advancement weakly, perceived power over likability, the boss's self-interest — used in: career-navigator
 - upstream/gstack/cso (MIT) — boundary and invariant census first, sibling propagation, exploitability gating, three separate judgements, independent re-derivation, webhook review order, two-user and two-tenant negative controls — used in: app-security
 - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/security-reviewer.md (MIT) — confidence tied to attack-path traceability with a critical-impact override; feature-gate leaks — used in: app-security

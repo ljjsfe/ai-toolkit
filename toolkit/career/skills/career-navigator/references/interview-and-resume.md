@@ -33,6 +33,19 @@ When the user says "mock interview" / "help me practice for an interview":
 - Prepare 3 questions for them: the team's top priority, what next-level success looks like, the biggest obstacle
 - This is the start of sponsorship, not just an interview
 
+## Choosing where to work (especially if you hate politics)
+
+How you play is this skill; whether to move is `liu-ayi`. Three ways to need less politics:
+
+- **A growth company.** When headcount and budget grow every year, scope comes from new work,
+  not from taking it from a colleague. Flat or shrinking orgs are zero-sum, and politics there
+  is unavoidable.
+- **An umbrella manager.** Test it in the interview: "Tell me about a time leadership asked your
+  team for something you thought was unrealistic. What did you do?" Listen for whether they
+  pushed back upward or passed it down.
+- **Work too hard to replace.** Go deep on the problems few people can solve; that kind of
+  expert is shielded from most of the game.
+
 ## Negotiating an offer / level
 
 This skill owns how to negotiate; whether to accept or move at all is `liu-ayi`.

@@ -1,7 +1,7 @@
 # Office Politics — power, interests, information
 
 Definition: where there are people, there is politics. People will use authority / power to push their own agenda — that's the norm.
-This module's stance: **politics isn't "whether to participate," it's "whether you can read it."** Someone who can't read it defaults to being a pawn on someone else's board. The goal is to understand the structure, protect yourself, and position yourself to be evaluated fairly — not to manipulate others.
+This module's stance: **politics isn't "whether to participate," it's "whether you can read it."** Someone who can't read it defaults to being a pawn on someone else's board. The goal is to understand the structure, protect yourself, and win the allocation of scope, headcount and recognition. Leverage is part of the job: interests, headcount, narrative and timing are the real currency. What this skill excludes is lying — invented offers, false facts, rumors — not because it is impolite but because it gets found out, and credibility is the asset every other move depends on.
 
 ## Step one is always: draw the power map
 
@@ -26,6 +26,60 @@ Without this map, every piece of advice is a guess.
 | **Credit/blame** | Credit-stealing, blame-shifting | Narrate as you go + written milestone updates; clarify negative attributions only verbally |
 | **Taking sides** | Two leaders don't get along; you're asked to pick a side | Don't take sides; with both sides, talk only about the work and the facts; never carry messages |
 | **Power vacuum/reshuffle** | Re-org, new manager, strategy shift | The first 30 days are critical: build a direct relationship with the new leader, reconfirm priorities |
+
+## How power is actually allocated (big-company mechanics)
+
+Figures below are one former Amazon VP's observations; your company's differ — ask, don't assume.
+
+- **Headcount is the currency.** Impact is hard to measure and easy to argue; headcount is
+  neither. Manager and director promotions often carry a size bar, written or not (he cites
+  roughly 80–90 people for Director in some orgs). So any proposal that moves people into or
+  out of an org is also a negotiation about someone's promotion. Ask whose.
+- **Shell games.** Executives lend a team to a favoured leader for a few months to clear a size
+  bar, then move it back after the promotion. A team transfer near promo season is a signal.
+- **Reorgs have two reasons.** The stated one: a new market, an acquisition, a leader leaving.
+  The real ones, often: keep a star by handing them attractive scope, build someone's promotion
+  case, or push someone out. Executives are storytellers — the reorg is a narrative built to
+  justify the allocation upward. When one is announced, map who gains scope or headcount, who
+  loses it, and whose case it builds.
+- **The garbage can.** Moving someone into legacy maintenance, a support queue or "other" is how
+  companies push out people they don't want to fire. If it happens to you, it is red — see
+  `exits-and-severance.md`.
+- **Lost scope rarely means demotion.** A director whose org shrinks usually gets 6–9 months to
+  find matching scope. The clock starts at the reorg, not when someone mentions it.
+
+## Turf: defending and taking scope
+
+**When another org wants to absorb yours:**
+- **Skunk.** Put the full cost of what they would inherit on the table in the forum where it is
+  decided: legacy systems, on-call load, ticket volume, open incidents. "Here are the ten
+  systems that come with this, and the on-call they need — are you ready to staff that?"
+- **Porcupine.** Make absorbing you expensive: counter-propose the merge in the other direction,
+  with a cost story ("combining them under us saves 30%"). Only with your skip-level behind you;
+  without that it reads as insubordination.
+
+**When you want to take scope:**
+- Never "they're failing, give it to me." Go to the shared boss or their lead with an offer of
+  help on a visible problem: "I noticed X has been having a rough time — is there something my
+  team can do?" Deliver. Then propose consolidating, with numbers: cost saved, fewer handoffs,
+  faster releases.
+- Sell the bigger value story (double the release rate, double the revenue), not the other
+  team's weakness.
+
+**When a counterpart is toxic:** assign one resilient person as the single interface, tell them
+plainly that shielding the team is the job, and reward them visibly afterwards.
+
+## Escalating over a bad manager: never alone
+
+Going to the skip-level alone makes you the high-maintenance one: replacing a manager is
+expensive for the skip, so their first instinct is to doubt the messenger.
+
+1. Privately, spoken, find two or three peers with the same problem: "Have you been running into
+   the same thing with X?"
+2. Go together, or one after another: "Three of us have hit the same issue. If it helps, we can
+   each walk you through specifics."
+3. Facts and delivery impact only — no motives, no adjectives. Several voices with the same facts
+   make it the manager's problem instead of yours.
 
 ## Threat grading (not all politics deserves your energy)
 
@@ -61,13 +115,14 @@ The vast majority of "office politics" is yellow and green. The most common mist
 - Two review cycles in a row with no feedback, or feedback that's vague
 - Your sponsor has left / lost influence
 - You're excluded from meetings that decide your work, with no explanation
+- A reorg moves you into a role with no roadmap or growth path (the garbage can) → `exits-and-severance.md`
 
 Two or more of these → this isn't a "work harder" problem — switch to `liu-ayi` for a structured analysis (stay / switch teams / switch companies), and start building external optionality immediately.
 
 ## Quick answers to common questions
 
 **"Should I get involved in office politics?"** You're already in it. The question is whether you read it actively or get hit passively.
-**"I don't want to become that kind of person."** Everything above is professional and legitimate: transparency, speaking up, building relationships, pushing back, giving credit. Manipulation, spreading rumors, and tattling are not part of this skill.
+**"I don't want to become that kind of person."** Everything above is reading interests and using real leverage: headcount, narrative, timing, coalitions, the cost of saying no to you. Rumors and invented facts are not in it — they get found out and cost more than they win. If you still want out of the game, choose where you play: see "Choosing where to work" in `interview-and-resume.md`.
 **"My manager plays favorites with someone."** First look at what that person is doing right (most likely alignment + visibility), and copy it — don't complain.
 **"The new leader brought in their own people."** Set up a 1:1 within 30 days, ask about their priorities and "what does great look like," then prove yourself with results. You don't need to become one of their people — you need to become someone they can't afford to lose.
 **"Should I tell my manager that so-and-so is scheming?"** Only state the facts and the impact on delivery — no motives, no adjectives, and say it out loud, not in writing.
@@ -77,4 +132,5 @@ Two or more of these → this isn't a "work harder" problem — switch to `liu-a
 - How to handle a specific person → `peers-and-politics.md`
 - Scripts for the actual conversation → `tough-conversations.md`
 - Building a coalition / sponsor → `branding-and-sponsorship.md`
+- Being moved out, PIP, severance → `exits-and-severance.md`
 - Whether to leave → `liu-ayi`

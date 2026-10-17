@@ -41,6 +41,27 @@ Options: A (recommended, with reasoning) / B / C
 Ask: I need you to [make a decision / step in / provide resources] by [date]
 ```
 
+## Umbrella or funnel manager
+
+An umbrella manager absorbs pressure from above; a funnel manager passes all of it down. A
+funnel keeps doing it because pushing work to you feels safer to them than pushing back upward.
+Change that **safety balance**: privately, at a calm time (a Tuesday, not mid-crisis), make clear
+that pushing it to you is now the riskier option *for them*.
+
+> "I've noticed the weekend work has become pretty regular. I want to help you make the case
+> upward for realistic timelines, with data. But I have to be honest — my family matters a lot
+> to me and I can't keep working weekends long term. I don't want you to commit a date upward
+> and then have me unable to deliver it; that would put you in a tough spot. How can we plan
+> ahead next time to push back on the unrealistic asks?"
+
+## Creating your own scope
+
+Deliver the core asks fully first — that buys the right to the rest. Then keep a small, bounded
+share (Ethan Evans's version: 10 of 800 people, about 1%) on a bet you believe in, tell your
+manager it exists, and frame it as upside for them: "I'm using 99% of the team on your goals;
+I'd like to keep 1% on this bet." For an IC the 1% is your own time, and only after the core
+work is visibly solid.
+
 ## Adjusting your message to your manager's style
 
 - Results-oriented: outcome + ask, details in an appendix

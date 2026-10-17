@@ -22,6 +22,30 @@ Promotion is easy at low levels and gets exponentially harder at each higher lev
 1. **Rating**: a higher rating → a higher chance of promotion
 2. **Someone in the calibration room knows you**: when your manager tries to sell you, other people need to be able to +1. This is the real purpose of branding and cross-team collaboration
 3. **Level narrative**: every project needs to answer "is this next-level work?" (scope, ambiguity, scope of influence)
+4. **Your direct manager is a veto.** No one gets promoted over their direct manager's clear objection. If they won't back you after a written gap list and a cycle of delivering against it, either win them over or change managers — don't wait out a third cycle.
+
+## Seed champions six months ahead
+
+Senior promotions need feedback from leaders outside your chain, who are busy and don't know your
+work. Plant it early.
+
+- Ask your manager to send adjacent VPs a note six months out: "X plans to go up for promotion in
+  about six months. Since your org works closely with ours, I wanted to flag it now — please
+  keep an eye on their work, and I'll come to you for feedback then."
+- If your manager won't, do it yourself: "I know you get a lot of last-minute promotion-feedback
+  requests. To save you time later, I wanted to connect six months ahead — my work will overlap
+  with your team's, and I'd like to understand what you expect."
+
+## What changes at Staff / Director and above
+
+- The early promotions came from working harder. Above Senior, the bar is letting go: delegating,
+  communicating, and dropping the micromanagement that got you here.
+- Trust at that level is built in crises — the outage, the customer about to leave — by stepping
+  up, sometimes at personal cost (cancelling the vacation). Be visible in the crisis, not after it.
+- With ability roughly equal, executives pick the person they want in the room: steady, upbeat,
+  easy to be around.
+- Manager and Director levels often carry an unwritten team-size bar; see "How power is actually
+  allocated" in `office-politics.md`.
 
 ## BEFORE the review — things to do on an ongoing basis
 
