@@ -81,6 +81,32 @@ by being useful to power, early and repeatedly — not by being liked.
   (the "What I've helped them with" column of the sponsor map). Allies are kept by reciprocity,
   not by affection.
 
+## Choosing whom to back
+
+Backing someone means aligning your work, your visibility and your loyalty with theirs. Choose
+deliberately, from the people table in the dossier.
+
+| | question | strong signal | weak signal |
+|---|---|---|---|
+| power now | do they decide or sway ratings, scope, headcount? | in the closed-door room; their asks get staffed | title without a vote |
+| trajectory | rising, flat or falling? | growing scope or headcount, a new mandate, their boss's favour | lost scope, skipped in decisions, their sponsor gone |
+| need for you | what do they need that you supply? | a problem on their plate you can solve | they need nothing from you |
+| protection | do they protect their people? | an umbrella; their people get promoted | a funnel; their people burn out or leave |
+| exposure | if they fall, do you fall? | your value travels without them | you are known only as their person |
+| cost | whom does it alienate? | nobody with power over you | your manager or a rival with a vote |
+
+Rules:
+- Your direct manager comes first: never back someone in a way your manager experiences as
+  disloyalty (the veto rule).
+- Back a rising leader early, while it is cheap. Best: rising trajectory, a real need for you,
+  and an umbrella.
+- Align with the person on the work, not against their rivals; keep a working relationship with
+  every faction that has a vote over you (don't take sides in their fights, hard rule 3).
+- Never be only one person's: keep at least one other relationship above your manager, so a
+  fall or a departure doesn't take you down too.
+- When a backer starts falling (two weak trajectory signals), don't defect publicly. Shift your
+  visible work toward the new centre of gravity quietly; leave no grievance behind.
+
 ## Turf: defending and taking scope
 
 **When another org wants to absorb yours:**

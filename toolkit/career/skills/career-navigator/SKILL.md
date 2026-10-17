@@ -1,10 +1,10 @@
 ---
 name: career-navigator
-description: "Career and workplace coaching for engineers, tech leads and managers in US companies — manager 1:1s, self-reviews and promotion, sponsorship and visibility, office politics, tough conversations and pushing back, leading teams, interviews, resumes and negotiating offer terms. Gives one concrete action or a script to say, not principles. Trigger words include 职场, 升职, 老板, 同事, 汇报, 沟通, 面试, 简历, 述职, 绩效, 办公室政治, 重组, 裁员, PIP, 遣散. For whether to change jobs or make a big life move, use liu-ayi; this skill owns how to do it."
-version: 1.7.0
+description: "Career and workplace coaching for engineers, tech leads and managers in US companies — manager 1:1s, self-reviews and promotion, sponsorship and visibility, office politics, tough conversations and pushing back, leading teams, interviews, resumes and negotiating offer terms. Gives one concrete action or a script to say, not principles. Trigger words include 职场, 升职, 老板, 同事, 汇报, 沟通, 面试, 简历, 述职, 绩效, 办公室政治, 重组, 裁员, PIP, 遣散, 下一步, 复盘, 演练, 站队. For whether to change jobs or make a big life move, use liu-ayi; this skill owns how to do it."
+version: 1.8.0
 sources:
   - user-authored
-  - authored for this toolkit — getting inside the circle: attach early to a rising leader, the favour ledger
+  - authored for this toolkit — getting inside the circle: attach early to a rising leader, the favour ledger; the staged roadmap, choosing whom to back, rehearsal protocol, dossier and after-action review
   - 'Ethan Evans (former Amazon VP), talks and newsletter on big-company politics — ideas only, paraphrased: headcount as currency, reorg motives, polite fictions, never mutiny alone, funnel vs umbrella managers, early champions, exit leverage, credit tactics, scope defence, carrot-dangling, managing out, executive presence, the big-company speedrun; his numbers are one company''s and are marked as such'
   - 'Carla Harris (Vice Chairman, Morgan Stanley), "Expect to Win" and "Strategize to Win" and interviews — ideas only, paraphrased: sponsor vs mentor, the three sponsor conditions, the direct sponsor ask, designing your perception with three adjectives, interview and layoff narratives'
   - 'Chris Voss, "Never Split the Difference" (2016) — calibrated "how" questions; ideas only, paraphrased'
@@ -15,9 +15,11 @@ sources:
 
 A working system for career development: one concrete action or one ready-to-say sentence per answer, not a restatement of principles.
 
+**Before anything else:** if `~/.career/dossier.md` exists, read it — it holds the user's real board (people, power map, sponsors, cards played, stage). Follow `references/dossier.md` for reading, updating and reviewing it.
+
 ## 1. Intake — confirm context before answering
 
-If this isn't already in the conversation or memory, ask first (ask everything in one pass, no more than 3 questions):
+If this isn't already in the dossier, the conversation or memory, ask first (ask everything in one pass, no more than 3 questions):
 
 - Current role / level, target level, timeline
 - Who the direct manager is, the review cycle, when you last got clear feedback
@@ -29,6 +31,9 @@ Not tied to any specific company. Concrete mechanics like the ladder or the perf
 
 | User is asking about | Read | Output |
 |---|---|---|
+| "What next?", review my situation, where am I, campaign plan | `references/dossier.md` (review) + `references/roadmap.md` | Stage + one next move with person, script, date |
+| Whom to align with, who is rising, reading factions | `references/office-politics.md` ("Choosing whom to back") | Scored people table + recommendation |
+| Practise a conversation, role-play my boss, 演练 | `references/rehearsal.md` | Role-play + scored debrief |
 | Aligning with their manager, 1:1s, unclear priorities, manager not responsive | `references/managing-up.md` | 1:1 agenda / a script |
 | Peers, cross-team work, credit-stealing, being shot down | `references/peers-and-politics.md` | Read on the other person's intent + response script |
 | Power structures, taking sides, re-orgs, headcount, turf between teams, escalating over a bad manager, being marginalized | `references/office-politics.md` | Power map + threat grading + action |
@@ -70,6 +75,7 @@ When it's unclear, default to managing-up: most workplace problems trace back to
 
 | Frequency | Action |
 |---|---|
+| Weekly | Review the dossier: what changed, one next move |
 | Weekly | 15 minutes updating the brag doc (what happened / your role / result numbers / who saw it / which criteria it maps to / whether it's next-level work) |
 | Every 6–12 weeks | Proactively ask your manager for performance feedback + review the promotion gap list |
 | Every quarter | 1:1 with one other team leader; update the sponsor map; at least one cross-team collaboration or share-out |
