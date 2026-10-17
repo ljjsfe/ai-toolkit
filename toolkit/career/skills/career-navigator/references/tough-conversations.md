@@ -34,6 +34,22 @@ Purpose: shows you're aggressive (X), while also setting the right expectation (
 
 Never give a single number; never say "should be quick."
 
+## Asked to commit to a date
+
+The most common conflict between teams is a silent expectation gap: there is no contract, you
+think March is a fine delivery, they needed January and March is too much, too late.
+
+1. **Ask before you answer** a high-stakes "can you?". A few yes/no questions get them to lay
+   out the timeline and what depends on it:
+   > "Is January a drop-dead date, or a target? What happens downstream if it lands in March?"
+2. **Answer factually, separating possible from commit:**
+   > "January is possible, but my commit is March. I can give you a firmer answer in two weeks,
+   > if that works for you."
+3. **Anything short of no is heard as yes.** "There's a chance" is a yes to them; walking it back
+   later is a decommit, and costs more than the original no. Don't soften the key point.
+4. **Unpack the ask** into smaller decisions you can commit to separately. If they don't need a
+   commit today, don't give one.
+
 ## Saying "no" / not having bandwidth
 
 "I want to help with this. Right now I'm committed to X and Y through [date]. I can take it on after that, or if it's more urgent than X, I'm happy to check with [manager] on reprioritizing."
