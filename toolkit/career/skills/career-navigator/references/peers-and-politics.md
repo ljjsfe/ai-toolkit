@@ -6,7 +6,7 @@ Working with peers day to day. For power structures, taking sides and threat gra
 ## Top tips
 
 1. Think from other people's standpoints — their **intent & goals**
-2. Develop soft skills (EQ, interpersonal)
+2. Before any ask, answer "what does this person get out of saying yes?"
 3. Build good work relationships, maintain a positive outlook
 4. Keep it professional (set boundaries, push back, don't overshare)
 5. **Speak up for yourself** — don't count on anyone else to speak for you

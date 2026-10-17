@@ -39,6 +39,18 @@ Never give a single number; never say "should be quick."
 "I want to help with this. Right now I'm committed to X and Y through [date]. I can take it on after that, or if it's more urgent than X, I'm happy to check with [manager] on reprioritizing."
 → Hand the priority decision to your manager so you don't have to be the bad guy.
 
+## Defending against the junk work
+
+Whoever accepts junk work without friction gets all of it. Push back enough that handing it to
+you costs more than handing it to someone softer (porcupine, not bunny).
+
+- **Tokens, with a smile:** "I only get three junk-work tokens a month. If this has to use one, I
+  can do it — but we'd be down to two. Sure you want to spend it here?" Your manager never agreed
+  to tokens; the joke sets the frame that the supply is finite, without a fight.
+- **Trade it:** "I know there's a pile of work nobody wants. I'll spend the next two weeks clearing
+  those bugs and the ops backlog for you — and once that's done, I lead the next new project."
+  Get the second half agreed before you start the first.
+
 ## Opening a hard conversation
 
 - Schedule 15-30 minutes ahead of time, 1:1, spoken (not email)
@@ -51,7 +63,33 @@ Never give a single number; never say "should be quick."
 - "I'd like to be considered for [next level] in the next cycle. Based on the ladder, what do you see as the gaps, and what projects would demonstrate that scope?"
 - "I heard the Y project is kicking off. I'd like to lead the Z part — I think it's a good fit because [reason], and it would give me the cross-functional exposure we talked about."
 
+- When you have the idea, claim it in so many words: "I've found something that could change how
+  our team does X. I'm really excited about it, and I want to be the one to build it." Once you've
+  said it, giving it to someone else means your manager has to disappoint you face to face — most
+  won't.
+
 Never use "if possible," "maybe," "I was wondering if."
+
+## When the carrot keeps dangling
+
+Vague promises ("keep doing what you're doing") cost your manager nothing; make them specific.
+
+> "I understand you can't guarantee the outcome — it goes through committee. I'm not asking for a
+> guarantee. What do I need to deliver so that you can walk into that room 100% confident
+> arguing for me?"
+
+> "You've asked me to keep going, but I don't have a clear target or timeline. How can I keep
+> working at full speed without knowing what I'm aiming for?"
+
+"How" questions (Chris Voss) make the other side solve your problem instead of saying no to it.
+
+**Life stage, said plainly** (only if it is true):
+> "My career matters a lot to me. I'm in a window where I need to make the next step in the next
+> two years — [the real reason: starting a family, supporting my parents]. I'd much rather do it
+> here. But if there's no path here, I'll have to look outside."
+
+Then stop talking. Hold eye contact and let the silence do the work; the first one to fill it
+usually concedes something.
 
 ## When you're shot down / criticized
 
@@ -68,6 +106,21 @@ Don't reply by email. Reply: "Thanks — let's grab 15 min to talk through this.
 Say true things the other person cannot argue with, which carry your real position. They hear
 the leverage; there is nothing in it to accuse you of. Warm in tone, firm in substance. Never
 bluff: every one of these works only if what you imply is true and you would act on it.
+
+**Leverage inventory — take it before playing any card:**
+
+| | ask yourself | if weak |
+|---|---|---|
+| outside option | a live offer, or recruiters you could convert within weeks? | interview first; the card is empty until then |
+| replaceability | how long and how much would replacing you cost them? | own something critical before you push |
+| sponsor | who above your manager would argue for you? | seed one (review-and-promotion) |
+| timing | where are you in the cycle — before calibration, mid-project, after a win? | wait for the window: right after a win, before calibration |
+| record | is your recent delivery visible and undisputed? | fix visibility first (branding) |
+
+**Card budget.** "I need to think about what that means" and a competing offer are one-shot: after
+you play them, your manager treats you as a flight risk — expect them to either deliver or start
+planning around you. Play one per cycle at most, and only when you would act on it. Porcupine
+pushes and token jokes are repeatable but wear thin; spend them on work that matters.
 
 **A promotion that keeps slipping:**
 > "I need to understand how important my career growth is to the company. It's very important to

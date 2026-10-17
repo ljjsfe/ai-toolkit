@@ -50,7 +50,9 @@ When a negative conversation is sprung on you:
 > "I want to give this the attention it deserves, and I don't think I can do that well right
 > now. Can we pick it up first thing tomorrow?"
 
-Most managers agree. Use the night to decide your ask, not to draft a rebuttal.
+Most managers back off. Use the night to decide your ask, not to draft a rebuttal. If they press on
+after you asked for time, note the date and their words in your private record — it is a card for
+later, as long as you report it exactly as it happened.
 
 When handed a severance agreement:
 > "Thanks. I'd like to take a few days to review this properly before I sign."
