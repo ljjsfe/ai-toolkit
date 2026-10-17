@@ -103,6 +103,9 @@ Trim your self review straight from this during review season.
 
 - Ask first: "What do I need to achieve to get to the next level?" — get a concrete gap list, write it down, revisit it at the next 1:1
 - Be aggressive and pushing about it: people who don't bring it up are assumed not to want it
+- Start saying it a year before you want it. Waiting until you are "fully ready" means never — the people who vote need a year to see you as the next level
+- In the annual review, spend about two thirds of the time on how you will create value next year, not on defending last year
+- Bring your record as data — the brag doc numbers — and let it lead the conversation
 - Track the gap list at every 1:1: "Last time you mentioned X as a gap; here's what I did on it."
 
 ## Reminders for client-facing / cross-functional roles

@@ -10,6 +10,14 @@
 
 When rewriting, output: original sentence → revised sentence → reason for the change (one line).
 
+## Applying and interviewing — you are not begging
+
+- Read "required" as "preferred". A posting asking for 5 years and a master's when you have 3 and
+  a bachelor's is a filter, not a verdict; the exceptions go to the people who apply.
+- The interviewer has a slot to fill today and pressure to fill it; you don't. Walk in as the
+  person solving their problem, not asking a favour. The one job: make not hiring you the biggest
+  mistake they could make today.
+
 ## Mock interview mode
 
 When the user says "mock interview" / "help me practice for an interview":
