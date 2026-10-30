@@ -12,7 +12,7 @@ see [CREDITS.md](CREDITS.md).
 
 | area | skills |
 |---|---|
-| engineering | `design-discussion` (think a design through, one question at a time) · `system-design` (numbers before boxes; design reviews) · `debugging` · `verification` · `code-review` · `app-security` · `production-ops` (safe changes and incidents) · `architecture-diagram` |
+| engineering | `design-discussion` (think a design through, one question at a time) · `system-design` (numbers before boxes; design reviews) · `debugging` · `tdd` (vertical slices, test-first) · `verification` · `code-review` · `app-security` · `production-ops` (safe changes and incidents) · `architecture-diagram` |
 | AI agents | `agent-architecture` · `agent-orchestration` · `agent-evals` · `agent-security` · `agent-instructions` (CLAUDE.md / AGENTS.md) |
 | research and market | `verified-research` · `market-scan` (competitors and unmet demand) · `macro-regime` |
 | product | `customer-discovery` (validate ideas with real users) · `product-scoping` · `pricing` · `experiment-readout` (A/B tests and launches) · `adopt-or-build` |
@@ -26,8 +26,9 @@ see [CREDITS.md](CREDITS.md).
 Design taste is delegated to [impeccable](https://github.com/pbakaus/impeccable) plus three of
 [emilkowalski/skills](https://github.com/emilkowalski/skills) (motion review, mobile-web feel, worst-case data), trend signals to
 [last30days](https://github.com/mvanhorn/last30days-skill), and safety hooks to
-[claude-code-hooks](https://github.com/karanb192/claude-code-hooks) (optional), and handoff to Codex
-to [codex-plugin-cc](https://github.com/openai/codex-plugin-cc) — installed from their own
+[claude-code-hooks](https://github.com/karanb192/claude-code-hooks) (optional), handoff to Codex
+to [codex-plugin-cc](https://github.com/openai/codex-plugin-cc), and spec-driven changes to
+[OpenSpec](https://github.com/Fission-AI/OpenSpec) (optional, on trial) — installed from their own
 sources (see `toolkit/external.yaml`).
 
 ## Install
@@ -43,7 +44,8 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
 
 - `--external` runs each installer listed in `toolkit/external.yaml` (impeccable, last30days,
   emilkowalski/skills, the Codex plugin for Claude Code). Entries marked `optional` — currently
-  claude-code-hooks — are printed, not installed.
+  taste-skill, mcp-builder, mcp-server-dev, claude-security, claude-code-hooks and openspec — are
+  printed, not installed.
 
 - Skills are stored once in `~/.agents/skills/`, which Codex reads directly; Claude Code gets a
   symlink per skill in `~/.claude/skills/`. Copies left in `~/.codex/skills/` by older versions

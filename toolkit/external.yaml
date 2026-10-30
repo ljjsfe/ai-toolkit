@@ -205,3 +205,24 @@
     Optional because guard-pack's git-safety blocks direct changes on main/master at the
     default level; set HOOK_SAFETY_LEVEL or work on branches first. Codex relies on its own
     sandbox and approval policy instead.
+
+- name: openspec
+  category: engineering
+  repo: https://github.com/Fission-AI/OpenSpec
+  license: MIT
+  tools: claude, codex
+  optional: true
+  install:
+    - npm install -g @fission-ai/openspec@latest
+  covers: >
+    Spec-driven changes, per project: `openspec init` in a repo, then each change gets a folder
+    (proposal, delta specs, design, tasks) and archiving merges its delta into openspec/specs/,
+    a lasting record of what the system should do. Adds per-project /opsx commands.
+  notes: >
+    Trial decided 2026-10-30, not yet started: one repo with several multi-step features, default
+    schema, two weeks from the start date; record the repo and start date here when it begins.
+    Measure review rounds per feature against the last three features built without it. Pass if
+    rounds drop and reviewing proposals and specs costs less time than it saves. To undo, delete
+    openspec/ and the openspec-* skills and opsx commands that `openspec init` generated for each
+    tool. Specs stay true only if every behaviour change goes through a change, so skip repos
+    where fixes bypass the flow.
