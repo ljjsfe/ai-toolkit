@@ -5,6 +5,10 @@ paths:
   - "**/*.cxx"
   - "**/*.h"
   - "**/*.hpp"
+  - "**/*.hxx"
+  - "**/*.ipp"
+  - "**/*.ixx"
+  - "**/*.cppm"
   - "**/CMakeLists.txt"
 ---
 # C++ traps
@@ -12,9 +16,9 @@ paths:
 - A lambda that captures locals by reference must not outlive them: never pass `[&]` lambdas to
   detached threads, async callbacks or stored handlers.
 - An unnamed guard is a temporary that unlocks at the end of the statement:
-  `std::lock_guard<std::mutex>{m};` or `std::scoped_lock{m};` protect nothing. Always name it:
-  `std::lock_guard lock(m);` (Writing `std::lock_guard<std::mutex>(m);` declares a new
-  variable `m` and fails to compile.)
+  `std::lock_guard<std::mutex>{m};` or `std::scoped_lock{m};` protect nothing. Worse,
+  `std::unique_lock<std::mutex>(m_);` compiles cleanly, default-constructs a local `m_` shadowing
+  the member, and never locks `m_`. Always name the guard: `std::scoped_lock lock(m_);`.
 - Never return a reference or pointer to a local. Do not declare return types `const T` — it
   disables moves.
 - Ranges views are lazy and reference their source. Piping an rvalue container is safe (it

@@ -2,11 +2,12 @@
 # `./install.sh <tool> --apply --external`. Adopted only when best-in-class for a category and
 # actively maintained. Our toolkit never restates what these cover.
 #
-# Format (read by install.sh without a YAML library — keep to this shape):
-#   tools:    which targets the entry applies to (claude, codex)
+# Format (read by install.sh and scripts/check.py without a YAML library — keep to this shape):
+#   tools:    which targets the entry applies to (claude, codex, agy)
 #   optional: true → listed but not installed by --external; install it yourself when decided
 #   install:  one shell command per "- " line, run in order. Commands must be safe to rerun
 #             and leave the latest version installed: ./update.sh simply reruns them.
+#             install.sh automatically narrows --providers= and -a flags to the selected tool(s).
 #   watch:    optional, comma-separated paths in the upstream repo worth re-reading when it
 #             changes (default: the whole repo); documentation only, install.sh ignores it
 #   folded fields (`>`) are documentation only
@@ -15,58 +16,49 @@
   category: design
   repo: https://github.com/pbakaus/impeccable
   license: Apache-2.0
-  tools: claude, codex
+  tools: claude, codex, agy
   install:
-    - npx -y impeccable@latest install --providers=claude,codex --scope=global
+    - npx -y impeccable@latest install --providers=claude,codex,antigravity --scope=global
   covers: >
     Frontend design taste end to end: surface modes (persuade/operate/read/experience),
     new-work direction process, calibration against saturated AI looks, craft floor
-    (contrast, spacing, type, motion, states, browser surfaces), refusal list, 25 commands
+    (contrast, spacing, type, motion, states, browser surfaces), refusal list, commands
     (shape, critique, audit, polish, typeset, animate, ...), and an edit-time detector hook.
   why_not_rewritten: >
-    Read 2026-10-13 against the other design upstreams (anthropics-skills frontend-design,
-    gstack design-*, everything-claude-code frontend-design-direction, taste-skill): its craft
-    floor and calibration already include their distinctive rules, and it adds an edit-time
-    detector we cannot reproduce in prose. 650+ commits in the last month. Re-read 2026-10-15
-    against taste-skill v2: still the default, because it covers product UI as well as pages and
-    already has dealt directions, verified imagery, multi-viewport screenshots and an independent
-    finish reviewer; taste-skill is kept as an optional alternative for marketing pages.
+    Read against anthropics-skills frontend-design, gstack design-*, everything-claude-code
+    frontend-design-direction, and taste-skill v2: its craft floor and calibration already
+    include their distinctive rules, and it adds an edit-time detector we cannot reproduce in
+    prose. Covers both product UI and marketing pages.
   notes: >
-    The edit-time detector hook is meant to run in every project on Claude Code: from the
-    release after npm 4.5.2 (upstream #986), the --scope=global install above registers it in
-    ~/.claude/settings.json, so ./update.sh turns it on. Up to 4.5.2 it does not land there;
-    run `npx -y impeccable install` inside a project to get it sooner. Codex hooks are per
-    project only (.codex/hooks.json) and need approval via /hooks.
+    --scope=global registers the Claude Code detector hook in ~/.claude/settings.json and
+    installs skills globally across selected providers. Codex hooks remain opt-in via /hooks.
 
 - name: taste-skill
   category: design
   repo: https://github.com/Leonxlnx/taste-skill
   license: MIT
-  tools: claude, codex
+  tools: claude, codex, agy
   optional: true
   watch: skills/taste-skill
   install:
-    - npx -y skills@latest add Leonxlnx/taste-skill -g -a claude-code -a codex -s design-taste-frontend -y
+    - npx -y skills@latest add Leonxlnx/taste-skill -g -a claude-code -a codex -a antigravity -s design-taste-frontend -y
   covers: >
-    v2 (install name design-taste-frontend): art direction for landing pages, marketing sites and
-    portfolios only, not app screens. Deals three of 20 directions from a 247-site study, then
+    v2.5+ (install name design-taste-frontend): art direction for landing pages, marketing sites,
+    portfolios, plus --app and --film modes. Deals three of 20 directions from a 247-site study,
     builds with real open-licence pictures and footage found and credited by script (Openverse,
-    Wikimedia, AIC, the Met), gates the page in a real browser at 1440/768/390 and fixes from its
-    own screenshots. Its picture search is the part impeccable lacks.
+    Wikimedia, AIC, the Met), and gates in a real browser at 1440/768/390.
   notes: >
-    Optional: install it when a marketing page is the job, and use one design system per
-    project, because its house rules (no hairlines, no monospace, no eyebrows) contradict
-    impeccable's. A run costs 30-45 minutes and a few hundred thousand tokens. Needs Node 22+
-    and Chrome/Chromium. Its own final blind round scored v2 7.7 vs no skill 7.8 (one model
-    juror, three briefs), so treat it as a better process, not a proven better result.
+    Optional: use one design system per project because its house rules (no hairlines, no
+    monospace, no eyebrows) contradict impeccable's. Needs Node 22+ and Chrome/Chromium; a full
+    run costs 30-45 minutes and hundreds of thousands of tokens.
 
 - name: last30days
   category: research
   repo: https://github.com/mvanhorn/last30days-skill
   license: MIT
-  tools: claude, codex
+  tools: claude, codex, agy
   install:
-    - npx -y skills@latest add mvanhorn/last30days-skill -g -a claude-code -a codex -y
+    - npx -y skills@latest add mvanhorn/last30days-skill -g -a claude-code -a codex -a antigravity -y
   covers: >
     Recency-windowed signal collection across Reddit, Hacker News, arXiv, Techmeme,
     Polymarket and GitHub without API keys (X, TikTok, YouTube comments need optional keys).
@@ -80,9 +72,9 @@
   category: design
   repo: https://github.com/emilkowalski/skills
   license: MIT
-  tools: claude, codex
+  tools: claude, codex, agy
   install:
-    - npx -y skills@latest add emilkowalski/skills -g -a claude-code -a codex -s review-animations -s mobile-native -s break-ui -y
+    - npx -y skills@latest add emilkowalski/skills -g -a claude-code -a codex -a antigravity -s review-animations -s mobile-native -s break-ui -y
   covers: >
     Three skills that complement impeccable where it is thin: review-animations (motion
     standards: whether to animate by frequency, easing, exact curves), mobile-native (mobile web
@@ -95,9 +87,9 @@
   category: writing
   repo: https://github.com/blader/humanizer
   license: MIT
-  tools: claude, codex
+  tools: claude, codex, agy
   install:
-    - npx -y skills@latest add blader/humanizer -g -a claude-code -a codex -y
+    - npx -y skills@latest add blader/humanizer -g -a claude-code -a codex -a antigravity -y
   covers: >
     English de-AI editing pass: 26 patterns of AI prose ranked by how much evidence each needs,
     a writing sample that overrides the rules, and a check that the rewrite added no facts.
@@ -107,9 +99,9 @@
   category: writing
   repo: https://github.com/op7418/Humanizer-zh
   license: MIT
-  tools: claude, codex
+  tools: claude, codex, agy
   install:
-    - npx -y skills@latest add op7418/Humanizer-zh -g -a claude-code -a codex -y
+    - npx -y skills@latest add op7418/Humanizer-zh -g -a claude-code -a codex -a antigravity -y
   covers: >
     Chinese counterpart of humanizer: template phrasing, padding and inflated claims, while
     keeping facts, how certain each claim is, and the author's voice.
@@ -118,24 +110,41 @@
   category: engineering
   repo: https://github.com/anthropics/skills
   license: Apache-2.0
-  tools: claude, codex
+  tools: claude, codex, agy
   watch: skills/webapp-testing
   install:
-    - npx -y skills@latest add anthropics/skills -g -a claude-code -a codex -s webapp-testing -y
+    - npx -y skills@latest add anthropics/skills -g -a claude-code -a codex -a antigravity -s webapp-testing -y
   covers: >
     Drives a local web app in a real browser with Playwright: starts the server(s), navigates,
     screenshots, reads console logs. The evidence `verification` asks for when the claim is
     "the UI works".
 
+- name: agent-browser
+  category: engineering
+  repo: https://github.com/vercel-labs/agent-browser
+  license: Apache-2.0
+  tools: claude, codex, agy
+  optional: true
+  install:
+    - npm install -g agent-browser@latest
+    - npx -y skills@latest add vercel-labs/agent-browser -g -a claude-code -a codex -a antigravity -y
+  covers: >
+    Stateful headless-browser CLI daemon returning compact ref-tagged accessibility snapshots
+    (@e1, @e2) in ~200-400 tokens instead of ad-hoc Playwright scripts or 10k-token DOM dumps.
+  notes: >
+    Optional faster/lower-token alternative to webapp-testing for interactive UI checks; run
+    `agent-browser install` once after npm install to download Chromium. If WebKit/Safari parity
+    is required, pair with or substitute `@playwright/cli` (microsoft/playwright-cli, Apache-2.0).
+
 - name: mcp-builder
   category: ai-agents
   repo: https://github.com/anthropics/skills
   license: Apache-2.0
-  tools: claude, codex
+  tools: claude, codex, agy
   optional: true
   watch: skills/mcp-builder
   install:
-    - npx -y skills@latest add anthropics/skills -g -a claude-code -a codex -s mcp-builder -y
+    - npx -y skills@latest add anthropics/skills -g -a claude-code -a codex -a antigravity -s mcp-builder -y
   covers: >
     Building an MCP server: tool design for agents, TypeScript and Python SDK patterns, and an
     evaluation harness. Install when building MCP servers.
@@ -203,14 +212,14 @@
     Tested upstream (1,900+ tests). Claude Code only.
   notes: >
     Optional because guard-pack's git-safety blocks direct changes on main/master at the
-    default level; set HOOK_SAFETY_LEVEL or work on branches first. Codex relies on its own
-    sandbox and approval policy instead.
+    default level; set HOOK_SAFETY_LEVEL or work on branches first. Codex and Antigravity rely on
+    their own terminal sandboxes and permission policies instead.
 
 - name: openspec
   category: engineering
   repo: https://github.com/Fission-AI/OpenSpec
   license: MIT
-  tools: claude, codex
+  tools: claude, codex, agy
   optional: true
   install:
     - npm install -g @fission-ai/openspec@latest
@@ -219,10 +228,7 @@
     (proposal, delta specs, design, tasks) and archiving merges its delta into openspec/specs/,
     a lasting record of what the system should do. Adds per-project /opsx commands.
   notes: >
-    Trial decided 2026-10-30, not yet started: one repo with several multi-step features, default
-    schema, two weeks from the start date; record the repo and start date here when it begins.
-    Measure review rounds per feature against the last three features built without it. Pass if
-    rounds drop and reviewing proposals and specs costs less time than it saves. To undo, delete
-    openspec/ and the openspec-* skills and opsx commands that `openspec init` generated for each
-    tool. Specs stay true only if every behaviour change goes through a change, so skip repos
-    where fixes bypass the flow.
+    Requires Node 22+ (from v1.16.0+). Trial decided 2026-10-30, not yet started: one repo with
+    several multi-step features, default schema, two weeks from the start date. Measure review
+    rounds per feature against the last three features built without it. Specs stay true only if
+    every behaviour change goes through a change, so skip repos where fixes bypass the flow.

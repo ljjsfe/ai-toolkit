@@ -6,7 +6,7 @@ Branding = create positive visibility, become the go-to person. Doing the work i
 
 **Speak up · Contribute · Influence · Find opportunities · Keep learning · Practice**
 
-1. **Communication skills**: concise and to the point, understand needs of others, push your agenda, influence directions, get others on the same page
+1. **Speak up, contribute & influence (communication skills)**: concise and to the point, deliver visible value, understand needs of others, push your agenda, influence directions, get others on the same page
 2. **Find opportunities**
    - Proactively ask to present to a bigger audience
    - Proactively ask for high-visibility / critical projects

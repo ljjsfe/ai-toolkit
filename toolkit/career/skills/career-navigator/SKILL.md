@@ -1,6 +1,10 @@
 ---
 name: career-navigator
-description: "Career and workplace coaching for engineers, tech leads and managers in US companies — manager 1:1s, self-reviews and promotion, sponsorship and visibility, pushing a proposal across teams without authority, office politics, tough conversations and pushing back, leading teams, interviews, resumes and negotiating offer terms. Gives one concrete action or a script to say, not principles. Trigger words include 职场, 升职, 老板, 同事, 汇报, 沟通, 面试, 简历, 述职, 绩效, 办公室政治, 重组, 裁员, PIP, 遣散, 下一步, 复盘, 演练, 站队, 推方案, 提案, 跨部门, 影响力, 谈判. For whether to change jobs or make a big life move, use liu-ayi; this skill owns how to do it."
+description: >-
+  Workplace and career tactics for engineers, TLs, and managers: 1:1s, perf/promotion, sponsorship,
+  cross-team influence, office politics, pushback, PIP/layoffs, interviews, resumes, and offers —
+  one concrete move or script per reply. Trigger on 职场, 升职, 汇报, 述职, 绩效, 办公室政治, 重组,
+  裁员, PIP, 面试, 谈判, 演练. Big life bets: liu-ayi.
 version: 1.9.0
 sources:
   - user-authored

@@ -1,8 +1,9 @@
 ---
 name: architecture-diagram
 description: Create polished dark-themed architecture diagrams as standalone, self-contained HTML+SVG files. Use when the user asks for a standalone system, infrastructure, cloud, security or network topology diagram file — not for diagrams embedded in a document.
+version: 1.1.0
 sources:
-  - third-party skill by Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 — body and resources kept verbatim, description rewritten for routing (MIT; see LICENSE in this folder)
+  - third-party skill adapted from Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 — description rewritten for routing, template arrow z-order and legend placement aligned to spec (MIT; see LICENSE in this folder)
 ---
 
 # Architecture Diagram Skill
@@ -163,7 +164,7 @@ Caveats: clipboard API needs a user gesture and a secure context (https/file/loc
 Copy and customize the template at `resources/template.html`. Key customization points:
 
 1. Update the `<title>` and header text
-2. Modify SVG viewBox dimensions if needed (default: `1000 x 680`)
+2. Modify SVG viewBox dimensions if needed (default: `1000 x 730`)
 3. Add/remove/reposition component boxes
 4. Draw connection arrows between components
 5. Update the three summary cards

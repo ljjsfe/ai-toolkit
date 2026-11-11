@@ -1,10 +1,15 @@
 ---
 name: tdd
-description: Build test-first in thin end-to-end slices — cut a plan into vertical slices with real blocking edges, agree the test seams before the first test, go red before green one slice at a time, mock only at system boundaries, and reject tests coupled to internals or that recompute their own expected value. Use for test-first or TDD work, red-green-refactor, and breaking a plan or spec into slices, tickets or tasks; for a bug without a reproduction start with debugging, and for a diff's tests use code-review.
-version: 1.0.0
+description: >-
+  Build test-first in thin vertical slices: agree public seams first, go red-before-green one
+  slice at a time, mock only system boundaries, and slice plans into tickets with real blocking
+  edges. For un-reproduced bugs start with debugging; for reviewing a diff's tests use code-review.
+version: 1.1.0
 sources:
   - upstream/mattpocock-skills/skills/engineering/tdd (MIT, commit 5beb35b) — tests at agreed seams, implementation-coupled and tautological tests, horizontal slicing as an anti-pattern, mock only at system boundaries, no refactoring mid-cycle
   - upstream/mattpocock-skills/skills/engineering/to-tickets (MIT, commit 5beb35b) — tracer-bullet vertical slices, blocking edges and the frontier, expand–contract sequencing for wide refactors, no file paths in tickets
+  - upstream/wondelai-skills/working-with-legacy-code (MIT) — characterization tests at the nearest public seam before changing untested legacy code
+  - upstream/trailofbits-skills/plugins/property-based-testing (CC BY-SA 4.0 — ideas only, no wording) — property checks (roundtrip, idempotence, invariants) alongside example tests for parsers, codecs and state machines
   - authored for this toolkit from a stated need (green suites that test nothing) — a test never seen red is not evidence
 ---
 
@@ -67,6 +72,10 @@ Scale it to the change: a small change is one slice, and its seams are stated, n
 - Make boundaries easy to fake: pass the dependency in rather than constructing it inside, and
   give each external operation its own function rather than one generic fetcher.
 - For a bug, turn the reproduction from `debugging` into the first red test at an agreed seam.
+- For untested legacy code, pin current observable behaviour with characterization tests at the
+  nearest public seam *before* changing behaviour or extracting structure.
+- For parsers, serializers, normalizers and state machines, pair example cases with property-based
+  checks (roundtrip, idempotence, invariant preservation across generated inputs).
 
 ## 3. Tests to reject
 

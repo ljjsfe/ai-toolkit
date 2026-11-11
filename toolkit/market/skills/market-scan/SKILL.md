@@ -1,6 +1,9 @@
 ---
 name: market-scan
-description: Scan a market for competitors and unmet demand with claims that survive scrutiny — label every competitor fact observed (source, date), inferred or implication; treat "not seen" as different from "absent"; rank demand signals by behaviour (posted workarounds and rejected pull requests over upvotes); score candidate opportunities on fixed bands; kill an idea only by naming what already does it; and return "nothing solid" rather than invent one. Use for competitor teardowns, market maps, positioning, unmet needs, pain points, idea mining, and "who wins here and why".
+description: >-
+  Scan a market for competitors and unmet demand: separate observed (dated source) / inferred /
+  implication, treat "not seen" != "absent", rank behavioural signals (workarounds, rejected PRs)
+  over upvotes, and name existing tools before killing an idea. Interviews: customer-discovery.
 version: 1.1.0
 sources:
   - upstream/marketingskills/skills/{competitor-profiling,competitors} (MIT) — observed / inferred / implication, not observed is not absent, dated snapshots, switching evidence both ways

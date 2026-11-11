@@ -1,6 +1,9 @@
 ---
 name: debugging
-description: Find the root cause of a bug before changing code — build a fast red/green reproduction first, route by failure shape (flaky, order-dependent, race, performance), locate the failing layer (frontend, API, backend, data), cite an observation for every hypothesis, and stop after three failed fixes. Use for bugs, failing tests, regressions and "is this frontend or backend?"; for an active production outage use production-ops.
+description: >-
+  Find a bug's root cause before changing code: build a fast red/green reproduction first, route by
+  failure shape (flaky, order-dependent, race, perf), isolate the failing layer (UI, API, backend,
+  DB), and stop after three failed fixes. For active production outages use production-ops.
 version: 1.0.0
 sources:
   - upstream/superpowers/skills/systematic-debugging (MIT) — root cause first, read the full error, one change at the source, three failed fixes means stop

@@ -23,8 +23,9 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/compound-engineering-plugin/docs/solutions/{developer-experience/always-on-agents-md.md, workflow/measuring-a-packs-effect-needs-non-inferable-rules.md, skill-design/authoring-auto-invoke-standing-instructions.md} (MIT) — load-when notes, sample output for helpers, standing-instruction phrasing — used in: agent-instructions
 - Claude Code memory docs, https://code.claude.com/docs/en/memory — AGENTS.md versus CLAUDE.md loading (checked 2026-10-15) — used in: agent-instructions
 - Codex AGENTS.md docs, https://learn.chatgpt.com/docs/agent-configuration/agents-md — discovery from project root to launch directory (checked 2026-10-15) — used in: agent-instructions
-- Gloaguen et al., "Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?" (2026), https://arxiv.org/abs/2602.11988 — context files cost over 20% more without general gains; overviews unhelpful — used in: agent-instructions
+- Google Antigravity customization docs, https://antigravity.google/docs/rules-workflows — AGENTS.md/GEMINI.md discovery, 24 KB/20k-token caps, .agents/rules trigger modes (checked 2026-11-11) — used in: agent-instructions
 - authored for this toolkit from a stated need (an internal spec-driven workflow reviewed 2026-10-30) — harvest after delivery, a human gate before any writeback, route each lesson to the place that owns it — used in: agent-instructions
+- Gloaguen et al., "Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?" (2026), https://arxiv.org/abs/2602.11988 — context files cost over 20% more without general gains; overviews unhelpful — used in: agent-instructions
 - upstream/superpowers/skills/{subagent-driven-development,dispatching-parallel-agents,executing-plans} (MIT) — explicit model per worker, fix rounds, a ledger that survives compaction — used in: agent-orchestration
 - upstream/oh-my-claudecode/skills/team (MIT) — used in: agent-orchestration
 - upstream/compound-engineering-plugin/skills/ce-work/references/execution-strategy.md (MIT) — exclusive file ownership, orchestrator-only git, bounded batch concurrency — used in: agent-orchestration
@@ -37,15 +38,18 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-managed-context,harness-engineering,self-improvement-loops} (MIT) — used in: agent-security
 - Gambit Security, "AI Agents Are Hacking Online Retailers for $25 a Company" (2026), https://gambit.security/blog-posts/autonomous-ai-agents-online-retailers-25-a-company — used in: agent-security
 - user-authored — used in: career-navigator
+- authored for this toolkit — getting inside the circle: attach early to a rising leader, the favour ledger; the staged roadmap, choosing whom to back, rehearsal protocol, dossier and after-action review; influence-campaign structure — used in: career-navigator
 - Ethan Evans (former Amazon VP), talks and newsletter on big-company politics — ideas only, paraphrased: headcount as currency, reorg motives, polite fictions, never mutiny alone, funnel vs umbrella managers, early champions, exit leverage, credit tactics, scope defence, carrot-dangling, managing out, executive presence, the big-company speedrun; his numbers are one company's and are marked as such — used in: career-navigator
-- Carla Harris (Vice Chairman, Morgan Stanley), "Expect to Win", "Strategize to Win" and interviews — ideas only, paraphrased: sponsor vs mentor, the three sponsor conditions, the direct sponsor ask, designing your perception with three adjectives, interview and layoff narratives — used in: career-navigator
+- Carla Harris (Vice Chairman, Morgan Stanley), "Expect to Win" and "Strategize to Win" and interviews — ideas only, paraphrased: sponsor vs mentor, the three sponsor conditions, the direct sponsor ask, designing your perception with three adjectives, interview and layoff narratives — used in: career-navigator
+- Dawei Feng (VP, Intel Client Computing Group), 领航 12 public lecture "Sales: the base skill of workplace influence" (Oct 2026) — ideas only, paraphrased: run an internal proposal as an enterprise sale, key influencers, why buy / why you / why now, debate prep, ask before you commit, Open and Walk, orchestrating resources, recharging relationships — used in: career-navigator
 - Chris Voss, "Never Split the Difference" (2016) — calibrated "how" questions; ideas only, paraphrased — used in: career-navigator
 - Jeffrey Pfeffer, "7 Rules of Power" (2022; Chinese edition 《权力进化论》) and "Power" (2010) — ideas only, paraphrased: performance predicts advancement weakly, perceived power over likability, the boss's self-interest — used in: career-navigator
 - upstream/gstack/cso (MIT) — boundary and invariant census first, sibling propagation, exploitability gating, three separate judgements, independent re-derivation, webhook review order, two-user and two-tenant negative controls — used in: app-security
 - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/security-reviewer.md (MIT) — confidence tied to attack-path traceability with a critical-impact override; feature-gate leaks — used in: app-security
 - upstream/trailofbits-skills/plugins/{fp-check,differential-review} (CC BY-SA 4.0 — ideas only, no wording) — restate the claim before verifying, trace the validation chain, risk not size, git blame on removed security code, counted blast radius, exploit chains across rejected findings — used in: app-security
 - upstream/getsentry-skills/skills/security-review (Apache-2.0) — attacker-controlled vs server-controlled input; do-not-flag list — used in: app-security
-- third-party skill by Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 — body and resources kept verbatim, description rewritten for routing (MIT; see LICENSE in this folder) — used in: architecture-diagram
+- upstream/stripe-ai/skills/stripe-best-practices (MIT) — verify settled payment status before fulfillment on async payment webhooks — used in: app-security
+- third-party skill adapted from Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 — description rewritten for routing, template arrow z-order and legend placement aligned to spec (MIT; see LICENSE in this folder) — used in: architecture-diagram
 - upstream/compound-engineering-plugin/skills/ce-code-review/references/{personas/*,action-class-rubric.md,subagent-template.md} (MIT) — correctness, security, performance and reliability lenses; P0–P3; check callers, guards and framework defaults — used in: code-review
 - upstream/compound-engineering-plugin/skills/ce-simplify-code/references/personas/efficiency-reviewer.md (MIT) — unbounded structures, listener leaks — used in: code-review
 - upstream/gstack/review (MIT) — sideways sweep, gate-integrity inventory, quote-or-cap confidence — used in: code-review
@@ -67,8 +71,10 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/mattpocock-skills/skills/engineering/grill-with-docs (MIT) — record decisions and terms as they settle, not at the end — used in: design-discussion
 - upstream/compound-engineering-plugin/skills/ce-brainstorm/references/{approaches,dialogue,interaction-rules,settled-decisions}.md (MIT) — present all approaches before recommending, anti-genericness test, look up rather than ask, integration check, no self-settling of decisions — used in: design-discussion
 - upstream/gstack/office-hours (MIT) — premise challenge (right problem, cost of doing nothing, what already exists); minimal versus long-term versus lateral approaches — used in: design-discussion
+- upstream/janestreet-agent-skills/socratic-tutor/SKILL.md (MIT, https://github.com/janestreet/agent_skills) — ambiguous-intent confirmation guard before starting a multi-turn loop; never project unstated constraints onto the user's answer — used in: design-discussion
 - upstream/everything-claude-code/skills/{database-migrations,docker-patterns} (MIT) — expand-migrate-contract, CONCURRENTLY, batched backfills — used in: production-ops
 - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/data-migration-reviewer.md (MIT) — broken dual-write transitions — used in: production-ops
+- upstream/supabase-agent-skills/skills/supabase-postgres-best-practices (MIT) — SET lock_timeout before lock-taking ALTER TABLE on live tables — used in: production-ops
 - upstream/jeffallan-claude-skills/skills/microservices-architect (MIT) — idempotency keys, idempotent saga steps, explicit retry budgets — used in: production-ops
 - upstream/gstack/{land-and-deploy,canary} (MIT) — risk-scaled verification, baseline deviation, merge-shape-aware revert — used in: production-ops
 - upstream/jeffallan-claude-skills/skills/{sre-engineer,monitoring-expert} (MIT) — multi-window burn-rate alerts, trend-based capacity alerts — used in: production-ops
@@ -86,12 +92,14 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - authored for this toolkit from a stated need (capacity and unit-cost estimation) — the estimation worksheet and the hot-spot checklist — used in: system-design
 - upstream/mattpocock-skills/skills/engineering/tdd (MIT, commit 5beb35b) — tests at agreed seams, implementation-coupled and tautological tests, horizontal slicing as an anti-pattern, mock only at system boundaries, no refactoring mid-cycle — used in: tdd
 - upstream/mattpocock-skills/skills/engineering/to-tickets (MIT, commit 5beb35b) — tracer-bullet vertical slices, blocking edges and the frontier, expand–contract sequencing for wide refactors, no file paths in tickets — used in: tdd
+- upstream/wondelai-skills/working-with-legacy-code (MIT) — characterization tests at the nearest public seam before changing untested legacy code — used in: tdd
+- upstream/trailofbits-skills/plugins/property-based-testing (CC BY-SA 4.0 — ideas only, no wording) — property checks (roundtrip, idempotence, invariants) alongside example tests for parsers, codecs and state machines — used in: tdd
 - authored for this toolkit from a stated need (green suites that test nothing) — a test never seen red is not evidence — used in: tdd
 - upstream/superpowers/skills/verification-before-completion (MIT) — fresh evidence before claims, partial evidence, what each claim needs — used in: verification
 - authored for this toolkit from a stated need (results challenged as unverified) — state how and where; answer challenges with evidence — used in: verification
 - upstream/addyosmani-agent-skills/skills/doubt-driven-development (MIT) — artifact-only adversarial review, bounded cycles, "doubt theater" — used in: verification
 - upstream/gstack/ship (MIT) — freshness by content, not by commit count — used in: verification
-- upstream/fission-ai-openspec, openspec-verify-change skill as generated by CLI 1.15.0 (MIT) — completeness, correctness and coherence per requirement; a skipped check never passes; not applicable as its own state — used in: verification
+- upstream/fission-ai-openspec, openspec-verify-change skill as generated by CLI 1.15.0–1.17.0 (MIT) — completeness, correctness and coherence per requirement; a skipped check never passes; descoped (not applicable) separated from removed-requirement verification — used in: verification
 - authored for this toolkit from a stated need (an internal spec-driven workflow reviewed 2026-10-30) — unrequested behaviour and contradictions as findings; three repair passes, then stop and report — used in: verification
 - upstream/yennanliu-investskill/prompts/thesis-tracker.md (MIT) — structure from this source; ledger fields, four statuses and their bars, last-confirmed vs check outcome, 3–5 KPIs, pre-mortem, next check — used in: thesis-ledger
 - upstream/yennanliu-investskill/prompts/10k-digest.md (MIT) — commitment scoring; rerun after a restatement (the stale-data rule is toolkit policy) — used in: thesis-ledger
@@ -112,6 +120,8 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/yennanliu-investskill/prompts/dcf-valuation.md (MIT) — g below r; TV above 80% flag — used in: valuation-audit
 - upstream/yennanliu-investskill/prompts/stock-valuation.md (MIT) — SBC-adjusted FCF; no EV bridge for P/E price — used in: valuation-audit
 - upstream/tradermonty-claude-trading-skills/skills/kanchi-dividend-sop/references/valuation-and-one-off-checks.md (MIT) — REIT row; one-off profit checks — used in: valuation-audit
+- upstream/janestreet-agent-skills/socratic-tutor/SKILL.md (MIT, https://github.com/janestreet/agent_skills) — intent guard, 3–5 question diagnostic, 0–5 sub-skill map, single-question turn rule, contradiction narrowing with 3-miss escape hatch, unprompted-recall gate, spaced-review regression, anti-flattery and anti-projection rules, save/resume state block — used in: socratic-tutor
+- authored for this toolkit from a stated need (codebase and paper onboarding) — silent workspace/source reading before diagnostic, anchoring questions in concrete files, call paths, or equations — used in: socratic-tutor
 - upstream/yennanliu-investskill/plugins/us-stock-analysis/skills/economics-analysis (MIT) — never use remembered readings; provenance header; memory means low confidence; conflicting sources shown, never averaged — used in: macro-regime
 - upstream/anthropics-financial-services/plugins/partner-built/lseg/skills/macro-rates-monitor (Apache-2.0) — fixed dashboard; real rate = nominal − breakeven; 2s10s and 3M-10Y slopes; cycle, policy, real-rate and financial-conditions synthesis — used in: macro-regime
 - upstream/tradermonty-claude-trading-skills/skills/macro-regime-detector (MIT) — fail closed on missing inputs; require a sustained signal before calling a regime change — used in: macro-regime
@@ -170,13 +180,18 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/anthropics-skills/skills/doc-coauthoring (licence not stated for this skill; method only) — test the draft on a fresh agent that sees only the draft — used in: writing
 - upstream/{blader-humanizer,op7418-humanizer-zh} (MIT) — the de-AI editing pass, installed as external skills (see toolkit/external.yaml) — used in: writing
 - upstream/everything-claude-code/rules/common/{git-workflow,coding-style}.md (MIT) — commit type list, immutable updates, validation at system boundaries — used in: rule core
+- C++ Core Guidelines (CP.44, CP.51, F.16, F.45, ES.84; MIT) — unnamed lock guards incl. unique_lock member shadowing, lambda and coroutine reference lifetimes, views over temporaries — used in: rule cpp
 - upstream/everything-claude-code/agents/database-reviewer.md (MIT) — structure from this source and the next; cursor pagination instead of OFFSET — used in: rule data-and-containers
 - upstream/everything-claude-code/skills/{postgres-patterns,docker-patterns} (MIT) — RLS auth call wrapped in a subquery; pinned tags, non-root, no secrets in layers, ports bound to 127.0.0.1 — used in: rule data-and-containers
+- upstream/supabase-agent-skills/skills/supabase-postgres-best-practices (MIT) — SECURITY DEFINER search_path pinning, RLS predicate indexing and recursion, transaction-mode pooler limits — used in: rule data-and-containers
 - upstream/everything-claude-code/agents/flutter-reviewer.md (MIT) — mounted check after await, cancel subscriptions and controllers in dispose — used in: rule flutter
 - upstream/everything-claude-code/rules/dart/coding-style.md (MIT) — sealed classes with exhaustive switches — used in: rule flutter
 - upstream/jeffallan-claude-skills/skills/spring-boot-engineer (MIT) — WebSecurityConfigurerAdapter removal, no block() in WebFlux — used in: rule java
+- Python 3.11–3.13 documentation (PEP 654 except*, PEP 695 type parameter syntax, PEP 698 override, PEP 702 warnings.deprecated; PSF-2.0) — version-gated typing and ExceptionGroup handling — used in: rule python
 - upstream/everything-claude-code/skills/nextjs-turbopack (MIT) — proxy.ts is not a misnamed middleware.ts — used in: rule typescript-web
 - upstream/everything-claude-code/rules/react/security.md (MIT) — Server Actions are public endpoints — used in: rule typescript-web
+- upstream/vercel-labs-agent-skills/skills/{react-best-practices,composition-patterns} (MIT) — children/slots over render functions across RSC boundaries, React.cache() per-request dedup, Next.js after() — used in: rule typescript-web
+- upstream/vercel-next-js/skills (MIT) — Next.js 16 "use cache" / cacheLife / cacheTag and local version-matched docs in node_modules/next/dist/docs/ — used in: rule typescript-web
 
 ## Adopted external projects (installed from their own source; not included)
 
@@ -187,8 +202,10 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - humanizer (MIT) — https://github.com/blader/humanizer
 - humanizer-zh (MIT) — https://github.com/op7418/Humanizer-zh
 - webapp-testing (Apache-2.0) — https://github.com/anthropics/skills
+- agent-browser (Apache-2.0) — https://github.com/vercel-labs/agent-browser
 - mcp-builder (Apache-2.0) — https://github.com/anthropics/skills
 - mcp-server-dev (Apache-2.0) — https://github.com/anthropics/claude-plugins-official
 - claude-security (proprietary (Anthropic, all rights reserved) — install only, never copied or rewritten here) — https://github.com/anthropics/claude-plugins-official
 - codex-plugin-cc (Apache-2.0) — https://github.com/openai/codex-plugin-cc
 - claude-code-hooks (MIT) — https://github.com/karanb192/claude-code-hooks
+- openspec (MIT) — https://github.com/Fission-AI/OpenSpec

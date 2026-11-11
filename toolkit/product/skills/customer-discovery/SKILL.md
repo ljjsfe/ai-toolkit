@@ -1,6 +1,9 @@
 ---
 name: customer-discovery
-description: "Validate an idea with real people before building — kill conditions written before evidence, interview questions about past behaviour only, an evidence ladder up to commitments, counts per segment, a build gate, and priced fake-door or concierge tests with thresholds. Use for customer interviews, discovery scripts, interview notes and \"would people pay for this\"; for where demand exists use market-scan, for what to build product-scoping. Also for 用户访谈, 验证需求."
+description: >-
+  Validate demand with real users before building: pre-written kill conditions, past-behaviour-only
+  interview scripts, commitment-graded evidence per segment, and priced fake-door/concierge tests.
+  Trigger on 用户访谈, 验证需求, "would people pay?". Market map: market-scan; scope: product-scoping.
 version: 1.0.0
 sources:
   - upstream/sreshtalluri-mom-test/skills/mom-test (MIT) — past-behaviour rule, reflexes for bad data, evidence ladder

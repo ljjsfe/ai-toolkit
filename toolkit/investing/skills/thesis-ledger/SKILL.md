@@ -1,6 +1,9 @@
 ---
 name: thesis-ledger
-description: "Write an investment thesis as dated, falsifiable claims and track it — tie each claim to a KPI with a threshold and date, grade it intact / weakened / broken / insufficient evidence, refuse intact on stale data, treat price moves as non-evidence, split each update into fact, price and wording changes, and fix a 12-month pre-mortem and kill criteria at entry. Use to write, check or review a stock or options thesis; for valuation use valuation-audit, for macro use macro-regime. Also for 投资逻辑, 持仓复盘, 季报对照."
+description: >-
+  Write and track stock or options theses as dated, falsifiable KPI claims: status bars (intact /
+  weakened / broken / insufficient evidence), stale-data blocks, price != evidence, fact/price/wording
+  drift split, and 12m pre-mortem. Trigger on 投资逻辑, 持仓复盘, 季报对照. Valuation: valuation-audit.
 version: 1.2.2
 sources:
   - upstream/yennanliu-investskill/prompts/thesis-tracker.md (MIT) — structure from this source;

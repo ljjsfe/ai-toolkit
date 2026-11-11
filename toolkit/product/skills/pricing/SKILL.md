@@ -1,6 +1,9 @@
 ---
 name: pricing
-description: "Set, test and change a price from evidence — require willingness-to-pay evidence (payment requests, top-box purchase intent, a priced fake door) before naming a number, pick the value metric before tiers, never average willingness to pay across segments, sort features into leaders, fillers and killers, and roll increases out to new customers first. Use for what to charge, tiers, free vs paid, raising prices and pricing-page reviews; for competitor prices use market-scan. Also for 定价, 涨价, 收费方案."
+description: >-
+  Set, test, and change pricing from willingness-to-pay evidence: pick value metric before tiers,
+  segment distributions (never average WTP), sort leader/filler/killer features, and stage price
+  increases to new cohorts first. Trigger on 定价, 涨价, 收费方案. Competitor prices: market-scan.
 version: 1.0.1
 sources:
   - upstream/wondelai-skills/monetizing-innovation/SKILL.md (MIT) — value metric before level, segment by willingness to pay, zero pushback as the under-pricing signature

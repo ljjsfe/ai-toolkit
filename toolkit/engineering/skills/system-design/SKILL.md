@@ -1,6 +1,10 @@
 ---
 name: system-design
-description: "Design a new system or re-size one with numbers before boxes (load, growth, uptime, RPO and RTO, capacity and cost per request), and review an existing design or plan without inventing findings, allowing \"fine as is\". Use for system design, architecture, capacity, cloud cost, and technical design or implementation-plan reviews such as \"is this over-complicated?\"; for a diff use code-review; for an open-ended design conversation use design-discussion."
+description: >-
+  Design or resize a system with numbers before boxes (RPS, storage, SLO/RPO/RTO, unit/monthly
+  cost, failure domains), or review an existing technical design/plan without inventing findings.
+  Not for diffs (code-review), unsettled framing (design-discussion), or agent loops
+  (agent-architecture).
 version: 1.0.1
 sources:
   - upstream/jeffallan-claude-skills/skills/architecture-designer/references/nfr-checklist.md (MIT) — numeric non-functional requirements before design; RPO and RTO as separate targets

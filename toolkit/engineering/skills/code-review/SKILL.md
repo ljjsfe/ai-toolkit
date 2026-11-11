@@ -1,7 +1,11 @@
 ---
 name: code-review
-description: Review a diff, pull request or branch with findings you can defend — grade spec and standards separately, find what is missing as well as what is wrong, sweep siblings of each issue, flag weakened tests or CI, read the history of changed lines, gate findings on file:line plus a failure scenario, and have an independent checker try to refute serious ones. Use when asked to review code, a PR or a branch, or before merging.
-version: 1.2.1
+description: >-
+  Review a diff, PR, or branch with defensible findings: separate spec vs codebase standards,
+  missing requirements, sibling sweeps, weakened-gate checks, git-history context, and independent
+  refutation of P0/P1s. For offensive security audits use app-security; for design/plan reviews use
+  system-design.
+version: 1.2.2
 sources:
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/{personas/*,action-class-rubric.md,subagent-template.md} (MIT) — correctness, security, performance and reliability lenses; P0–P3; check callers, guards and framework defaults
   - upstream/compound-engineering-plugin/skills/ce-simplify-code/references/personas/efficiency-reviewer.md (MIT) — unbounded structures, listener leaks
@@ -19,8 +23,8 @@ A review that cries wolf is worse than none. Fewer, defensible findings beat a l
 
 1. **Two axes, reported separately.** *Spec*: does it do what was asked, and what did it
    silently not do? *Standards*: is it correct, safe and consistent with this codebase —
-   including the code rules in the repo's `CLAUDE.md` / `AGENTS.md`, rule files and decision
-   records? Load these from the **base branch**, cite the specific rule when broken, and treat
+   including the code rules in the repo's `AGENTS.md` / `CLAUDE.md` / `GEMINI.md`, `.claude/rules/`
+   or `.agents/rules/`, and decision records? Load these from the **base branch**, cite the specific rule when broken, and treat
    any change to them inside the diff as a gate change (law 4) — a PR does not get to set the
    rules it is judged by. Find
    the spec first (linked issue, plan, PR description). If there is none, report "no spec

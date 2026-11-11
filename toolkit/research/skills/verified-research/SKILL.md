@@ -1,7 +1,10 @@
 ---
 name: verified-research
-description: Research a question across real sources and produce a verified, argued answer — question the question first, size the run, admit only pages actually opened and traced to their origin, count independent origins, have an independent checker re-open every claim, and write an argument chain rather than a topic dump. Use as the citation and verification method behind any research, and for standalone technology, literature or investment questions where wrong citations are costly; for a settled single fact, just answer.
-version: 1.2.1
+description: >-
+  Research contested or high-stakes questions across opened primary sources: frame hypotheses first,
+  fix search/check budgets, trace claims to independent origins, verify every citation in a separate
+  checker pass, and argue from records. Competitor/demand scans: market-scan; single facts: answer.
+version: 1.2.2
 sources:
   - upstream/jalald-verified-research/skills/verified-research/SKILL.md (MIT) — research budgets, top-up size, escalation triggers, origin counting, claims-only checker
   - upstream/seanellyjames-deep-research-skill/SKILL.en.md (MIT) — premise framing, falsifiable hypotheses, claim headings
@@ -88,8 +91,10 @@ borrows a source sentence that does not state it.
 
 ## 4. Check — never by the writer
 
-The checker is a fresh subagent; in a quick run, re-open each source yourself from the claims
-list after drafting, then sweep the finished text once for any claim missing from the list.
+The checker is a fresh subagent (if subagents are unavailable, run a dedicated post-draft
+verification pass from the claims list alone and label the output `self-checked`); in a quick run,
+re-open each source yourself from the claims list after drafting, then sweep the finished text once
+for any claim missing from the list.
 The checker gets the claims list and the records, not the draft, so it cannot read the
 argument into the page. Direct records: it re-opens the source and quotes the passage it
 relied on. Derived records: it recomputes the arithmetic from the inputs, or tests whether

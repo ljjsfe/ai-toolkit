@@ -1,6 +1,10 @@
 ---
 name: agent-evals
-description: Evaluate an agent, prompt, skill or model change so the result can be trusted — define and freeze the eval before running, keep the evaluator hidden from what it judges, require a deterministic check, grade live behaviour from artifacts, and size and price the run before scaling. Use when measuring whether an agent or LLM change is better, building a regression suite, or comparing agents or models.
+description: >-
+  Evaluate an agent, prompt, skill, or model change with frozen rubrics, hidden graders,
+  deterministic checks, artifact-based live grading, and piloted spend caps. Use for LLM/agent
+  benchmarks and regression suites; not for product A/B experiments (use experiment-readout) or
+  one-change completion checks (use verification).
 version: 1.1.1
 sources:
   - upstream/everything-claude-code/skills/{eval-harness,agent-eval,gan-style-harness} (MIT)
