@@ -32,6 +32,7 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/anthropics-skills/skills/claude-api/shared/managed-agents-multiagent.md — when delegation fits — used in: agent-orchestration
 - upstream/seanellyjames-deep-research-skill/SKILL.md (MIT) — concurrency cap and no nested spawning — used in: agent-orchestration
 - upstream/villetakanen-asdlc-io (MIT) — declared dependencies and a divergence rule in the task brief — used in: agent-orchestration
+- authored for this toolkit — Oracle-by-blast-radius model tiering (Fast / Workhorse / Frontier), subagent-only tier switching to preserve prompt cache, command-log redirection, two-strike escalation, and cross-family / cross-tier review order — used in: agent-orchestration
 - upstream/everything-claude-code/skills/{agent-security-hardening,mcp-dependency-review,prompt-caching-strategy,llm-trading-agent-security,agent-architecture-audit} (MIT) — used in: agent-security
 - upstream/vila-lab/README.md, docs/architecture.md (CC BY-NC-SA 4.0 — ideas only, no wording) — used in: agent-security
 - upstream/everything-claude-code/the-security-guide.md (MIT) — Simon Willison's "lethal trifecta" (private data, untrusted content, an outbound channel), behind "The dangerous combination" — used in: agent-security
