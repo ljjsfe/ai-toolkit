@@ -1,7 +1,11 @@
 ---
 name: agent-instructions
-description: Write or audit a repository's agent instruction files (CLAUDE.md, AGENTS.md, rules) so they stay short and earn their cost — put each rule in the cheapest place that enforces it, keep only what the agent cannot infer, verify every command and path, treat corrective lines as friction to fix, trim generated drafts, and harvest lessons after delivery through a user gate. Use when creating, reviewing or trimming CLAUDE.md, AGENTS.md or agent rules, or after a change where the user corrected the agent or a check failed before passing; for security vetting of a cloned repo's agent files use agent-security.
-version: 1.4.0
+description: >-
+  Write, trim, or audit repository instruction files (AGENTS.md, CLAUDE.md, GEMINI.md, path/glob
+  rules) across Claude Code, Codex, and Antigravity, or harvest post-delivery lessons through a
+  user gate. Keep only non-inferable verified rules; for security vetting of cloned repo configs
+  use agent-security.
+version: 1.5.0
 sources:
   - upstream/villetakanen-asdlc-io/src/content/practices/agents-md-spec.md, src/content/recipes/write-agents-md.md (MIT) — enforcement ladder, corrective lines as friction, init output as candidates
   - upstream/claude-plugins-official/plugins/claude-md-management (Apache-2.0) — command and path currency check; generic and one-off cut tests
@@ -9,6 +13,7 @@ sources:
   - upstream/compound-engineering-plugin/docs/solutions/{developer-experience/always-on-agents-md.md, workflow/measuring-a-packs-effect-needs-non-inferable-rules.md, skill-design/authoring-auto-invoke-standing-instructions.md} (MIT) — load-when notes, sample output for helpers, standing-instruction phrasing
   - Claude Code memory docs, https://code.claude.com/docs/en/memory — AGENTS.md versus CLAUDE.md loading (checked 2026-10-15)
   - Codex AGENTS.md docs, https://learn.chatgpt.com/docs/agent-configuration/agents-md — discovery from project root to launch directory (checked 2026-10-15)
+  - Google Antigravity customization docs, https://antigravity.google/docs/rules-workflows — AGENTS.md/GEMINI.md discovery, 24 KB/20k-token caps, .agents/rules trigger modes (checked 2026-11-11)
   - authored for this toolkit from a stated need (an internal spec-driven workflow reviewed 2026-10-30) — harvest after delivery, a human gate before any writeback, route each lesson to the place that owns it
   - 'Gloaguen et al., "Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?" (2026), https://arxiv.org/abs/2602.11988 — context files cost over 20% more without general gains; overviews unhelpful'
 ---
@@ -28,9 +33,9 @@ Walk down this ladder and stop at the first place that can carry the rule:
 | checkable on every change | CI |
 | an action to block or require at a tool call | a hook |
 | a procedure for one kind of task | a skill; at most its name and trigger in the file |
-| needed only in one directory or file type | a path-scoped rule (Claude Code) or a skill; see layout for nested files |
-| needed only for some tasks | a notes file, pointed to by a one-line "read X when Y" |
-| one person's preference | the user-level file (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`); `CLAUDE.local.md` only where a `CLAUDE.md` already exists |
+| needed only in one directory or file type | a path-scoped rule (`.claude/rules/*.md` `paths:` in Claude Code; `.agents/rules/*.md` `trigger: glob` in Antigravity) or a skill |
+| needed only for some tasks | a notes file, pointed to by a one-line "read X when Y" (or `trigger: model_decision` rule in Antigravity) |
+| one person's preference | the user-level file (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, `~/.gemini/config/rules/`); `CLAUDE.local.md` only where a `CLAUDE.md` already exists |
 | a project-wide invariant that needs judgement | the root instruction file |
 
 Where a tool already enforces something, the file names the command and does not restate the rule.
@@ -90,20 +95,24 @@ Not after every task.
 
 ## Layout across tools
 
-Under Claude Code's default Project instructions setting (it can be set to load both files):
-
-- Default to a single `AGENTS.md`. Codex reads it, and Claude Code reads it natively
-  (v2.1.277+) when no `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` exists in the
-  directory or above it.
+- **Default to a single root `AGENTS.md` (plain Markdown, no frontmatter).** Codex, Antigravity
+  (`agy`), and Claude Code (v2.1.277+ when no `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md`
+  exists in the directory or above it) all read it natively.
 - **If a `CLAUDE.md` exists, Claude Code reads it instead of `AGENTS.md`.** Add one only for
   Claude-specific notes, and open it with `@AGENTS.md` so the shared content still loads. A
   `CLAUDE.md` without that import silently hides `AGENTS.md`; so does a personal
-  `CLAUDE.local.md` unless Project instructions is set to load both. The import also covers
-  sessions where native `AGENTS.md` loading is unavailable.
-- A nested `AGENTS.md` is unreliable. Codex discovers files automatically only from the project
-  root down to the directory it was launched in, not below it; Claude Code reads a subdirectory's `AGENTS.md` only
-  when no `CLAUDE.md` exists, and `@AGENTS.md` imports just the root file. For per-path rules
-  prefer a path-scoped rule (Claude Code only) or a skill.
+  `CLAUDE.local.md` unless Project instructions is set to load both.
+- **Antigravity (`agy`) specifics:** walks from CWD up to the repo root loading `AGENTS.md` and
+  `GEMINI.md` (24 KB per-file cap; 20k-token aggregate rules budget before demoting to path
+  pointers). Modular rules go flat in `.agents/rules/*.md` (nested subdirectories are ignored) and
+  must open with valid snake_case frontmatter (`trigger: always_on`, `trigger: glob` + quoted
+  `globs: "*.tsx, *.ts"`, `trigger: model_decision` + `description:`, or `trigger: manual`);
+  files with missing or malformed frontmatter in `rules/` are silently discarded.
+- **Nested `AGENTS.md` is uneven across tools.** Codex walks root → launch directory only (not
+  deeper subdirectories); Antigravity walks CWD → root as files are touched; Claude Code reads a
+  subdirectory's `AGENTS.md` only when no `CLAUDE.md` exists, and `@AGENTS.md` imports just the
+  root file. Prefer path-scoped rules (`.claude/rules/` + `.agents/rules/`) or skills over nested
+  `AGENTS.md` files.
 
 ## Procedures
 

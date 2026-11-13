@@ -1,6 +1,10 @@
 ---
 name: liu-ayi
-description: "刘阿姨 (Liu Ayi) strategic-analysis framework — use when the user says 刘阿姨, liu-ayi, 战略分析 or 局势研判, or must decide whether to change jobs, found, move or make a major life or business bet, or wants an organisational or geopolitical situation read through power, incentives and institutions. Not for workplace tactics (career-navigator), product plans (product-scoping), technology adoption (adopt-or-build) or competitor analysis (market-scan) or individual stocks (valuation-audit, thesis-ledger); for the facts behind a decision use verified-research."
+description: >-
+  刘阿姨 (Liu Ayi) strategic-analysis framework: order output vs consumption, institutional capital,
+  inherited floors, base rates, and calibrated life/founder/org bets. Trigger on 刘阿姨, liu-ayi,
+  战略分析, 局势研判, major career/founding moves. Workplace tactics: career-navigator; facts:
+  verified-research.
 version: 2.1.1
 sources:
   - user-authored framework (v1, 2026-03), restructured

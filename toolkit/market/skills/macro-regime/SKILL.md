@@ -34,9 +34,9 @@ that never reaches the decision it was meant to inform.
 
 | row | what to read | where (FRED series unless noted) |
 |---|---|---|
-| growth | real GDP growth (quarter on quarter, annualised), payrolls trend, ISM PMIs | `A191RL1Q225SBEA`, `PAYEMS`; ISM releases |
+| growth | real GDP growth (quarter on quarter, annualised), payrolls trend, manufacturing/activity PMI | `A191RL1Q225SBEA`, `PAYEMS`; ISM release (or NY/Philly Fed surveys `GACDISA066MSFRBNY`, `GACDFSA066MSFRBPHI` when ISM is gated) |
 | inflation vs target | core PCE and core CPI, year on year and 3-month annualised | `PCEPILFE`, `CPILFESL`; BLS, BEA |
-| labour | unemployment, openings per unemployed | `UNRATE`; BLS JOLTS |
+| labour | unemployment, openings per unemployed | `UNRATE`, `JTSJOL`, `UNEMPLOY` (BLS JOLTS) |
 | policy | policy target range vs the central bank's own neutral estimate | `DFEDTARU`, `DFEDTARL` (effective rate `DFF`); FOMC statement and Summary of Economic Projections |
 | real rates | 10-year real yield (TIPS); breakeven = nominal − real | `DFII10`, `DGS10`, `T10YIE` |
 | curve | 2s10s and 3M-10Y slopes; shape (normal, flat, inverted, re-steepening) | `T10Y2Y`, `T10Y3M` |
@@ -73,7 +73,8 @@ direction and a confidence (high / medium / low) and the reason:
   balance sheets can afford that this company cannot (or the reverse).
 
 Then have a fresh reviewer, given only the dashboard and the business description, challenge
-the transmission links; keep the ones that survive.
+the transmission links (or run a labelled self-challenge pass if subagents are unavailable); keep
+the ones that survive.
 
 Never turn the result into asset-allocation, buy/sell or market-timing recommendations.
 

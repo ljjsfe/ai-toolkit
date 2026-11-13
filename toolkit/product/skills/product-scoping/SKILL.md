@@ -1,6 +1,9 @@
 ---
 name: product-scoping
-description: Scope a feature or product decision before building — choose an explicit ambition level, frame needs as opportunities rather than features, generate at least three solutions before picking one, name what users would use instead, and red-team the plan's load-bearing assumptions into "fails if" conditions with this week's cheapest test. Use when deciding what to build, what goes into a first version, prioritising features, writing a lean PRD, or stress-testing a product plan.
+description: >-
+  Scope what to build and write lean PRDs: set explicit ambition mode (expand/selective/hold/reduce),
+  frame user opportunities before features, compare >=3 solutions + current alternative, and
+  red-team "fails if" assumptions. Unvalidated demand: customer-discovery; engineering slices: tdd.
 version: 1.0.0
 sources:
   - upstream/gstack/plan-ceo-review (MIT) — four explicit scope modes chosen before review

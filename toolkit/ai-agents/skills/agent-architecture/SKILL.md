@@ -1,6 +1,10 @@
 ---
 name: agent-architecture
-description: Design or review an LLM agent system that will run unattended or in production — decide whether it needs an agent at all, pick the topology, state model, tool surface, context pipeline and cost budget, and write stop conditions and human gates before the loop. Use when designing, building or debugging an agent product, multi-agent system or LLM pipeline (not for running subagents in this session — that is agent-orchestration); pair with agent-security once tools or credentials are involved.
+description: >-
+  Design or review a production or unattended LLM agent system: whether an agent is needed,
+  topology, append-only state, tool surface, context/cache pipeline, stop conditions, and human
+  gates. Not for dispatching subagents in this session (use agent-orchestration); pair with
+  agent-security once tools or credentials are involved.
 version: 1.0.0
 sources:
   - upstream/humanlayer-12-factor-agents/content/factor-02, factor-05, factor-07, factor-09 (prose CC BY-SA 4.0 — ideas only, no wording)

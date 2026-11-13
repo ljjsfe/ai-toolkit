@@ -1,7 +1,10 @@
 ---
 name: design-discussion
-description: "Hold an in-depth design conversation before any plan exists — one question at a time, goal and constraints pinned before proposing, 2-3 approaches that differ in mechanism, and a decision log. Use for an open-ended design conversation while the goal and constraints are still unsettled — \"let's discuss the design\", API or data-model options, 讨论方案, 聊设计; once the shape is clear use system-design (sizing, review) or agent-architecture (agent systems)."
-version: 1.0.1
+description: >-
+  Hold an open-ended design conversation before planning: one question + guess per turn, frame goal
+  and constraints before proposing, 2–3 distinct mechanisms, and a live decision log. Trigger on
+  "discuss the design", 讨论方案/聊设计; once settled use system-design or agent-architecture.
+version: 1.1.0
 sources:
   - upstream/superpowers/skills/brainstorming (MIT) — think wide privately, play back in chunks, builder check by a fresh reader, nothing built before approval
   - upstream/addyosmani-agent-skills/skills/interview-me (MIT) — one question with a guess attached, "want vs should want" probe, predict-the-next-three stop test, bare assent is not a yes
@@ -10,12 +13,15 @@ sources:
   - upstream/mattpocock-skills/skills/engineering/grill-with-docs (MIT) — record decisions and terms as they settle, not at the end
   - upstream/compound-engineering-plugin/skills/ce-brainstorm/references/{approaches,dialogue,interaction-rules,settled-decisions}.md (MIT) — present all approaches before recommending, anti-genericness test, look up rather than ask, integration check, no self-settling of decisions
   - upstream/gstack/office-hours (MIT) — premise challenge (right problem, cost of doing nothing, what already exists); minimal versus long-term versus lateral approaches
+  - upstream/janestreet-agent-skills/socratic-tutor/SKILL.md (MIT, https://github.com/janestreet/agent_skills) — ambiguous-intent confirmation guard before starting a multi-turn loop; never project unstated constraints onto the user's answer
 ---
 
 # Design Discussion
 
 A design conversation is worth having because each answer changes the next question. Treat it
-as a dialogue that converges on decisions, not an interview that collects requirements.
+as a dialogue that converges on decisions, not an interview that collects requirements. If it is
+unclear whether the user wants a quick recommendation or a multi-turn design discussion, ask in one
+sentence before starting the loop.
 
 ## Iron laws
 
@@ -29,7 +35,8 @@ as a dialogue that converges on decisions, not an interview that collects requir
    one approach. Show all of them before you recommend one.
 4. **Keep a decision log and honour it.** A decided item is not re-asked; it reopens only on
    new evidence, which you name. Only the user settles a decision — your own proposal that they
-   did not engage with stays *open*, and "sounds good" covers only what you actually showed.
+   did not engage with stays *open*, "sounds good" covers only what you actually showed, and you
+   never attribute to the user a constraint or implication they did not state.
 5. **Stop when the next answers would not change the design.** Test: can you predict the
    user's reaction to the next three questions you would ask? If yes, write the doc.
 6. **Nothing gets built during the discussion.** Reading code to answer a question is fine;
@@ -93,6 +100,7 @@ user's answers are still not predictable, say so and step back to the frame inst
 | whether to adopt, build or migrate to a specific technology | adopt-or-build |
 | an agent system's topology, tool surface and stop conditions | agent-architecture |
 | a strategic or career-level bet behind the design | liu-ayi |
+| building mastery of an unfamiliar domain or codebase | socratic-tutor |
 
 ## Output
 

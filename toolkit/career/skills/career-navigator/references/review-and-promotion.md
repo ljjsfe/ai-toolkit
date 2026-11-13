@@ -17,7 +17,7 @@ standard** — you're competing for a slot against people at your level in your 
 
 Promotion is easy at low levels and gets exponentially harder at each higher level. The bar for N+1 is "already doing N+1 work," not "doing N well."
 
-## Three pillars of promotion
+## Four pillars of promotion
 
 1. **Rating**: a higher rating → a higher chance of promotion
 2. **Someone in the calibration room knows you**: when your manager tries to sell you, other people need to be able to +1. This is the real purpose of branding and cross-team collaboration

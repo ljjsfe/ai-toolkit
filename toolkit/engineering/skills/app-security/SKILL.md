@@ -1,12 +1,17 @@
 ---
 name: app-security
-description: "Security-review a web, mobile or backend application the way attackers find real bugs — map trust and tenant boundaries first, test authorisation with a second user or tenant, and report only findings with a concrete attack path. Use for security reviews, audits, or before shipping auth, payments, multi-tenant or integration code (a diff review of the same change: code-review); for agents and LLM tools use agent-security."
-version: 1.0.3
+description: >-
+  Security-review a web, mobile, or backend application: map trust and tenant boundaries first,
+  test authorisation with a second identity/tenant, and report only findings with a concrete
+  attack path. Use before shipping auth, tenancy, payments, or webhooks (diff review: code-review;
+  LLM/tool agents: agent-security).
+version: 1.1.0
 sources:
   - upstream/gstack/cso (MIT) — boundary and invariant census first, sibling propagation, exploitability gating, three separate judgements, independent re-derivation, webhook review order, two-user and two-tenant negative controls
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/security-reviewer.md (MIT) — confidence tied to attack-path traceability with a critical-impact override; feature-gate leaks
   - upstream/trailofbits-skills/plugins/{fp-check,differential-review} (CC BY-SA 4.0 — ideas only, no wording) — restate the claim before verifying, trace the validation chain, risk not size, git blame on removed security code, counted blast radius, exploit chains across rejected findings
   - upstream/getsentry-skills/skills/security-review (Apache-2.0) — attacker-controlled vs server-controlled input; do-not-flag list
+  - upstream/stripe-ai/skills/stripe-best-practices (MIT) — verify settled payment status before fulfillment on async payment webhooks
 ---
 
 # App Security
@@ -44,7 +49,7 @@ pattern. Find the boundaries first, then attack them.
 | object access | every read, update and delete scopes by owner or tenant in the query itself, not only in the UI or route guard |
 | mass assignment | request bodies bound to models cannot set role, owner, tenant, price or status fields |
 | tenant isolation | background jobs, exports, search indexes, caches and admin tools respect the tenant boundary too |
-| webhooks and integrations | trace the whole middleware and handler chain before calling a signature missing; verify the signature over the **raw** body with a constant-time comparison, enforce a timestamp or replay window, make handling idempotent, bind the event to the right tenant, and ask what a forged event could change (money, ownership, access) |
+| webhooks and integrations | trace the whole middleware and handler chain before calling a signature missing; verify the signature over the **raw** body with a constant-time comparison, enforce a timestamp or replay window, make handling idempotent, bind the event to the right tenant, verify **settled payment status** before fulfillment (a checkout/session-completed event is not cleared funds on async payment methods such as bank debits; handle async failure events too), and ask what a forged event could change (money, ownership, access) |
 | feature gates | a diff that makes a gated, internal or unreleased feature reachable without its gate (flipped default, guard dropped on one path, route registered outside the gated block) |
 
 ## Reviewing a change

@@ -1,6 +1,9 @@
 ---
 name: experiment-readout
-description: "Design and read product A/B tests and post-launch metric changes so the conclusion survives scrutiny — fix decision rules and primary and guardrail metrics before looking, halt on sample ratio mismatch, check power and progress against the planned sample, separate bias from noise, classify guardrails, and correct for many metrics or segments. Use for test design, sample size, readouts, ship decisions and 'did this launch work?'; for evaluating AI agents use agent-evals. Also for 实验结果, AB测试 读数."
+description: >-
+  Design and read product A/B tests and launch metric shifts: pre-registered primary/guardrail
+  rules, SRM halt gate, power/sample arithmetic, bias-vs-noise separation, and multiple-comparison
+  correction. Trigger on 实验结果, AB测试读数, "did this launch work?". For AI evals use agent-evals.
 version: 1.0.1
 sources:
   - upstream/ai-analyst-lab-ai-analyst/.claude/skills/srm-check (MIT) — SRM as a blocking gate, per-period SRM, investigation paths

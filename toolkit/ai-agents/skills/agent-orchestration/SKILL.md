@@ -1,7 +1,11 @@
 ---
 name: agent-orchestration
-description: Run a team of subagents inside Claude Code or Codex without losing work — keep progress in a ledger that survives compaction, pin models, assign file ownership, serialise single-writer operations, and verify every "done" against an artifact. Use when dispatching more than one subagent or delegating multi-step work.
-version: 1.1.0
+description: >-
+  Coordinate multiple subagents or parallel workers inside Claude Code, Codex, or Antigravity:
+  compaction-safe ledger, explicit model/workspace choice, disjoint file ownership, single-writer
+  git/config ops, and artifact-verified completion. Not for designing agent products (use
+  agent-architecture).
+version: 1.2.0
 sources:
   - upstream/superpowers/skills/{subagent-driven-development,dispatching-parallel-agents,executing-plans} (MIT) — explicit model per worker, fix rounds, a ledger that survives compaction
   - upstream/oh-my-claudecode/skills/team (MIT)
@@ -23,16 +27,19 @@ verdict. This skill is about running the team, not about designing an agent prod
    model, dependencies and result path to a file as you go. After any compaction or resume, trust the ledger
    and `git log` over your own recollection. The most expensive orchestration failure is an
    orchestrator that loses its place and re-dispatches work that was already done.
-2. **Pass the model explicitly on every dispatch.** An omitted model inherits the session's,
-   which is usually the most expensive one.
+2. **Set the model deliberately on every dispatch.** On Claude Code and Codex, pass an explicit
+   model per worker so an expensive session model is not inherited blindly; on Antigravity
+   (`agy`), pass `Model: "inherit"` unless the user requested another model or the slice is
+   trivial/high-volume (`flash` / `flash_lite`).
 3. **Parallelise reading, serialise writing.** Research, review and analysis run in parallel.
    Workers that edit files run in parallel only on disjoint file sets. Single-writer
    operations — version bumps, changelog, tags, PRs, migrations, deploys, shared config — are
    done by the orchestrator, one at a time, never delegated.
 4. **Assign ownership before spawning.** Each worker gets an explicit file cluster; no file
    appears in two clusters, and workers never pick their own tasks. Disjoint files are not
-   enough for parallel writers: give each its own worktree (they still collide on lockfiles,
-   build output, test databases and ports), and fix shared interfaces before fanning out.
+   enough for parallel writers: give each its own worktree (`Workspace: "share"` or `"branch"`
+   in Antigravity; `git worktree` in Claude Code / Codex — note they still collide on shared test
+   databases and ports), and fix shared interfaces before fanning out.
 5. **"Done" from a worker is a claim, not a fact.** Accept it only with an artifact you can
    check — a test run, a diff, a file at a path — or a verdict from an independent reviewer
    who did not do the work.
@@ -81,7 +88,9 @@ When a worker's result fails verification:
 
 Never retry with the same brief and no new information.
 
-While workers run, do independent work or give the user a one-line status; never go silent.
+While async workers run, do independent work or end your turn cleanly when the harness wakes on
+worker messages (Antigravity / background subagents) — never poll in a sleep loop, and give the
+user a one-line status before yielding.
 
 ## Closing a batch
 

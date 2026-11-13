@@ -1,10 +1,14 @@
 ---
 name: production-ops
-description: "Make production changes that pass review and also survive live (schema and data migrations, retries, deploys, rollbacks, alerting), and run incidents in the right order: stop the harm first, capture evidence, call it resolved only when the original signal recovers. Use for changes to schema, data, retries, deploys, rollbacks or alerting, and for live incidents or outages (users affected now); for non-urgent bugs use debugging."
-version: 1.0.1
+description: >-
+  Ship safe production changes (expand-migrate-contract schema/data migrations, idempotent retries,
+  deploys, rollbacks, burn-rate alerts) and run live incidents (mitigate first, capture evidence,
+  confirm signal recovery). For non-urgent bugs use debugging.
+version: 1.1.0
 sources:
   - upstream/everything-claude-code/skills/{database-migrations,docker-patterns} (MIT) — expand-migrate-contract, CONCURRENTLY, batched backfills
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/data-migration-reviewer.md (MIT) — broken dual-write transitions
+  - upstream/supabase-agent-skills/skills/supabase-postgres-best-practices (MIT) — SET lock_timeout before lock-taking ALTER TABLE on live tables
   - upstream/jeffallan-claude-skills/skills/microservices-architect (MIT) — idempotency keys, idempotent saga steps, explicit retry budgets
   - upstream/gstack/{land-and-deploy,canary} (MIT) — risk-scaled verification, baseline deviation, merge-shape-aware revert
   - upstream/jeffallan-claude-skills/skills/{sre-engineer,monitoring-expert} (MIT) — multi-window burn-rate alerts, trend-based capacity alerts
@@ -32,6 +36,10 @@ mistake that looks reasonable at the time.
 
 ### Schema and data
 
+- **Set a short `lock_timeout` (e.g. `SET lock_timeout = '2s'`) before any lock-taking `ALTER
+  TABLE` on a live table.** Without it, a migration waiting behind one slow query queues an
+  `ACCESS EXCLUSIVE` lock that blocks every subsequent read and write on that table; fail fast and
+  retry instead.
 - **During a dual-write transition both the old and new columns must be populated.** If a
   release stops writing the old one early, a rollback to the previous code reads NULLs.
 - Indexes on live tables: `CREATE INDEX CONCURRENTLY`, which cannot run inside a transaction

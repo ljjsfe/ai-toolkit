@@ -1,6 +1,9 @@
 ---
 name: adopt-or-build
-description: Decide whether to adopt, trial, wait on, reject, migrate to or build instead of a technology, library or open-source project — size the cost of being wrong from the code, ground the verdict in this project and in outside evidence, price building and operating it, keep "keep what we have" and "do nothing" as real options, and return Incomplete rather than guess. Use for "should we use X", "is X better than what we built", build-vs-buy and migration questions.
+description: >-
+  Decide whether to adopt, trial, hold, reject, migrate to, or build instead of a library, service,
+  or open-source tool: measure switching cost from codebase fan-out, check repo + external evidence
+  floors, and keep incumbent/do-nothing live. Not for product feature scoping (use product-scoping).
 version: 1.2.0
 sources:
   - upstream/compound-engineering-plugin/skills/ce-pov (MIT) — two evidence floors, reversibility-tiered effort with a consequence override, precedent first, keep-incumbent and do-nothing skepticism, Hold / Reject / Not-our-problem vocabulary, frozen view before a second opinion, "either is viable"

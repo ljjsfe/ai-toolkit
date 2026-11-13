@@ -1,7 +1,7 @@
 # ai-toolkit
 
-A small, opinionated set of skills, rules and hooks for **Claude Code** and **Codex**, for building
-full-stack products and agent systems.
+A small, opinionated set of skills, rules and hooks for **Claude Code**, **Codex** and
+**Antigravity (`agy`)**, for building full-stack products and agent systems.
 
 Each skill is a curated, complete statement of how to do its job right — a small set of tools
 chosen for being correct, not for being exhaustive. Models keep improving and will do more of
@@ -13,7 +13,8 @@ see [CREDITS.md](CREDITS.md).
 | area | skills |
 |---|---|
 | engineering | `design-discussion` (think a design through, one question at a time) · `system-design` (numbers before boxes; design reviews) · `debugging` · `tdd` (vertical slices, test-first) · `verification` · `code-review` · `app-security` · `production-ops` (safe changes and incidents) · `architecture-diagram` |
-| AI agents | `agent-architecture` · `agent-orchestration` · `agent-evals` · `agent-security` · `agent-instructions` (CLAUDE.md / AGENTS.md) |
+| AI agents | `agent-architecture` · `agent-orchestration` · `agent-evals` · `agent-security` · `agent-instructions` (AGENTS.md / CLAUDE.md / GEMINI.md) |
+| learning | `socratic-tutor` — Socratic mastery of a codebase, paper or technical domain with 0–5 skill maps and spaced recall |
 | research and market | `verified-research` · `market-scan` (competitors and unmet demand) · `macro-regime` |
 | product | `customer-discovery` (validate ideas with real users) · `product-scoping` · `pricing` · `experiment-readout` (A/B tests and launches) · `adopt-or-build` |
 | investing | `thesis-ledger` · `valuation-audit` — decision support for individual investors; never buy/sell advice |
@@ -21,11 +22,13 @@ see [CREDITS.md](CREDITS.md).
 | career | `career-navigator` |
 | writing | `writing` — posts, articles and social media in the writer's voice, no invented facts; edited with humanizer / humanizer-zh (external) |
 | rules | `core.md` (always loaded, ~20 lines) plus language traps that load only for matching files: Python, Java/Spring, C++, TypeScript/React/Next.js, Flutter/Dart, SQL/containers |
-| hooks | `claim-check` — blocks "done / fixed / tests pass" claims made after editing files without running anything |
+| hooks | `claim-check` — blocks "done / fixed / tests pass" claims made after editing files without running anything (Claude Code, Antigravity, Codex transcript support) |
 
 Design taste is delegated to [impeccable](https://github.com/pbakaus/impeccable) plus three of
 [emilkowalski/skills](https://github.com/emilkowalski/skills) (motion review, mobile-web feel, worst-case data), trend signals to
-[last30days](https://github.com/mvanhorn/last30days-skill), and safety hooks to
+[last30days](https://github.com/mvanhorn/last30days-skill), de-AI prose editing to
+[humanizer](https://github.com/blader/humanizer) and [humanizer-zh](https://github.com/op7418/Humanizer-zh), browser UI verification to
+[webapp-testing](https://github.com/anthropics/skills) (or optional [agent-browser](https://github.com/vercel-labs/agent-browser)), safety hooks to
 [claude-code-hooks](https://github.com/karanb192/claude-code-hooks) (optional), handoff to Codex
 to [codex-plugin-cc](https://github.com/openai/codex-plugin-cc), and spec-driven changes to
 [OpenSpec](https://github.com/Fission-AI/OpenSpec) (optional, on trial) — installed from their own
@@ -35,30 +38,34 @@ sources (see `toolkit/external.yaml`).
 
 ```bash
 git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
-./install.sh claude|codex|both                 # dry run: prints what would change
+./install.sh claude|codex|agy|both|all         # dry run: prints what would change (`both` = claude+codex)
 ./install.sh claude --apply                    # install for Claude Code
+./install.sh agy --apply                       # install for Google Antigravity
 ./install.sh claude --apply --replace-legacy   # also move your existing skills/rules to ~/.toolkit-backup/
-./install.sh both --apply --external           # new machine: toolkit + the external components
-./update.sh                                    # later: git pull, then reinstall everything at latest
+./install.sh all --apply --external            # new machine: all three harnesses + external components
+./update.sh                                    # later: git pull, then reinstall all + external at latest
 ```
 
-- `--external` runs each installer listed in `toolkit/external.yaml` (impeccable, last30days,
-  emilkowalski/skills, the Codex plugin for Claude Code). Entries marked `optional` — currently
-  taste-skill, mcp-builder, mcp-server-dev, claude-security, claude-code-hooks and openspec — are
-  printed, not installed.
-
-- Skills are stored once in `~/.agents/skills/`, which Codex reads directly; Claude Code gets a
-  symlink per skill in `~/.claude/skills/`. Copies left in `~/.codex/skills/` by older versions
-  are removed. Rules and the hook stay tool-specific.
+- `--external` runs each non-optional installer listed in `toolkit/external.yaml` scoped to the
+  selected target(s): impeccable, last30days, emilkowalski/skills, humanizer, humanizer-zh,
+  webapp-testing, and (for Claude Code) codex-plugin-cc. Entries marked `optional` — currently
+  taste-skill, agent-browser, mcp-builder, mcp-server-dev, claude-security, claude-code-hooks and
+  openspec — are printed, not installed.
+- Skills are stored once in `~/.agents/skills/`, which Codex reads directly; Claude Code gets
+  symlinks in `~/.claude/skills/` and Antigravity gets symlinks in `~/.gemini/config/skills/`
+  plus `~/.gemini/config/skills.json` discovery for external skills (excluding `*-traps`, since
+  both Claude Code and Antigravity receive native path/glob-scoped rules).
 - `--replace-legacy` never touches claude.ai-synced skills, externally installed ones, your
   agents, or names listed in `~/.toolkit-keep`.
-- Personal parameters: put them in `toolkit/<category>/personal.local.md` (gitignored; e.g. a writing voice profile in `toolkit/writing/`); they are
-  merged into that category's skills as `PERSONAL.md` at install time.
-- Hook tests (need `pytest`, e.g. `python3 -m pip install pytest`):
-  `cd toolkit/hooks/claim-check && python3 -m pytest -q`.
-- `claim-check` is a cheap tripwire, not proof of verification: it checks that *some* command
-  ran after the last edit, not which one, and it ignores claims negated just before them
-  ("not verified", "还没完成").
+- Personal parameters: put them in `toolkit/<category>/personal.local.md` (gitignored; e.g. a
+  writing voice profile in `toolkit/writing/`); they are merged into that category's skills as
+  `PERSONAL.md` at install time.
+- Validation and tests (zero external dependencies):
+  - Full repo check (frontmatter, resident description budget, references, `CREDITS.md` sync, and hook tests): `python3 scripts/check.py`
+  - Hook tests alone: `python3 toolkit/hooks/claim-check/test_claim_check.py` (also `pytest -q` compatible).
+- `claim-check` is a cheap tripwire, not proof of verification: it checks that *some* command or
+  browser check ran after the last edit, not which one, and it ignores negated or conditional
+  phrases ("not verified", "if tests pass", "还没完成").
 
 ## Principles
 
@@ -68,7 +75,6 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
 3. Rewrite, don't copy — upstream material is read and restated; licences are respected.
 4. Resident cost is a budget: descriptions are short, long rules load only when relevant.
 
-
 ## License
 
-MIT — see [LICENSE](LICENSE). Third-party material keeps its own licence as noted in CREDITS.md.
+MIT — see [LICENSE](LICENSE). Third-party material keeps its own licence as noted in [CREDITS.md](CREDITS.md).

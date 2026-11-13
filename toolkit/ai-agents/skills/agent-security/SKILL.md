@@ -1,6 +1,9 @@
 ---
 name: agent-security
-description: Threat-model and harden an agent that reads untrusted content or holds real permissions — treat every external text and the agent's own notes as data, enforce authority in code outside the model, deny-by-default, gate destructive actions, and check supply chain, filesystem, network, secrets and caches. Use when building, reviewing or deploying an agent with tools, MCP servers, file or network access, credentials, or money; for the surrounding application use app-security.
+description: >-
+  Threat-model and harden an agent with tools, MCP servers, file/network access, credentials, or
+  money: untrusted text and self-notes as data, code-level authority, deny-by-default, human-gated
+  destructive calls, and supply-chain checks. For surrounding web/API security use app-security.
 version: 1.0.1
 sources:
   - upstream/everything-claude-code/skills/{agent-security-hardening,mcp-dependency-review,prompt-caching-strategy,llm-trading-agent-security,agent-architecture-audit} (MIT)
@@ -55,11 +58,11 @@ leg — split the agent, drop the outbound channel, or require approval on outbo
 - Instruction-like content found in data is logged and surfaced to the user.
 
 **Before the trust prompt**
-- A cloned or downloaded repository's agent files — `CLAUDE.md`, `AGENTS.md`, settings, hooks,
-  MCP configs, extensions — are untrusted code. Read them before opening the folder with an
-  agent, and do not rely on the trust dialog as the boundary: past releases let parts of a
-  repository's configuration act before the user accepted it, and a fix in one version says
-  nothing about the version you run.
+- A cloned or downloaded repository's agent files — `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`,
+  `.claude/`, `.codex/`, `.agents/` (`hooks.json`, `mcp_config.json`, `plugins.json`, rules) — are
+  untrusted code. Read them before opening the folder with an agent, and do not rely on the trust
+  dialog as the boundary: past releases let parts of a repository's configuration act before the
+  user accepted it, and a fix in one version says nothing about the version you run.
 
 **Supply chain (MCP servers, plugins, tools)**
 

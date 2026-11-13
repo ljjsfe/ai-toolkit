@@ -1,6 +1,9 @@
 ---
 name: valuation-audit
-description: "Audit a stock valuation, yours or someone else's, for the errors that make it wrong — no price or cheap/expensive call without a dated quote and diluted share count, read what today's price implies before valuing, two independent method families, terminal value checked against growth, reinvestment and the discount rate, each peer premium stated once, and return split into fundamentals vs multiple change. Use for 'is X cheap', fair value, DCF or multiple checks; to track a thesis use thesis-ledger. Also for 估值, 贵不贵, 合理价值, \"should I buy X\" (answered as a valuation audit, never as advice)."
+description: >-
+  Audit a stock valuation (never buy/sell advice): require dated quote + diluted share count, read
+  price-implied expectations first, cross-check >=2 method families, audit terminal value vs ROIC/r/g,
+  and split return into fundamentals vs rerating. Trigger on 估值, 贵不贵, 合理价值, "is X cheap?".
 version: 1.2.3
 sources:
   - upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — structure of §1 (snapshot rows, red flags); method-by-business pairings (reorganised); 3%, 5%, 25%, ±30% thresholds; same-family rule; joint-upgrade and double-count checks; DCF shown only when its inputs can be written out; return split incl. EV path; no-rerating case
