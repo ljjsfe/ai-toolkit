@@ -5,7 +5,7 @@ description: >-
   missing requirements, sibling sweeps, weakened-gate checks, git-history context, and independent
   refutation of P0/P1s. For offensive security audits use app-security; for design/plan reviews use
   system-design.
-version: 1.2.2
+version: 1.2.3
 sources:
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/{personas/*,action-class-rubric.md,subagent-template.md} (MIT) — correctness, security, performance and reliability lenses; P0–P3; check callers, guards and framework defaults
   - upstream/compound-engineering-plugin/skills/ce-simplify-code/references/personas/efficiency-reviewer.md (MIT) — unbounded structures, listener leaks
@@ -48,7 +48,8 @@ A review that cries wolf is worse than none. Fewer, defensible findings beat a l
    silenced by an ignore comment that existed before this change; an ignore this diff adds is a
    gate change (law 4).
 6. **Serious findings survive an independent refutation.** Give every P0/P1 — and every finding
-   that rests on a repo rule — to a fresh subagent that did not produce it: the finding, the cited
+   that rests on a repo rule — to a fresh subagent that did not produce it (preferring another
+   model family when available): the finding, the cited
    rule from the base branch, and the repository at the change's head (so it can read callers,
    guards and history), but not the reviewer's reasoning; tell it to disprove the finding. It
    must confirm a rule-based finding against the rule's actual wording. Drop what it refutes;
