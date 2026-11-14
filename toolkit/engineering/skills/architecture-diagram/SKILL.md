@@ -1,7 +1,7 @@
 ---
 name: architecture-diagram
 description: Create polished dark-themed architecture diagrams as standalone, self-contained HTML+SVG files. Use when the user asks for a standalone system, infrastructure, cloud, security or network topology diagram file — not for diagrams embedded in a document.
-version: 1.2.0
+version: 1.2.1
 sources:
   - third-party skill adapted from Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 — description rewritten for routing, template arrow z-order and legend placement aligned to spec (MIT; see LICENSE in this folder) [port "draw connection arrows early in the svg" "place legends outside all boundary boxes"]
   - third-party skill from Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 (MIT) — worked examples (web app, microservices, AWS serverless) shipped under resources/examples with the AWS legend moved below its region [port "start from the closest worked example"]
@@ -152,7 +152,7 @@ Caveats: clipboard API needs a user gesture and a secure context (https/file/loc
 <div class="card">
   <div class="card-header">
     <div class="card-dot COLOR"></div>
-    <h3>Title</h3>
+    <h2>Title</h2>
   </div>
   <ul>
     <li>• Item one</li>
