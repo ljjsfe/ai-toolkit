@@ -553,6 +553,20 @@ def main() -> int:
                     f"{cat_readme.relative_to(ROOT)}: mentions personal.local.md but category has no local skills/"
                 )
 
+    # Every credited upstream must be registered (repo + reviewed commit) so drift can be checked.
+    lock_path = TOOLKIT / "upstreams.json"
+    lock = json.loads(lock_path.read_text(encoding="utf-8")).get("upstreams", {}) if lock_path.exists() else {}
+    credited_names: set[str] = set()
+    for _, srcs in skill_sources + list(rule_sources.items()):
+        for src in srcs:
+            for m in re.finditer(r"upstream/(\{[^}]+\}|[A-Za-z0-9._-]+)", split_coverage(src)[0]):
+                raw = m.group(1)
+                credited_names.update(x.strip() for x in raw.strip("{}").split(","))
+    for name in sorted(credited_names - set(lock)):
+        errors.append(f"toolkit/upstreams.json: credited upstream {name!r} is not registered (repo, reviewed_sha)")
+    for name in sorted(set(lock) - credited_names):
+        errors.append(f"toolkit/upstreams.json: {name!r} is registered but no source credits it")
+
     externals = parse_external_yaml(TOOLKIT / "external.yaml", errors)
     validate_install_external_prefixes(ROOT / "install.sh", externals, errors)
     expected_credits = build_expected_credits(skill_sources, rule_sources, externals)
@@ -567,6 +581,7 @@ def main() -> int:
     # Run validator and claim-check unit tests
     test_scripts = [
         ("check.py", ROOT / "scripts" / "test_check.py"),
+        ("upstream_drift.py", ROOT / "scripts" / "test_upstream_drift.py"),
         ("claim-check", TOOLKIT / "hooks" / "claim-check" / "test_claim_check.py"),
     ]
     # Executable helpers shipped inside a skill must carry their own tests.

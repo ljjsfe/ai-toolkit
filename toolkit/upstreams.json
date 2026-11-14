@@ -1,0 +1,262 @@
+{
+  "_comment": "Upstreams credited in skill and rule sources. reviewed_sha is the commit read when the toolkit text was last checked against it; scripts/upstream_drift.py lists what changed since. repo null means the source could not be located and its credit cannot be re-checked.",
+  "upstreams": {
+    "addyosmani-agent-skills": {
+      "repo": "addyosmani/agent-skills",
+      "reviewed_sha": "39b723ceebf81474d0557c1fecd01eddab585563",
+      "reviewed_on": "2026-11-14"
+    },
+    "ahao-writing-dna-distiller": {
+      "repo": "ahao31196/ahao-writing-dna-distiller",
+      "reviewed_sha": "5dfbdc030139dd771650cdcdbab756743ca37d0f",
+      "reviewed_on": "2026-11-14"
+    },
+    "ai-analyst-lab-ai-analyst": {
+      "repo": "ai-analyst-lab/ai-analyst",
+      "reviewed_sha": "52c0744688cf4097a90926d6bf063541756a0cc5",
+      "reviewed_on": "2026-11-14"
+    },
+    "aidevgtm-gtm-cofounder": {
+      "repo": "aidevgtm/gtm-cofounder",
+      "reviewed_sha": "77740860973fc8bf81fb979ef6ab7829be866843",
+      "reviewed_on": "2026-11-14"
+    },
+    "anthropics-financial-services": {
+      "repo": "anthropics/financial-services",
+      "reviewed_sha": "3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f",
+      "reviewed_on": "2026-11-14"
+    },
+    "anthropics-skills": {
+      "repo": "anthropics/skills",
+      "reviewed_sha": null,
+      "reviewed_on": null,
+      "note": "not re-read against HEAD in the 2026-11-14 audit"
+    },
+    "axiomhq-skills": {
+      "repo": "axiomhq/skills",
+      "reviewed_sha": null,
+      "reviewed_on": null,
+      "note": "not re-read against HEAD in the 2026-11-14 audit"
+    },
+    "b-m-capital-research-honeclaw": {
+      "repo": "B-M-Capital-Research/honeclaw",
+      "reviewed_sha": "f7d87aff034507a529ccf34b84de2aff7879f5ec",
+      "reviewed_on": "2026-11-14"
+    },
+    "blader-humanizer": {
+      "repo": "blader/humanizer",
+      "reviewed_sha": null,
+      "reviewed_on": null,
+      "note": "not re-read against HEAD in the 2026-11-14 audit"
+    },
+    "claude-plugins-official": {
+      "repo": "anthropics/claude-plugins-official",
+      "reviewed_sha": "b5b01ac4f889fec0c4c6bb89f27ca7c8574473f6",
+      "reviewed_on": "2026-11-14"
+    },
+    "compound-engineering-plugin": {
+      "repo": "EveryInc/compound-engineering-plugin",
+      "reviewed_sha": "ee46dde75a40e297bd8eac4055a410a771d3ac1d",
+      "reviewed_on": "2026-11-14"
+    },
+    "eltntawy-idea-discovery-playbook": {
+      "repo": "eltntawy/idea-discovery-playbook",
+      "reviewed_sha": "ccf08f3c40bab5d9806bb7290013e6af9a6164c1",
+      "reviewed_on": "2026-11-14"
+    },
+    "everything-claude-code": {
+      "repo": "affaan-m/everything-claude-code",
+      "reviewed_sha": "d2ef2680594f9a17526a6e1a2e18b3d242c5d17b",
+      "reviewed_on": "2026-11-14"
+    },
+    "ferdinandobons-startup-skill": {
+      "repo": "ferdinandobons/startup-skill",
+      "reviewed_sha": null,
+      "reviewed_on": null,
+      "note": "not re-read against HEAD in the 2026-11-14 audit"
+    },
+    "fission-ai-openspec": {
+      "repo": "Fission-AI/OpenSpec",
+      "reviewed_sha": "d12c2817776779e06891d68230773b3bb673b106",
+      "reviewed_on": "2026-11-14"
+    },
+    "geekjourneyx-github-demand-radar": {
+      "repo": "geekjourneyx/github-demand-radar",
+      "reviewed_sha": "b8cf2fdd57ae852ab8730c1487252227284a785d",
+      "reviewed_on": "2026-11-14"
+    },
+    "getsentry-skills": {
+      "repo": "getsentry/skills",
+      "reviewed_sha": "a582c51ee29d0f35e6ac321340796f77d43da733",
+      "reviewed_on": "2026-11-14"
+    },
+    "gstack": {
+      "repo": "garrytan/gstack",
+      "reviewed_sha": "81fb9008351d29fccc3e146d860a9cda8c104a2d",
+      "reviewed_on": "2026-11-14",
+      "retired_paths": {
+        "investigate": "cut upstream in 2026-11 after a preregistered null eval (CHANGELOG GST-1717); the failure-shape routing ported into debugging is kept as our own content"
+      }
+    },
+    "humanlayer-12-factor-agents": {
+      "repo": "humanlayer/12-factor-agents",
+      "reviewed_sha": "d20c728368bf9c189d6d7aab704744decb6ec0cc",
+      "reviewed_on": "2026-11-14"
+    },
+    "jalald-verified-research": {
+      "repo": "jalald/verified-research",
+      "reviewed_sha": "f713e3f23f088ae0e26e700ad2709dc541030323",
+      "reviewed_on": "2026-11-14"
+    },
+    "janestreet-agent-skills": {
+      "repo": "janestreet/agent_skills",
+      "reviewed_sha": "7c6715c29548a3b39d4a9545c698ee4fd17a7213",
+      "reviewed_on": "2026-11-14"
+    },
+    "jeffallan-claude-skills": {
+      "repo": "jeffallan/claude-skills",
+      "reviewed_sha": "078a25cc5bfd8011459be7b91d004e900c1d02d3",
+      "reviewed_on": "2026-11-14"
+    },
+    "karanb192-claude-code-hooks": {
+      "repo": "karanb192/claude-code-hooks",
+      "reviewed_sha": "9bcd1ee0538f632606bd8f2d8f5a4a213415ddda",
+      "reviewed_on": "2026-11-14"
+    },
+    "khazix-skills": {
+      "repo": "KKKKhazix/khazix-skills",
+      "reviewed_sha": "71cd50ffe1f1f4d400b54be967dc6b59379aff8f",
+      "reviewed_on": "2026-11-14"
+    },
+    "marketingskills": {
+      "repo": "coreyhaines31/marketingskills",
+      "reviewed_sha": "1f837447b20bb6f0e72d87b80ece1c221c362c7d",
+      "reviewed_on": "2026-11-14"
+    },
+    "mattpocock-skills": {
+      "repo": "mattpocock/skills",
+      "reviewed_sha": "5863806dd4e15c63174bee4e7515a4256792ecfa",
+      "reviewed_on": "2026-11-14"
+    },
+    "muratcankoylan-agent-skills-for-context-engineering": {
+      "repo": "muratcankoylan/Agent-Skills-for-Context-Engineering",
+      "reviewed_sha": "9ff0c99108b36d3b886defd825d8ac1f47dba374",
+      "reviewed_on": "2026-11-14"
+    },
+    "mvanhorn-last30days-skill": {
+      "repo": "mvanhorn/last30days-skill",
+      "reviewed_sha": null,
+      "reviewed_on": null,
+      "note": "not re-read against HEAD in the 2026-11-14 audit"
+    },
+    "oh-my-claudecode": {
+      "repo": "Yeachan-Heo/oh-my-claudecode",
+      "reviewed_sha": "dec7e4188c0e3de6b92fb3d734ee5c95326021ed",
+      "reviewed_on": "2026-11-14"
+    },
+    "op7418-humanizer-zh": {
+      "repo": "op7418/Humanizer-zh",
+      "reviewed_sha": null,
+      "reviewed_on": null,
+      "note": "not re-read against HEAD in the 2026-11-14 audit"
+    },
+    "optimnow-cloud-finops-skills": {
+      "repo": "OptimNow/cloud-finops-skills",
+      "reviewed_sha": null,
+      "reviewed_on": null,
+      "note": "not re-read against HEAD in the 2026-11-14 audit"
+    },
+    "phuryn-pm-skills": {
+      "repo": "phuryn/pm-skills",
+      "reviewed_sha": "9af7bfd0bc47fdad43c2eaa7a43cd13918e7aaef",
+      "reviewed_on": "2026-11-14"
+    },
+    "posthog-experiments": {
+      "repo": "PostHog/posthog",
+      "reviewed_sha": null,
+      "reviewed_on": null,
+      "note": "not re-read against HEAD in the 2026-11-14 audit"
+    },
+    "seanellyjames-deep-research-skill": {
+      "repo": null,
+      "reviewed_sha": null,
+      "reviewed_on": null,
+      "note": "repository not found on 2026-11-14; credit unverifiable"
+    },
+    "sreshtalluri-mom-test": {
+      "repo": "sreshtalluri/mom-test",
+      "reviewed_sha": "40d9ee4a002beb1ad70c7fe97b26065e9f431ea1",
+      "reviewed_on": "2026-11-14"
+    },
+    "stripe-ai": {
+      "repo": "stripe/ai",
+      "reviewed_sha": null,
+      "reviewed_on": null,
+      "note": "not re-read against HEAD in the 2026-11-14 audit"
+    },
+    "supabase-agent-skills": {
+      "repo": "supabase/agent-skills",
+      "reviewed_sha": "c9be0e931b7930f7d02126d04774d904c381e7d7",
+      "reviewed_on": "2026-11-14"
+    },
+    "superpowers": {
+      "repo": "obra/superpowers",
+      "reviewed_sha": "22f0b463e7a5e579904dd6211a520321035526f7",
+      "reviewed_on": "2026-11-14"
+    },
+    "tradermonty-claude-trading-skills": {
+      "repo": "tradermonty/claude-trading-skills",
+      "reviewed_sha": "fdfff010e1efe181ebe9c11a0109ef5f8b736147",
+      "reviewed_on": "2026-11-14"
+    },
+    "trailofbits-skills": {
+      "repo": "trailofbits/skills",
+      "reviewed_sha": "149d7b21f4067765b82e67029730b42d228ef4b4",
+      "reviewed_on": "2026-11-14"
+    },
+    "vercel-labs-agent-skills": {
+      "repo": "vercel-labs/agent-skills",
+      "reviewed_sha": null,
+      "reviewed_on": null,
+      "note": "not re-read against HEAD in the 2026-11-14 audit"
+    },
+    "vercel-next-js": {
+      "repo": "vercel/next.js",
+      "reviewed_sha": null,
+      "reviewed_on": null,
+      "note": "not re-read against HEAD in the 2026-11-14 audit"
+    },
+    "vila-lab": {
+      "repo": null,
+      "reviewed_sha": null,
+      "reviewed_on": null,
+      "note": "repository not found on 2026-11-14; credit unverifiable"
+    },
+    "villetakanen-asdlc-io": {
+      "repo": "villetakanen/asdlc-io",
+      "reviewed_sha": null,
+      "reviewed_on": null,
+      "note": "not re-read against HEAD in the 2026-11-14 audit"
+    },
+    "wanshuiyin-auto-claude-code-research-in-sleep": {
+      "repo": "wanshuiyin/Auto-claude-code-research-in-sleep",
+      "reviewed_sha": "9f30e834d24a337dbdd06fb20a1150d4376dfa59",
+      "reviewed_on": "2026-11-14"
+    },
+    "wondelai-skills": {
+      "repo": "wondelai/skills",
+      "reviewed_sha": "c5265583b1a9740f06831e1d3e89b35bba3eb430",
+      "reviewed_on": "2026-11-14"
+    },
+    "xbtlin-ai-berkshire": {
+      "repo": "xbtlin/ai-berkshire",
+      "reviewed_sha": "bea57d5e72aad7def1c34ed5b2b1598039de41cf",
+      "reviewed_on": "2026-11-14"
+    },
+    "yennanliu-investskill": {
+      "repo": "yennanliu/InvestSkill",
+      "reviewed_sha": "f6af133d0b91dc45c51a6901f8ea432d82558fd7",
+      "reviewed_on": "2026-11-14"
+    }
+  }
+}

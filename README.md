@@ -63,6 +63,7 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
   `PERSONAL.md` at install time.
 - Validation and tests (zero external dependencies):
   - Full repo check (frontmatter, resident description budget, references, source coverage tags and their anchors, `external.yaml` trial review dates, `CREDITS.md` sync, unit tests, and tests of any skill `scripts/`): `python3 scripts/check.py`
+  - Upstream drift: `python3 scripts/upstream_drift.py [name …]` (needs an authenticated `gh`) lists, for every credited path, whether it still exists upstream and which commits touched it since the commit recorded in `toolkit/upstreams.json`. After re-reading a change and updating the skill, move that upstream's `reviewed_sha` / `reviewed_on` forward. `check.py` fails if a credited upstream is not registered there.
   - Validator & hook tests alone: `python3 scripts/test_check.py` and `python3 toolkit/hooks/claim-check/test_claim_check.py` (also `pytest -q` compatible).
 - `claim-check` is a cheap tripwire, not proof of verification: it checks that a command that is
   not purely read-only (`ls`, `cat`, `git status`… do not count) or a browser check ran after the
