@@ -6,12 +6,13 @@ description: >-
   increases to new cohorts first. Trigger on 定价, 涨价, 收费方案. Competitor prices: market-scan.
 version: 1.0.1
 sources:
-  - upstream/wondelai-skills/monetizing-innovation/SKILL.md (MIT) — value metric before level, segment by willingness to pay, zero pushback as the under-pricing signature
-  - upstream/wondelai-skills/monetizing-innovation/references/wtp-conversations.md (MIT) — top-box scoring, haircut stated numbers, curve not average, red flags in answers
-  - upstream/wondelai-skills/monetizing-innovation/references/packaging-tiers.md (MIT) — leader/filler/killer thresholds, killers never inside a tier price
-  - upstream/aidevgtm-gtm-cofounder/skills/12-pricing/SKILL.md (MIT) — deflected payment requests as the strongest signal, value-metric decision tree, the free/paid line (give away individual value), metric then packaging then number, value-multiple heuristic
-  - upstream/marketingskills/skills/pricing/SKILL.md (MIT) — new-customers-first rollout, small existing cohort, grandfathering as a transition, the ultra-low-price trap
-  - upstream/marketingskills/skills/pricing/references/pricing-page-teardown.md (MIT) — reviewing the page for AI agents as well as humans
+  - upstream/wondelai-skills/monetizing-innovation/SKILL.md (MIT) — value metric before level, segment by willingness to pay, zero pushback as the under-pricing signature [port "value metric, then packaging, then the number" "never average willingness to pay" "zero pushback means too cheap"]
+  - upstream/wondelai-skills/monetizing-innovation/references/wtp-conversations.md (MIT) — top-box scoring, haircut stated numbers, curve not average, red flags in answers [port "count only 5s" "haircut them" "quoting the market back"]
+  - upstream/wondelai-skills/monetizing-innovation/references/wtp-conversations.md (MIT) — the exact WTP question scripts, a simplified conjoint procedure, B2C sample sizes [gap not carried over]
+  - upstream/wondelai-skills/monetizing-innovation/references/packaging-tiers.md (MIT) — leader/filler/killer thresholds, killers never inside a tier price [port "top-5 in purchase ranking" "never inside a tier price"]
+  - upstream/aidevgtm-gtm-cofounder/skills/12-pricing/SKILL.md (MIT) — deflected payment requests as the strongest signal, value-metric decision tree, the free/paid line (give away individual value), metric then packaging then number, value-multiple heuristic [port "requests received or turned away" "wrong-metric test" "give away individual value" "roughly 10x the price"]
+  - upstream/marketingskills/skills/pricing/SKILL.md (MIT) — new-customers-first rollout, small existing cohort, grandfathering as a transition, the ultra-low-price trap [port "new sign-ups only" "small existing cohort" "price the grandfathering" "ultra-low entry price"]
+  - upstream/marketingskills/skills/pricing/references/pricing-page-teardown.md (MIT) — reviewing the page for AI agents as well as humans [port "ai agents that shortlist tools"]
 ---
 
 # Pricing

@@ -6,12 +6,14 @@ description: >-
   correction. Trigger on 实验结果, AB测试读数, "did this launch work?". For AI evals use agent-evals.
 version: 1.0.1
 sources:
-  - upstream/ai-analyst-lab-ai-analyst/.claude/skills/srm-check (MIT) — SRM as a blocking gate, per-period SRM, investigation paths
-  - upstream/ai-analyst-lab-ai-analyst/.claude/skills/guardrails (MIT) — clear / trade-off / degraded verdicts, net impact in shared units
-  - upstream/ai-analyst-lab-ai-analyst/.claude/skills/experiment (MIT) — pre-registered config, not-viable power checkpoint, stricter SRM threshold while monitoring, Holm correction, outcome classes
-  - upstream/ai-analyst-lab-ai-analyst/.claude/skills/triangulation (MIT) — independent methods for non-randomised changes; agreement is not proof
-  - upstream/posthog-experiments/products/experiments/skills/diagnosing-experiment-health (MIT, method only) — age and exposed-population checks, systematic vs statistical, mechanisms need evidence
-  - upstream/posthog-experiments/products/experiments/skills/diagnosing-experiment-health/references/interpretation.md (MIT, method only) — peeking, multiple comparisons, MDE and sample arithmetic, "target reached" is not a result
+  - upstream/ai-analyst-lab-ai-analyst/.claude/skills/srm-check (MIT) — SRM as a blocking gate, per-period SRM, investigation paths [port "sample ratio mismatch halts the readout" "per-period check" "where to look"]
+  - upstream/ai-analyst-lab-ai-analyst/.claude/skills/guardrails (MIT) — clear / trade-off / degraded verdicts, net impact in shared units [port "the bound crosses the tolerance" "net-impact line"]
+  - upstream/ai-analyst-lab-ai-analyst/.claude/skills/experiment (MIT) — pre-registered config, not-viable power checkpoint, stricter SRM threshold while monitoring, Holm correction, outcome classes [port "pre-register before looking" "not viable forces a decision" "p < 0.0005 while monitoring" "adjust p-values (holm)" "learn (underpowered null)"]
+  - upstream/ai-analyst-lab-ai-analyst/helpers/stats/experiment_stats/{srm.py,power.py,corrections.py,ab_tests.py,sequential.py,variance_reduction.py} (MIT) — tested code for the SRM chi-squared p-value, power and duration incl. uneven splits, Holm, ratio metrics by the delta method, a named sequential method, CUPED; per-segment SRM; the Simpson's-paradox segment check [gap the skill asks for chi-squared and p values but ships no way to compute them]
+  - upstream/ai-analyst-lab-ai-analyst/.claude/skills/triangulation (MIT) — independent methods for non-randomised changes; agreement is not proof [port "at least two paths that differ in" "agreement narrows the doubt"]
+  - upstream/ai-analyst-lab-ai-analyst/.claude/skills/triangulation (MIT) — paths run in isolated subagents with per-path record fields [gap independence is asked for in one line with no mechanism]
+  - upstream/posthog-experiments/products/experiments/skills/diagnosing-experiment-health (MIT, method only) — age and exposed-population checks, systematic vs statistical, mechanisms need evidence [port "how far through the run" "who is exposed vs who the decision is about" "name a mechanism only with evidence" "waiting fixes noise, not bias"]
+  - upstream/posthog-experiments/products/experiments/skills/diagnosing-experiment-health/references/interpretation.md (MIT, method only) — peeking, multiple comparisons, MDE and sample arithmetic, "target reached" is not a result [port "stopping when the result first looks significant" "about a 23% chance" "halving the mde quadruples" "an effect of mde size would likely have shown"]
 ---
 
 # Experiment Readout

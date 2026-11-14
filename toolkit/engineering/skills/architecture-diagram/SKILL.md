@@ -3,7 +3,8 @@ name: architecture-diagram
 description: Create polished dark-themed architecture diagrams as standalone, self-contained HTML+SVG files. Use when the user asks for a standalone system, infrastructure, cloud, security or network topology diagram file — not for diagrams embedded in a document.
 version: 1.1.0
 sources:
-  - third-party skill adapted from Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 — description rewritten for routing, template arrow z-order and legend placement aligned to spec (MIT; see LICENSE in this folder)
+  - third-party skill adapted from Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 — description rewritten for routing, template arrow z-order and legend placement aligned to spec (MIT; see LICENSE in this folder) [port "draw connection arrows early in the svg" "place legends outside all boundary boxes"]
+  - third-party skill from Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 (MIT) — worked examples (web app, microservices, AWS serverless); a render-and-check step for spacing and legend rules [gap examples not shipped and neither version renders to check]
 ---
 
 # Architecture Diagram Skill

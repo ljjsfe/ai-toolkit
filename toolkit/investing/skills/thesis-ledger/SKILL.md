@@ -8,19 +8,22 @@ version: 1.2.2
 sources:
   - upstream/yennanliu-investskill/prompts/thesis-tracker.md (MIT) — structure from this source;
     ledger fields, four statuses and their bars, last-confirmed vs check outcome, 3–5 KPIs,
-    pre-mortem, next check
-  - upstream/yennanliu-investskill/prompts/10k-digest.md (MIT) — commitment scoring; rerun after a restatement (the stale-data rule is toolkit policy)
-  - upstream/yennanliu-investskill/prompts/result-validator.md (MIT) — provenance block; memory is low confidence
-  - upstream/xbtlin-ai-berkshire/skills/thesis-drift.md (MIT) — fact / price / wording buckets; no baseline, no check
+    pre-mortem, next check [port "3–5 statements, each with kpi" "insufficient evidence" "last confirmed status" "dated entry + 12 months"]
+  - upstream/yennanliu-investskill/prompts/thesis-tracker.md (MIT) — a parseable saved-entry format and location, with a fenced-block fallback the user stores [gap the skill never says where an entry is saved, so Check and Review cannot load one in a new session]
+  - upstream/yennanliu-investskill/prompts/10k-digest.md (MIT) — commitment scoring; rerun after a restatement (the stale-data rule is toolkit policy) [port "score the saved promises" "a restatement or auditor change"]
+  - upstream/yennanliu-investskill/prompts/result-validator.md (MIT) — provenance block; memory is low confidence [port "memory ⇒ low"]
+  - upstream/xbtlin-ai-berkshire/skills/thesis-drift.md (MIT) — fact / price / wording buckets; no baseline, no check [port "is it new, dated, checkable" "a thesis recalled after the fact"]
+  - upstream/xbtlin-ai-berkshire/tools/financial_rigor.py (MIT) — the script that rule 6 says figures come from [gap no script is shipped; only the print-the-formula fallback works]
   - upstream/anthropics-financial-services/plugins/vertical-plugins/equity-research/skills/thesis-tracker/SKILL.md
-    (Apache-2.0) — long/short side, catalysts tied to claims, trend column, track disconfirming evidence
+    (Apache-2.0) — long/short side, catalysts tied to claims, trend column, track disconfirming evidence [port "long or short; holding horizon" "an event that tests no claim" "strongest fact against the thesis"]
   - upstream/tradermonty-claude-trading-skills/skills/trader-memory-core/SKILL.md (MIT) — event-history
-    appends; closed vs invalidated (never editing past rows is toolkit policy)
-  - upstream/b-m-capital-research-honeclaw/skills/company-thesis-ratings/SKILL.md (MIT) — fact / inference / unknown tags
+    appends; closed vs invalidated (never editing past rows is toolkit policy) [port "rows are added, never edited" "*invalidated*"]
+  - upstream/tradermonty-claude-trading-skills/skills/trader-memory-core/{scripts/thesis_store.py,schemas/thesis.schema.json,scripts/thesis_review.py} (MIT) — schema-validated thesis state, due-date queries, MAE/MFE postmortem and recorded lessons [gap not carried over]
+  - upstream/b-m-capital-research-honeclaw/skills/company-thesis-ratings/SKILL.md (MIT) — fact / inference / unknown tags [port "inferences (marked)"]
   - Gary Klein, "Performing a Project Premortem", HBR 2007, https://hbr.org/2007/09/performing-a-project-premortem
-    (public literature) — failure taken as certain; user's causes first (order adapted)
-  - Annie Duke, Thinking in Bets (2018) (public literature) — grade the thesis apart from the P&L
-  - authored for this toolkit from a stated need (options positions) — claim dates vs expiry
+    (public literature) — failure taken as certain; user's causes first (order adapted) [port "the user lists causes first"]
+  - Annie Duke, Thinking in Bets (2018) (public literature) — grade the thesis apart from the P&L [port "separately from the p&l"]
+  - authored for this toolkit from a stated need (options positions) — claim dates vs expiry [port "every claim date lands before expiry"]
 ---
 
 # Thesis Ledger

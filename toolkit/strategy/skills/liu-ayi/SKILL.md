@@ -7,9 +7,9 @@ description: >-
   verified-research.
 version: 2.1.1
 sources:
-  - user-authored framework (v1, 2026-03), restructured
-  - ideas from Liu Zhongjing (order output vs consumption, customary law, institutional capital, legitimacy before policy), paraphrased and restated as testable checks; his political programme and determinism are deliberately excluded
-  - Hume, Burke and Hayek on evolved institutions; Tetlock on reference classes and calibration (public literature)
+  - user-authored framework (v1, 2026-03), restructured [port "common sense anchors everything" "the order-and-institution lens"]
+  - ideas from Liu Zhongjing (order output vs consumption, customary law, institutional capital, legitimacy before policy), paraphrased and restated as testable checks; his political programme and determinism are deliberately excluded [port "order producer or consumer" "institutional capital" "root before leaf"]
+  - Hume, Burke and Hayek on evolved institutions; Tetlock on reference classes and calibration (public literature) [port "how long would they take to rebuild" "the reference class" "calibrated ranges, not adjectives"]
 ---
 
 # Liu Ayi (刘阿姨)

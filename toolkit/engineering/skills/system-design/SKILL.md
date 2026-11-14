@@ -7,14 +7,16 @@ description: >-
   (agent-architecture), or diffs (code-review).
 version: 1.0.2
 sources:
-  - upstream/jeffallan-claude-skills/skills/architecture-designer/references/nfr-checklist.md (MIT) — numeric non-functional requirements before design; RPO and RTO as separate targets
-  - upstream/everything-claude-code/skills/redis-patterns (MIT) — cache stampede named with a concrete fix
-  - upstream/jeffallan-claude-skills/skills/cloud-architect/references/multi-cloud.md (MIT) — lock-in tier per service type; multi-cloud only for a named exit scenario
-  - upstream/gstack/{plan-eng-review,review} (MIT) — named review battery; two-real-callers rule for extraction
-  - upstream/compound-engineering-plugin/skills/ce-doc-review (MIT) — adequate needs no change; name the downstream cost
-  - upstream/mattpocock-skills/skills/engineering/{domain-modeling,triage,codebase-design} (MIT) — decision-record gate, prior-solution search, deletion and seam tests
-  - upstream/optimnow-cloud-finops-skills (CC BY-SA 4.0 — ideas only, no wording) — find waste from billing data per resource type
-  - authored for this toolkit from a stated need (capacity and unit-cost estimation) — the estimation worksheet and the hot-spot checklist
+  - upstream/jeffallan-claude-skills/skills/architecture-designer/references/nfr-checklist.md (MIT) — numeric non-functional requirements before design; RPO and RTO as separate targets [port "numbers before boxes" "resilience as three numbers"]
+  - upstream/everything-claude-code/skills/redis-patterns (MIT) — cache stampede named with a concrete fix [port "cache stampede when a hot key expires"]
+  - upstream/jeffallan-claude-skills/skills/cloud-architect/references/multi-cloud.md (MIT) — lock-in tier per service type; multi-cloud only for a named exit scenario [port "grade each one's lock-in" "is not a reason for multi-cloud"]
+  - upstream/gstack/{plan-eng-review,review} (MIT) — named review battery; two-real-callers rule for extraction [port "boring by default" "two verified real callers"]
+  - upstream/gstack/plan-eng-review/sections/review-sections.md (MIT) — complexity smell (8+ files or 2+ new classes), code-path test-coverage tracing, the critical-gap rule (no test, no handling, silent failure) [gap not carried over]
+  - upstream/compound-engineering-plugin/skills/ce-doc-review (MIT) — adequate needs no change; name the downstream cost [port "is a valid outcome" "every finding names its cost"]
+  - upstream/compound-engineering-plugin/skills/ce-doc-review (MIT) — coherence, feasibility and adversarial persona reviewers with independent verification [gap review mode is single-pass]
+  - upstream/mattpocock-skills/skills/engineering/{domain-modeling,triage,codebase-design} (MIT) — decision-record gate, prior-solution search, deletion and seam tests [port "record a decision only when it is hard to reverse" "check it does not already exist" "deletion test" "one adapter behind an interface"]
+  - upstream/optimnow-cloud-finops-skills (CC BY-SA 4.0 — ideas only, no wording) — find waste from billing data per resource type [port "start from the billing export"]
+  - authored for this toolkit from a stated need (capacity and unit-cost estimation) — the estimation worksheet and the hot-spot checklist [port "daily requests ÷ 86,400" "failure domains"]
 ---
 
 # System Design

@@ -6,15 +6,18 @@ description: >-
   and split return into fundamentals vs rerating. Trigger on 估值, 贵不贵, 合理价值, "is X cheap?".
 version: 1.2.3
 sources:
-  - upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — structure of §1 (snapshot rows, red flags); method-by-business pairings (reorganised); 3%, 5%, 25%, ±30% thresholds; same-family rule; joint-upgrade and double-count checks; DCF shown only when its inputs can be written out; return split incl. EV path; no-rerating case
-  - Mauboussin and Rappaport, "Expectations Investing" (2001; rev. 2021), https://www.expectationsinvesting.com/ — §2, price-implied drivers and forecast period
-  - Damodaran, valuation teaching material, https://pages.stern.nyu.edu/~adamodar/ — FCFF vs equity models for financials; g near risk-free; reinvestment = g/ROIC; ROIC fade; ROIC = WACC makes growth worthless
-  - upstream/xbtlin-ai-berkshire/codex-skills/investment-research/SKILL.md (MIT) — terminal multiple from economics not peers; 5-point r−g heuristic; same-basis r and g; discrete-risk scenario
-  - upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/dcf-model/SKILL.md (Apache-2.0) — PV(TV) share below 40% check; grid centre equals base
-  - upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/comps-analysis/SKILL.md (Apache-2.0) — median, drop doubtful peers, quartiles, 10% source gap
-  - upstream/yennanliu-investskill/prompts/dcf-valuation.md (MIT) — g below r; TV above 80% flag
-  - upstream/yennanliu-investskill/prompts/stock-valuation.md (MIT) — SBC-adjusted FCF; no EV bridge for P/E price
-  - upstream/tradermonty-claude-trading-skills/skills/kanchi-dividend-sop/references/valuation-and-one-off-checks.md (MIT) — REIT row; one-off profit checks
+  - upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — structure of §1 (snapshot rows, red flags); method-by-business pairings (reorganised); 3%, 5%, 25%, ±30% thresholds; same-family rule; joint-upgrade and double-count checks; DCF shown only when its inputs can be written out; return split incl. EV path; no-rerating case [port "over 3% apart" "apart by more than about 5%" "more than about 25% apart" "roughly ±30% off the anchor" "only a different family counts" "it is being paid for twice" "counts as a value only when its ledger is complete" "no-rerating case" "split in currency through the bridge"]
+  - upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — a named data route for quote, consensus and share count; currency conversion for ADRs and foreign issuers; a unit-magnitude check; scenarios that change operating inputs, not only the multiple; A/B/C grades for forward-revenue evidence; the mid-cycle EPS formula and contract-coverage adjustment for cyclicals [gap not carried over]
+  - Mauboussin and Rappaport, "Expectations Investing" (2001; rev. 2021), https://www.expectationsinvesting.com/ — §2, price-implied drivers and forecast period [port "read the price first" "years of above-cost-of-capital growth"]
+  - Damodaran, valuation teaching material, https://pages.stern.nyu.edu/~adamodar/ — FCFF vs equity models for financials; g near risk-free; reinvestment = g/ROIC; ROIC fade; ROIC = WACC makes growth worthless [port "free cash flow to the firm" "long-run g stays near" "reinvestment rate = g ÷ roic" "let terminal roic fade" "at roic = wacc = 8%"]
+  - upstream/xbtlin-ai-berkshire/codex-skills/investment-research/SKILL.md (MIT) — terminal multiple from economics not peers; 5-point r−g heuristic; same-basis r and g; discrete-risk scenario [port "from the business's own economics" "narrow spread (toolkit heuristic, after xbtlin" "same currency and inflation basis" "discrete risks"]
+  - upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/dcf-model/SKILL.md (Apache-2.0) — PV(TV) share below 40% check; grid centre equals base [port "terminal assumptions are not unreasonably harsh" "its centre cell must equal"]
+  - upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/dcf-model/{SKILL.md,scripts/validate_dcf.py} (Apache-2.0) — the WACC build (CAPM, beta, equity risk premium, after-tax cost of debt, weights) and a DCF validation script [gap only the risk-free rate is sourced; no script]
+  - upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/comps-analysis/SKILL.md (Apache-2.0) — median, drop doubtful peers, quartiles, 10% source gap [port "drop a doubtful peer" "on an input by more than 10%"]
+  - upstream/yennanliu-investskill/prompts/dcf-valuation.md (MIT) — g below r; TV above 80% flag [port "the perpetuity formula has no meaning there" "the answer rests on the perpetuity"]
+  - upstream/yennanliu-investskill/prompts/stock-valuation.md (MIT) — SBC-adjusted FCF; no EV bridge for P/E price [port "fcf is shown net of it" "is not bridged again"]
+  - upstream/tradermonty-claude-trading-skills/skills/kanchi-dividend-sop/references/valuation-and-one-off-checks.md (MIT) — REIT row; one-off profit checks [port "p/ffo or p/affo" "strip disposal gains"]
+  - upstream/tradermonty-claude-trading-skills/skills/kanchi-dividend-sop/references/valuation-and-one-off-checks.md (MIT) — margin expansion without matching revenue quality; a dividend funded by debt [gap two of the one-off checks are missing]
 ---
 
 # Valuation Audit

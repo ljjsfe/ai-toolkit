@@ -6,14 +6,17 @@ description: >-
   "discuss the design", 讨论方案/聊设计; once settled use system-design, spec, or agent-architecture.
 version: 1.1.1
 sources:
-  - upstream/superpowers/skills/brainstorming (MIT) — think wide privately, play back in chunks, builder check by a fresh reader, nothing built before approval
-  - upstream/addyosmani-agent-skills/skills/interview-me (MIT) — one question with a guess attached, "want vs should want" probe, predict-the-next-three stop test, bare assent is not a yes
-  - upstream/addyosmani-agent-skills/skills/idea-refine (MIT) — directions must differ, not vary; name what each bets on; a not-doing list
-  - upstream/mattpocock-skills/skills/engineering/domain-modeling (MIT) — sharpen overloaded terms, edge-case scenarios, check the code, ADR only when hard to reverse, surprising and a real trade-off
-  - upstream/mattpocock-skills/skills/engineering/grill-with-docs (MIT) — record decisions and terms as they settle, not at the end
-  - upstream/compound-engineering-plugin/skills/ce-brainstorm/references/{approaches,dialogue,interaction-rules,settled-decisions}.md (MIT) — present all approaches before recommending, anti-genericness test, look up rather than ask, integration check, no self-settling of decisions
-  - upstream/gstack/office-hours (MIT) — premise challenge (right problem, cost of doing nothing, what already exists); minimal versus long-term versus lateral approaches
-  - upstream/janestreet-agent-skills/socratic-tutor/SKILL.md (MIT, https://github.com/janestreet/agent_skills) — ambiguous-intent confirmation guard before starting a multi-turn loop; never project unstated constraints onto the user's answer
+  - upstream/superpowers/skills/brainstorming (MIT) — think wide privately, nothing built before approval [port "generate several privately" "nothing gets built during the discussion"]
+  - upstream/superpowers/skills/brainstorming (MIT) — design played back in short chunks each ending with a what-is-missing question; builder check as a required subagent pass with a prompt and three-pile triage; sizing and splitting the work [gap only an optional fresh-reader line]
+  - upstream/addyosmani-agent-skills/skills/interview-me (MIT) — one question with a guess attached, "want vs should want" probe, predict-the-next-three stop test, bare assent is not a yes [port "with your guess attached" "justifying to an imagined reviewer" "reaction to the next three questions" "covers only what you actually showed"]
+  - upstream/addyosmani-agent-skills/skills/idea-refine (MIT) — directions must differ, not vary; name what each bets on; a not-doing list [port "differ in mechanism, not in parameters" "and the bet it makes" "what this deliberately will not do"]
+  - upstream/mattpocock-skills/skills/engineering/domain-modeling (MIT) — sharpen overloaded terms, edge-case scenarios, check the code, ADR only when hard to reverse, surprising and a real trade-off [port "overloaded nouns" "boundary scenarios" "check the code and raise" "surprising without context"]
+  - upstream/mattpocock-skills/skills/engineering/grill-with-docs (MIT) — record decisions and terms as they settle, not at the end [port "whenever something settles, not at the end"]
+  - upstream/compound-engineering-plugin/skills/ce-brainstorm/references/{approaches,dialogue,interaction-rules,settled-decisions}.md (MIT) — present all approaches before recommending, anti-genericness test, look up rather than ask, integration check, no self-settling of decisions [port "show all of them before you recommend" "generic article on the topic" "look it up instead of asking" "combine what has been decided" "only the user settles a decision"]
+  - upstream/compound-engineering-plugin/skills/ce-brainstorm/references/blindspot-pass.md (MIT) — a blindspot pass for users who cannot evaluate the options themselves [gap not carried over]
+  - upstream/gstack/office-hours (MIT) — premise challenge (right problem, cost of doing nothing, what already exists); minimal versus long-term versus lateral approaches [port "is this the right problem" "the minimal version"]
+  - upstream/gstack/office-hours (MIT) — landscape search before proposing; premises the user must explicitly agree to [gap not carried over]
+  - upstream/janestreet-agent-skills/socratic-tutor/SKILL.md (MIT, https://github.com/janestreet/agent_skills) — ambiguous-intent confirmation guard before starting a multi-turn loop; never project unstated constraints onto the user's answer [port "ask in one sentence before starting the loop" "never attribute to the user a constraint"]
 ---
 
 # Design Discussion

@@ -2,18 +2,19 @@
 
 Skills here were written from the sources below: read and rewritten, not copied.
 Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
+Each source is tagged in its skill's frontmatter; `python3 scripts/check.py` fails if a
+ported item's anchor text is not actually present in the skill.
 
-## Per-skill sources
+## Ported
 
-- upstream/humanlayer-12-factor-agents/content/factor-02, factor-05, factor-07, factor-09 (prose CC BY-SA 4.0 — ideas only, no wording) — used in: agent-architecture
-- upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{multi-agent-patterns,tool-design,context-optimization,context-compression,self-managed-context,filesystem-context,long-horizon-prompting,harness-engineering,evaluation} (MIT) — used in: agent-architecture
-- upstream/everything-claude-code/skills/{agent-architecture-audit,prompt-caching-strategy,regex-vs-llm-structured-text,cost-aware-llm-pipeline} (MIT) — used in: agent-architecture
-- upstream/vila-lab/docs/architecture.md (CC BY-NC-SA 4.0 — ideas only, no wording) — used in: agent-architecture
-- upstream/everything-claude-code/skills/{eval-harness,agent-eval,gan-style-harness} (MIT) — used in: agent-evals
-- upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-improvement-loops,harness-engineering,evaluation,advanced-evaluation} (MIT) — incl. judge position bias — used in: agent-evals
-- upstream/anthropics-skills/skills/skill-creator, skills/mcp-builder/reference/evaluation.md (Apache-2.0) — used in: agent-evals
-- upstream/gstack/eval-plan (MIT) — used in: agent-evals
-- upstream/compound-engineering-plugin/.agents/skills/ce-skill-work/references/evaluate.md (MIT) — used in: agent-evals
+Procedure carried over; anchored in the skill text.
+
+- upstream/humanlayer-12-factor-agents/content/factor-05, factor-07, factor-09 (prose CC BY-SA 4.0 — ideas only, no wording) — unified event-log state, human contact as a tool call, compact errors with a ceiling — used in: agent-architecture
+- upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{multi-agent-patterns,tool-design,context-optimization,context-compression,self-managed-context,filesystem-context,long-horizon-prompting,harness-engineering} (MIT) — fan-out caps, verbatim pass-through, few general tools, cache-aware ordering, staged reduction, files for large outputs, persistence paired with verification, harness surfaces — used in: agent-architecture
+- upstream/everything-claude-code/skills/{agent-architecture-audit,prompt-caching-strategy,regex-vs-llm-structured-text,cost-aware-llm-pipeline} (MIT) — layered review, cache savings from usage counters, code-first parsing, pinned model per role — used in: agent-architecture
+- upstream/everything-claude-code/skills/{eval-harness,agent-eval,gan-style-harness} (MIT) — pass@k and pass^k, worktree per run, cost per run — used in: agent-evals
+- upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-improvement-loops,harness-engineering,evaluation,advanced-evaluation} (MIT) — hidden graders, raw traces to the optimiser, judge position bias — used in: agent-evals
+- upstream/anthropics-skills/skills/skill-creator, skills/mcp-builder/reference/evaluation.md (Apache-2.0) — trigger tuning split, tool-server question rules — used in: agent-evals
 - upstream/anthropics-skills/skills/claude-api/shared/evals/{eval-audit,build-eval,eval-hillclimb}.md (Apache-2.0) — grade the end state, start from real failures, report spread, held-out split — used in: agent-evals
 - upstream/compound-engineering-plugin/docs (MIT) — blinded arms, small-n paired evals — used in: agent-evals
 - upstream/compound-engineering-plugin/docs/solutions/skill-design/callee-skill-evals-need-caller-shaped-tasks.md (MIT) — caller-shaped tasks, overreach grading, pre-existing items in touched files — used in: agent-evals
@@ -27,45 +28,42 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - authored for this toolkit from a stated need (an internal spec-driven workflow reviewed 2026-10-30) — harvest after delivery, a human gate before any writeback, route each lesson to the place that owns it — used in: agent-instructions
 - Gloaguen et al., "Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?" (2026), https://arxiv.org/abs/2602.11988 — context files cost over 20% more without general gains; overviews unhelpful — used in: agent-instructions
 - upstream/superpowers/skills/{subagent-driven-development,dispatching-parallel-agents,executing-plans} (MIT) — explicit model per worker, fix rounds, a ledger that survives compaction — used in: agent-orchestration
-- upstream/oh-my-claudecode/skills/team (MIT) — used in: agent-orchestration
 - upstream/compound-engineering-plugin/skills/ce-work/references/execution-strategy.md (MIT) — exclusive file ownership, orchestrator-only git, bounded batch concurrency — used in: agent-orchestration
 - upstream/anthropics-skills/skills/claude-api/shared/managed-agents-multiagent.md — when delegation fits — used in: agent-orchestration
 - upstream/seanellyjames-deep-research-skill/SKILL.md (MIT) — concurrency cap and no nested spawning — used in: agent-orchestration
 - upstream/villetakanen-asdlc-io (MIT) — declared dependencies and a divergence rule in the task brief — used in: agent-orchestration
 - authored for this toolkit — Oracle-by-blast-radius model tiering (Fast / Workhorse / Frontier), subagent-only tier switching to preserve prompt cache, command-log redirection, two-strike escalation, and cross-family / cross-tier review order — used in: agent-orchestration
-- upstream/everything-claude-code/skills/{agent-security-hardening,mcp-dependency-review,prompt-caching-strategy,llm-trading-agent-security,agent-architecture-audit} (MIT) — used in: agent-security
-- upstream/vila-lab/README.md, docs/architecture.md (CC BY-NC-SA 4.0 — ideas only, no wording) — used in: agent-security
+- upstream/everything-claude-code/skills/{agent-security-hardening,mcp-dependency-review,prompt-caching-strategy,llm-trading-agent-security} (MIT) — deny-wins policy, path containment, sentinel-secret test, MCP pinning tiers, cache keys are not access checks, trading limits — used in: agent-security
 - upstream/everything-claude-code/the-security-guide.md (MIT) — Simon Willison's "lethal trifecta" (private data, untrusted content, an outbound channel), behind "The dangerous combination" — used in: agent-security
-- upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-managed-context,harness-engineering,self-improvement-loops} (MIT) — used in: agent-security
+- upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-managed-context,harness-engineering,self-improvement-loops} (MIT) — self-written notes as untrusted input; graders locked from the agent — used in: agent-security
 - Gambit Security, "AI Agents Are Hacking Online Retailers for $25 a Company" (2026), https://gambit.security/blog-posts/autonomous-ai-agents-online-retailers-25-a-company — used in: agent-security
-- user-authored — used in: career-navigator
+- user-authored — the career playbook and dossier workflow — used in: career-navigator
 - authored for this toolkit — getting inside the circle: attach early to a rising leader, the favour ledger; the staged roadmap, choosing whom to back, rehearsal protocol, dossier and after-action review; influence-campaign structure — used in: career-navigator
-- Ethan Evans (former Amazon VP), talks and newsletter on big-company politics — ideas only, paraphrased: headcount as currency, reorg motives, polite fictions, never mutiny alone, funnel vs umbrella managers, early champions, exit leverage, credit tactics, scope defence, carrot-dangling, managing out, executive presence, the big-company speedrun; his numbers are one company's and are marked as such — used in: career-navigator
+- Ethan Evans (former Amazon VP), talks and newsletter on big-company politics — ideas only, paraphrased: headcount as currency, reorg motives, polite fictions, funnel vs umbrella managers, early champions, exit leverage, credit tactics, scope defence, carrot-dangling, managing out, executive presence, the big-company speedrun; his numbers are one company's and are marked as such — used in: career-navigator
 - Carla Harris (Vice Chairman, Morgan Stanley), "Expect to Win" and "Strategize to Win" and interviews — ideas only, paraphrased: sponsor vs mentor, the three sponsor conditions, the direct sponsor ask, designing your perception with three adjectives, interview and layoff narratives — used in: career-navigator
-- Dawei Feng (VP, Intel Client Computing Group), 领航 12 public lecture "Sales: the base skill of workplace influence" (Oct 2026) — ideas only, paraphrased: run an internal proposal as an enterprise sale, key influencers, why buy / why you / why now, debate prep, ask before you commit, Open and Walk, orchestrating resources, recharging relationships — used in: career-navigator
+- Dawei Feng (VP, Intel Client Computing Group), 领航 12 public lecture "Sales: the base skill of workplace influence" (Oct 2026) — ideas only, paraphrased: run an internal proposal as an enterprise sale, key influencers, why buy / why you / why now, debate prep, ask before you commit, Open and Walk, orchestrating resources — used in: career-navigator
 - Chris Voss, "Never Split the Difference" (2016) — calibrated "how" questions; ideas only, paraphrased — used in: career-navigator
 - Jeffrey Pfeffer, "7 Rules of Power" (2022; Chinese edition 《权力进化论》) and "Power" (2010) — ideas only, paraphrased: performance predicts advancement weakly, perceived power over likability, the boss's self-interest — used in: career-navigator
 - upstream/gstack/cso (MIT) — boundary and invariant census first, sibling propagation, exploitability gating, three separate judgements, independent re-derivation, webhook review order, two-user and two-tenant negative controls — used in: app-security
 - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/security-reviewer.md (MIT) — confidence tied to attack-path traceability with a critical-impact override; feature-gate leaks — used in: app-security
 - upstream/trailofbits-skills/plugins/{fp-check,differential-review} (CC BY-SA 4.0 — ideas only, no wording) — restate the claim before verifying, trace the validation chain, risk not size, git blame on removed security code, counted blast radius, exploit chains across rejected findings — used in: app-security
-- upstream/getsentry-skills/skills/security-review (Apache-2.0) — attacker-controlled vs server-controlled input; do-not-flag list — used in: app-security
+- upstream/getsentry-skills/skills/security-review (Apache-2.0) — attacker-controlled vs server-controlled input — used in: app-security
 - upstream/stripe-ai/skills/stripe-best-practices (MIT) — verify settled payment status before fulfillment on async payment webhooks — used in: app-security
 - third-party skill adapted from Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 — description rewritten for routing, template arrow z-order and legend placement aligned to spec (MIT; see LICENSE in this folder) — used in: architecture-diagram
-- upstream/compound-engineering-plugin/skills/ce-code-review/references/{personas/*,action-class-rubric.md,subagent-template.md} (MIT) — correctness, security, performance and reliability lenses; P0–P3; check callers, guards and framework defaults — used in: code-review
+- upstream/compound-engineering-plugin/skills/ce-code-review/references/{action-class-rubric.md,subagent-template.md} (MIT) — P0–P3; check callers, guards and framework defaults — used in: code-review
 - upstream/compound-engineering-plugin/skills/ce-simplify-code/references/personas/efficiency-reviewer.md (MIT) — unbounded structures, listener leaks — used in: code-review
-- upstream/gstack/review (MIT) — sideways sweep, gate-integrity inventory, quote-or-cap confidence — used in: code-review
+- upstream/gstack/review (MIT) — sideways sweep, weakened-gate inventory, quote-or-cap confidence — used in: code-review
 - upstream/villetakanen-asdlc-io (MIT) — the repo's own instruction files as a review contract; stale specs as missing work — used in: code-review
-- upstream/mattpocock-skills/skills/engineering/code-review (MIT) — spec and standards as separate axes, smell vocabulary as fallback, repo conventions override — used in: code-review
+- upstream/mattpocock-skills/skills/engineering/code-review (MIT) — spec and standards as separate axes, repo conventions override — used in: code-review
 - upstream/claude-plugins-official/plugins/code-review/commands/code-review.md (Apache-2.0) — independent per-finding verification; untouched-line, pre-existing, tool-catchable and explicitly silenced issues are not findings; git history, earlier PR comments and in-code guidance as review lenses — used in: code-review
-- upstream/superpowers/skills/systematic-debugging (MIT) — root cause first, read the full error, one change at the source, three failed fixes means stop — used in: debugging
+- upstream/superpowers/skills/systematic-debugging (MIT) — root cause first, three failed fixes means stop — used in: debugging
 - upstream/compound-engineering-plugin/skills/ce-debug/references/{investigate,fix}.md (MIT) — observation-cited hypotheses, explicit invalidation — used in: debugging
 - upstream/mattpocock-skills/skills/engineering/diagnosing-bugs (MIT) — reproduction loop as the first deliverable — used in: debugging
-- upstream/gstack/investigate (MIT) — failure-shape routing; rerun, timeout and skip are not hypotheses — used in: debugging
-- upstream/compound-engineering-plugin/skills/ce-debug (MIT) — convergent vs divergent fixes — used in: debugging
+- upstream/gstack/investigate (MIT; retired upstream in 2026-11 after a null eval) — failure-shape routing; rerun, timeout and skip are not hypotheses — used in: debugging
 - upstream/gstack/qa (MIT) — regression-test value bar — used in: debugging
 - upstream/addyosmani-agent-skills/skills/debugging-and-error-recovery (MIT) — check the layer (UI, network, backend) — used in: debugging
 - authored for this toolkit from a stated need (frontend-or-backend triage) — request/response boundary isolation steps — used in: debugging
-- upstream/superpowers/skills/brainstorming (MIT) — think wide privately, play back in chunks, builder check by a fresh reader, nothing built before approval — used in: design-discussion
+- upstream/superpowers/skills/brainstorming (MIT) — think wide privately, nothing built before approval — used in: design-discussion
 - upstream/addyosmani-agent-skills/skills/interview-me (MIT) — one question with a guess attached, "want vs should want" probe, predict-the-next-three stop test, bare assent is not a yes — used in: design-discussion
 - upstream/addyosmani-agent-skills/skills/idea-refine (MIT) — directions must differ, not vary; name what each bets on; a not-doing list — used in: design-discussion
 - upstream/mattpocock-skills/skills/engineering/domain-modeling (MIT) — sharpen overloaded terms, edge-case scenarios, check the code, ADR only when hard to reverse, surprising and a real trade-off — used in: design-discussion
@@ -84,7 +82,7 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/jeffallan-claude-skills/skills/devops-engineer/references/incident-response.md (MIT) — evidence before state-destroying actions, routing by incident type and regulatory clock, re-check after remediation — used in: production-ops
 - upstream/axiomhq-skills/skills/sre (MIT) — discover the data's real fields before querying — used in: production-ops
 - upstream/fission-ai-openspec v2.0.0 schemas/spec-driven/{schema.yaml,templates/*} (MIT, https://github.com/Fission-AI/OpenSpec) — proposal/specs/design/tasks artifact DAG, capability-named layout, normative SHALL/MUST requirements with WHEN/THEN scenarios, conditional design, zero-delta escape hatch — used in: spec
-- upstream/fission-ai-openspec v2.0.0 src/core/{specs-apply,archive,validation/validator}.ts and skills/openspec-{propose,apply-change,sync-specs,update-change,archive-change} (MIT, https://github.com/Fission-AI/OpenSpec) — full-block MODIFIED anti-loss rule, RENAMED/REMOVED/MODIFIED/ADDED merge order, capability retirement guard, bi-directional change reconciliation — used in: spec
+- upstream/fission-ai-openspec v2.0.0 src/core/specs-apply.ts and skills/openspec-{propose,apply-change,sync-specs,update-change,archive-change} (MIT, https://github.com/Fission-AI/OpenSpec) — full-block MODIFIED anti-loss rule, RENAMED/REMOVED/MODIFIED/ADDED merge order, capability retirement guard, bi-directional change reconciliation — used in: spec
 - authored for this toolkit from a stated need (CLI-free spec-driven engineering) — stable requirement IDs for item-by-item verification, explicit human-sign-off decision block, timeless living specs with zero inline changelog — used in: spec
 - upstream/jeffallan-claude-skills/skills/architecture-designer/references/nfr-checklist.md (MIT) — numeric non-functional requirements before design; RPO and RTO as separate targets — used in: system-design
 - upstream/everything-claude-code/skills/redis-patterns (MIT) — cache stampede named with a concrete fix — used in: system-design
@@ -196,6 +194,67 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/everything-claude-code/rules/react/security.md (MIT) — Server Actions are public endpoints — used in: rule typescript-web
 - upstream/vercel-labs-agent-skills/skills/{react-best-practices,composition-patterns} (MIT) — children/slots over render functions across RSC boundaries, React.cache() per-request dedup, Next.js after() — used in: rule typescript-web
 - upstream/vercel-next-js/skills (MIT) — Next.js 16 "use cache" / cacheLife / cacheTag and local version-matched docs in node_modules/next/dist/docs/ — used in: rule typescript-web
+
+## Ideas drawn on
+
+Inspiration only; no procedure from these is claimed.
+
+- upstream/vila-lab/docs/architecture.md (CC BY-NC-SA 4.0 — ideas only, no wording) — agent system architecture — used in: agent-architecture
+- upstream/gstack/eval-plan (MIT) — eval planning — used in: agent-evals
+- upstream/compound-engineering-plugin/.agents/skills/ce-skill-work/references/evaluate.md (MIT) — skill evaluation — used in: agent-evals
+- upstream/vila-lab/README.md, docs/architecture.md (CC BY-NC-SA 4.0 — ideas only, no wording) — agent system threat surfaces — used in: agent-security
+- upstream/compound-engineering-plugin/skills/ce-debug (MIT) — convergent vs divergent fixes — used in: debugging
+
+## Known gaps
+
+The upstream has this capability and the toolkit does not (yet).
+
+- upstream/everything-claude-code/skills/agent-architecture-audit (MIT) — the full 12-layer stack (incl. distillation, active recall, hidden repair loops, stale persistence), ready rg anti-pattern queries, per-finding symptom / mechanism / evidence / confidence, code-first fix order, severity model and report schema — missing: review mode is an 8-row question table — used in: agent-architecture
+- upstream/everything-claude-code/{skills/agent-eval,skills/gan-style-harness,scripts/eval-harness.js} (MIT) — YAML task and judge schema, a runner, a results layout, weighted rubric with an iterate-to-threshold loop — missing: the skill ships no task format, runner or results file — used in: agent-evals
+- upstream/muratcankoylan-agent-skills-for-context-engineering/skills/advanced-evaluation (MIT) — length, verbosity and self-enhancement judge biases; scale calibration; justification before score — missing: only position bias is covered — used in: agent-evals
+- upstream/superpowers/skills/subagent-driven-development (MIT) — two-stage review after every task (spec compliance, then code quality) plus a final whole-branch review; the DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED worker status protocol; implementer and reviewer prompt templates and brief scripts — missing: not carried over — used in: agent-orchestration
+- upstream/oh-my-claudecode/skills/team (MIT) — staged plan, prd, exec, verify, fix pipeline with entry and exit gates; risk-based reviewer escalation; stuck-worker watchdog and reassignment; shutdown and resume protocol — missing: previously credited by name only; none of it is in the skill — used in: agent-orchestration
+- upstream/everything-claude-code/skills/{agent-security-hardening,llm-trading-agent-security} (MIT) — trust-boundary map (source, parser, validator, side effect); identifier allowlists and argv separation; env-value validation; private temp files; tool-output bounding with truncation markers and control-character stripping; a tests-cover-it completion gate per hardening step; transaction deadlines and MEV protection — missing: not carried over — used in: agent-security
+- upstream/gstack/cso/{SKILL.md,sections/audit-phases.md} (MIT) — OWASP Top 10 and ASVS coverage map, STRIDE, secrets in git history, dependency supply chain, CI pull_request_target, reproduction contract, complete / partial / not-assessed report header — missing: not carried over — used in: app-security
+- upstream/trailofbits-skills/plugins/fp-check (CC BY-SA 4.0 — ideas only, no wording) — catalogue of false-positive patterns and exploitability/PoC passes — missing: not carried over — used in: app-security
+- upstream/getsentry-skills/skills/security-review/references (Apache-2.0) — per-class references (injection, XSS, SSRF, deserialization, path traversal, session and JWT, crypto) and the full do-not-flag list — missing: the skill covers authorisation only — used in: app-security
+- third-party skill from Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 (MIT) — worked examples (web app, microservices, AWS serverless); a render-and-check step for spacing and legend rules — missing: examples not shipped and neither version renders to check — used in: architecture-diagram
+- upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/* (MIT) — per-lens checklists (correctness sentinel and lifecycle-writer checks, reliability timeouts, retries and error-path leaks), anchored 25/50/75/100 confidence, per-persona do-not-flag lists — missing: reduced to a one-line list of lenses — used in: code-review
+- upstream/gstack/review/{checklist.md,gate-integrity.md} (MIT) — enum/value completeness trace, RH-1…16 gate-weakening pattern catalog, scope-creep check — missing: not carried over — used in: code-review
+- upstream/mattpocock-skills/skills/engineering/code-review (MIT) — smell vocabulary as fallback — missing: the smell list and fixes are not in the skill — used in: code-review
+- upstream/superpowers/skills/systematic-debugging (MIT) — read the full error; one change at the source; backward root-cause tracing; condition-based waiting; find-polluter.sh — missing: none of these are in the skill — used in: debugging
+- upstream/compound-engineering-plugin/skills/ce-debug/references/investigate.md (MIT) — environment sanity check, dirty tree as a suspect, assumption audit, bisect with the repro, tracker and PR history search — missing: not carried over — used in: debugging
+- upstream/mattpocock-skills/skills/engineering/diagnosing-bugs (MIT) — ladder of ways to build a feedback loop, minimise step, 3–5 ranked falsifiable hypotheses, tagged debug logs with a cleanup grep — missing: not carried over — used in: debugging
+- upstream/addyosmani-agent-skills/skills/debugging-and-error-recovery (MIT) — database layer isolation; error output treated as untrusted data — missing: not carried over — used in: debugging
+- upstream/superpowers/skills/brainstorming (MIT) — design played back in short chunks each ending with a what-is-missing question; builder check as a required subagent pass with a prompt and three-pile triage; sizing and splitting the work — missing: only an optional fresh-reader line — used in: design-discussion
+- upstream/compound-engineering-plugin/skills/ce-brainstorm/references/blindspot-pass.md (MIT) — a blindspot pass for users who cannot evaluate the options themselves — missing: not carried over — used in: design-discussion
+- upstream/gstack/office-hours (MIT) — landscape search before proposing; premises the user must explicitly agree to — missing: not carried over — used in: design-discussion
+- upstream/everything-claude-code/skills/database-migrations (MIT) — forward-only migrations in production; no NOT NULL column without a default on a live table — missing: not carried over — used in: production-ops
+- upstream/gstack/{land-and-deploy,canary} (MIT) — baseline captured before the deploy, a fixed monitoring window with numeric thresholds, unknown scope is not docs-only, bounded deploy waits, a revert PR when branch protection blocks a push — missing: not carried over — used in: production-ops
+- upstream/jeffallan-claude-skills/skills/sre-engineer/references/error-budget-policy.md (MIT) — what happens when the error budget runs out — missing: not carried over — used in: production-ops
+- upstream/fission-ai-openspec v2.0.0 src/core/{validation/validator.ts,specs-apply.ts,archive.ts} and skills/openspec-sync-specs (MIT, https://github.com/Fission-AI/OpenSpec) — delta-format validation (about 30 checks), merge preconditions that abort on a missing target or rename collision, scenario-name diff before a MODIFIED merge, plan-all-then-write atomicity, the six-condition capability retirement guard — missing: no validator; merge rules are prose with no failure handling — used in: spec
+- upstream/gstack/plan-eng-review/sections/review-sections.md (MIT) — complexity smell (8+ files or 2+ new classes), code-path test-coverage tracing, the critical-gap rule (no test, no handling, silent failure) — missing: not carried over — used in: system-design
+- upstream/compound-engineering-plugin/skills/ce-doc-review (MIT) — coherence, feasibility and adversarial persona reviewers with independent verification — missing: review mode is single-pass — used in: system-design
+- upstream/trailofbits-skills/plugins/property-based-testing (CC BY-SA 4.0 — ideas only, no wording) — property catalogue ordered by strength; vacuous properties through over-filtering; generator design — missing: only a one-line pointer in the skill — used in: tdd
+- upstream/yennanliu-investskill/prompts/thesis-tracker.md (MIT) — a parseable saved-entry format and location, with a fenced-block fallback the user stores — missing: the skill never says where an entry is saved, so Check and Review cannot load one in a new session — used in: thesis-ledger
+- upstream/xbtlin-ai-berkshire/tools/financial_rigor.py (MIT) — the script that rule 6 says figures come from — missing: no script is shipped; only the print-the-formula fallback works — used in: thesis-ledger
+- upstream/tradermonty-claude-trading-skills/skills/trader-memory-core/{scripts/thesis_store.py,schemas/thesis.schema.json,scripts/thesis_review.py} (MIT) — schema-validated thesis state, due-date queries, MAE/MFE postmortem and recorded lessons — missing: not carried over — used in: thesis-ledger
+- upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — a named data route for quote, consensus and share count; currency conversion for ADRs and foreign issuers; a unit-magnitude check; scenarios that change operating inputs, not only the multiple; A/B/C grades for forward-revenue evidence; the mid-cycle EPS formula and contract-coverage adjustment for cyclicals — missing: not carried over — used in: valuation-audit
+- upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/dcf-model/{SKILL.md,scripts/validate_dcf.py} (Apache-2.0) — the WACC build (CAPM, beta, equity risk premium, after-tax cost of debt, weights) and a DCF validation script — missing: only the risk-free rate is sourced; no script — used in: valuation-audit
+- upstream/tradermonty-claude-trading-skills/skills/kanchi-dividend-sop/references/valuation-and-one-off-checks.md (MIT) — margin expansion without matching revenue quality; a dividend funded by debt — missing: two of the one-off checks are missing — used in: valuation-audit
+- upstream/janestreet-agent-skills/socratic-tutor/SKILL.md (MIT, https://github.com/janestreet/agent_skills) — devil's advocate on correct answers; vague or partly correct is not correct; tool-run exercises checked against real output; short explanations allowed to introduce new material — missing: not carried over — used in: socratic-tutor
+- upstream/yennanliu-investskill/plugins/us-stock-analysis/skills/economics-analysis (MIT) — recession indicators (Sahm rule, NY Fed recession probability, leading index, inversion duration and lead time) — missing: the description promises recession risk but no row measures it — used in: macro-regime
+- upstream/anthropics-financial-services/plugins/partner-built/lseg/{.mcp.json,skills/macro-rates-monitor} (Apache-2.0) — a live data connector; the skill swaps it for free FRED series but gives no fetch route (CSV endpoint or API key from the environment) — missing: an agent without web access cannot fill the dashboard — used in: macro-regime
+- upstream/tradermonty-claude-trading-skills/skills/macro-regime-detector/{references/regime_detection_methodology.md,scripts/scorer.py} (MIT) — sustained defined as 6- and 12-month moving-average crossovers with confirmation scoring; cross-asset components incl. stock-bond correlation; stored prior readings to compare against — missing: persistence is one release count and no earlier dashboard is kept — used in: macro-regime
+- upstream/geekjourneyx-github-demand-radar/{SKILL.md,references/negative-filters.md} (MIT) — concrete gh api search queries for closed-unmerged and stale PRs sorted by reactions; the noise filters (label and title patterns, bikeshedding, no-context wishes) — missing: collection is one line and only the keep-half of the filters is carried — used in: market-scan
+- upstream/sreshtalluri-mom-test/skills/mom-test-debrief (MIT) — the full 19-rung ladder (collapsed here to three tiers) and the 15-row interview scorecard — missing: not carried over — used in: customer-discovery
+- upstream/sreshtalluri-mom-test/skills/mom-test-memory (MIT) — a persistent discovery folder with append-only interview files, rung tags and status merge rules, so the ledger survives across sessions — missing: the ledger has no storage location — used in: customer-discovery
+- upstream/ai-analyst-lab-ai-analyst/helpers/stats/experiment_stats/{srm.py,power.py,corrections.py,ab_tests.py,sequential.py,variance_reduction.py} (MIT) — tested code for the SRM chi-squared p-value, power and duration incl. uneven splits, Holm, ratio metrics by the delta method, a named sequential method, CUPED; per-segment SRM; the Simpson's-paradox segment check — missing: the skill asks for chi-squared and p values but ships no way to compute them — used in: experiment-readout
+- upstream/ai-analyst-lab-ai-analyst/.claude/skills/triangulation (MIT) — paths run in isolated subagents with per-path record fields — missing: independence is asked for in one line with no mechanism — used in: experiment-readout
+- upstream/wondelai-skills/monetizing-innovation/references/wtp-conversations.md (MIT) — the exact WTP question scripts, a simplified conjoint procedure, B2C sample sizes — missing: not carried over — used in: pricing
+- upstream/phuryn-pm-skills/pm-execution/skills/create-prd (MIT) — the six-part value proposition and the ask-up-to-three-questions-before-writing rule — missing: only who / current tool / why switch is kept — used in: product-scoping
+- upstream/jalald-verified-research/skills/verified-research/scripts/{audit_report.py,check_links.py,evidence.py} (MIT) — mechanical detection of cited URLs no researcher gathered, dead links and quotes missing from their page, independent-origin counts and stale sources; the red-team phase for contested runs — missing: the checker pass relies on reading alone — used in: verified-research
+- upstream/ahao-writing-dna-distiller (MIT) — the measuring pipeline (distill_metrics.py for sentence-length spread, short/long ratio, punctuation, nominalisation and risky-word density), beat sheets and structure archetypes, the form-vs-content forbidden map, the AI-flavour firewall self-check — missing: the voice profile has no way to measure its ranges — used in: writing
 
 ## Adopted external projects (installed from their own source; not included)
 

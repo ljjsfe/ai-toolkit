@@ -5,6 +5,7 @@ from __future__ import annotations
 import sys
 import tempfile
 import unittest
+from collections import OrderedDict
 from datetime import date
 from pathlib import Path
 
@@ -136,6 +137,46 @@ class SkillStructureAndPrefixValidationTests(unittest.TestCase):
             check.validate_install_external_prefixes(sh, externals, errors)
         self.assertEqual(len(errors), 1, errors)
         self.assertIn("openspec-", errors[0])
+
+
+class SourceCoverageTests(unittest.TestCase):
+    BODY = "## Iron laws\n\n1. **Build the reproduction** before theorising.\n"
+
+    def _check(self, srcs: list[str]) -> list[str]:
+        errors: list[str] = []
+        check.validate_source_coverage("skill", srcs, self.BODY, errors)
+        return errors
+
+    def test_port_with_present_anchor_passes(self) -> None:
+        self.assertEqual(self._check(['up/x (MIT) — repro first [port "build the reproduction"]']), [])
+
+    def test_port_with_absent_anchor_fails(self) -> None:
+        errors = self._check(['up/x (MIT) — read the full error [port "read the full error"]'])
+        self.assertEqual(len(errors), 1, errors)
+        self.assertIn("not found", errors[0])
+
+    def test_untagged_source_fails(self) -> None:
+        self.assertEqual(len(self._check(["up/x (MIT) — something"])), 1)
+
+    def test_short_or_missing_anchor_fails(self) -> None:
+        self.assertEqual(len(self._check(['up/x [port "repro"]'])), 1)
+        self.assertEqual(len(self._check(["up/x [port]"])), 1)
+
+    def test_idea_and_gap_rules(self) -> None:
+        self.assertEqual(self._check(["up/x — inspiration [idea]", "up/y — scripts [gap no SRM script]"]), [])
+        self.assertEqual(len(self._check(["up/y [gap]"])), 1)
+        self.assertEqual(len(self._check(["up/y [idea extra]"])), 1)
+
+    def test_credits_split_into_sections(self) -> None:
+        out = check.build_expected_credits(
+            [("alpha", ['up/a — x [port "build the reproduction"]', "up/b — y [idea]", "up/c — z [gap no runner]"])],
+            OrderedDict(),
+            [],
+        )
+        port_i, idea_i, gap_i = out.index("## Ported"), out.index("## Ideas drawn on"), out.index("## Known gaps")
+        self.assertLess(port_i, out.index("- up/a — x — used in: alpha"))
+        self.assertLess(idea_i, out.index("- up/b — y — used in: alpha"))
+        self.assertIn("- up/c — z — missing: no runner — used in: alpha", out[gap_i:])
 
 
 if __name__ == "__main__":

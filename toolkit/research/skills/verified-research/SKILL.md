@@ -6,11 +6,12 @@ description: >-
   checker pass, and argue from records. Competitor/demand scans: market-scan; single facts: answer.
 version: 1.2.2
 sources:
-  - upstream/jalald-verified-research/skills/verified-research/SKILL.md (MIT) — research budgets, top-up size, escalation triggers, origin counting, claims-only checker
-  - upstream/seanellyjames-deep-research-skill/SKILL.en.md (MIT) — premise framing, falsifiable hypotheses, claim headings
-  - upstream/wanshuiyin-auto-claude-code-research-in-sleep/skills/citation-audit/SKILL.md (MIT) — wrong-context verdict
-  - upstream/everything-claude-code/skills/research-ops/SKILL.md (MIT) — sorting user material; statement-type tags
-  - Mike Caulfield, SIFT ("the four moves"), https://hapgood.us/2019/06/19/sift-the-four-moves/ — lateral reading, tracing claims (method only)
+  - upstream/jalald-verified-research/skills/verified-research/SKILL.md (MIT) — research budgets, top-up size, escalation triggers, origin counting, claims-only checker [port "research budgets come from jalald" "move up one size only when a named trigger" "origins, not urls" "the claims list and the records, not the draft"]
+  - upstream/jalald-verified-research/skills/verified-research/scripts/{audit_report.py,check_links.py,evidence.py} (MIT) — mechanical detection of cited URLs no researcher gathered, dead links and quotes missing from their page, independent-origin counts and stale sources; the red-team phase for contested runs [gap the checker pass relies on reading alone]
+  - upstream/seanellyjames-deep-research-skill/SKILL.en.md (MIT) — premise framing, falsifiable hypotheses, claim headings [port "what the question takes for granted" "two or three that evidence could falsify" "headings are claims"]
+  - upstream/wanshuiyin-auto-claude-code-research-in-sleep/skills/citation-audit/SKILL.md (MIT) — wrong-context verdict [port "wrong context is the costly one"]
+  - upstream/everything-claude-code/skills/research-ops/SKILL.md (MIT) — sorting user material; statement-type tags [port "already evidenced, needs checking, open" "tag each sentence"]
+  - Mike Caulfield, SIFT ("the four moves"), https://hapgood.us/2019/06/19/sift-the-four-moves/ — lateral reading, tracing claims (method only) [port "read the publisher sideways" "trace upstream"]
 ---
 
 # Verified Research

@@ -6,10 +6,11 @@ description: >-
   red-team "fails if" assumptions. Demand: customer-discovery; contracts: spec; slices: tdd.
 version: 1.0.1
 sources:
-  - upstream/gstack/plan-ceo-review (MIT) — four explicit scope modes chosen before review
-  - upstream/phuryn-pm-skills/pm-product-discovery/skills/opportunity-solution-tree (MIT) — opportunities not features, three solutions per opportunity, opportunity score
-  - upstream/phuryn-pm-skills/pm-execution/skills/create-prd (MIT) — value proposition with an explicit alternatives slot; findings enter the PRD only if they change a decision
-  - upstream/phuryn-pm-skills/pm-execution/skills/strategy-red-team (MIT) — load-bearing claims, steelman then attack, "fails if", ranked cheapest tests, no manufactured doubt
+  - upstream/gstack/plan-ceo-review (MIT) — four explicit scope modes chosen before review [port "choose the ambition level out loud"]
+  - upstream/phuryn-pm-skills/pm-product-discovery/skills/opportunity-solution-tree (MIT) — opportunities not features, three solutions per opportunity, opportunity score [port "opportunities before features" "at least three solutions per opportunity" "importance ×"]
+  - upstream/phuryn-pm-skills/pm-execution/skills/create-prd (MIT) — value proposition with an explicit alternatives slot; findings enter the PRD only if they change a decision [port "name the alternative" "research that does not change a decision"]
+  - upstream/phuryn-pm-skills/pm-execution/skills/create-prd (MIT) — the six-part value proposition and the ask-up-to-three-questions-before-writing rule [gap only who / current tool / why switch is kept]
+  - upstream/phuryn-pm-skills/pm-execution/skills/strategy-red-team (MIT) — load-bearing claims, steelman then attack, "fails if", ranked cheapest tests, no manufactured doubt [port "load-bearing" "write the strongest case that it is true" "do not invent weaknesses"]
 ---
 
 # Product Scoping

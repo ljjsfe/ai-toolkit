@@ -6,15 +6,17 @@ description: >-
   Trigger on 用户访谈, 验证需求, "would people pay?". Market map: market-scan; scope: product-scoping.
 version: 1.0.0
 sources:
-  - upstream/sreshtalluri-mom-test/skills/mom-test (MIT) — past-behaviour rule, reflexes for bad data, evidence ladder
-  - upstream/sreshtalluri-mom-test/skills/mom-test-check-questions (MIT) — question failure tests and reframe shapes
-  - upstream/sreshtalluri-mom-test/skills/mom-test-debrief (MIT) — 19-rung ladder, facts vs interpretations, assumption statuses, segment split in batch mode
-  - upstream/sreshtalluri-mom-test/skills/mom-test-gate (MIT) — per-segment qualifying count, 3-interview bar, commitment needed for a solution
-  - upstream/sreshtalluri-mom-test/skills/mom-test-memory/templates/assumptions.md (MIT) — assumption row with segment and kill condition
-  - upstream/eltntawy-idea-discovery-playbook/skills/behavior-led-validation (MIT) — email-only waitlist does not validate; payment as strongest signal
-  - upstream/eltntawy-idea-discovery-playbook/skills/validation-experiments (MIT) — technique picker, priced CTA, success and fail thresholds, sequence, ethical fake door
-  - upstream/gstack/office-hours/sections/phase-2a-startup-diagnostic.md (MIT) — demand-reality and status-quo questions; waitlists and interest are not demand
-  - upstream/phuryn-pm-skills/pm-product-discovery/skills/brainstorm-experiments-new (MIT) — "at least X% of Y will do Z" hypothesis line
+  - upstream/sreshtalluri-mom-test/skills/mom-test (MIT) — past-behaviour rule, reflexes for bad data, evidence ladder [port "ask only about past and current behaviour" "grade every fact on the ladder"]
+  - upstream/sreshtalluri-mom-test/skills/mom-test-check-questions (MIT) — question failure tests and reframe shapes [port "rewrite it into one of the shapes"]
+  - upstream/sreshtalluri-mom-test/skills/mom-test-debrief (MIT) — 19-rung ladder, facts vs interpretations, assumption statuses, segment split in batch mode [port "split notes into **facts**" "tag each qualifying fact" "find the attribute that splits them"]
+  - upstream/sreshtalluri-mom-test/skills/mom-test-debrief (MIT) — the full 19-rung ladder (collapsed here to three tiers) and the 15-row interview scorecard [gap not carried over]
+  - upstream/sreshtalluri-mom-test/skills/mom-test-gate (MIT) — per-segment qualifying count, 3-interview bar, commitment needed for a solution [port "three or more distinct interviews in the segment" "count per segment, never average"]
+  - upstream/sreshtalluri-mom-test/skills/mom-test-memory/templates/assumptions.md (MIT) — assumption row with segment and kill condition [port "write the assumption and its kill condition"]
+  - upstream/sreshtalluri-mom-test/skills/mom-test-memory (MIT) — a persistent discovery folder with append-only interview files, rung tags and status merge rules, so the ledger survives across sessions [gap the ledger has no storage location]
+  - upstream/eltntawy-idea-discovery-playbook/skills/behavior-led-validation (MIT) — email-only waitlist does not validate; payment as strongest signal [port "an email-only waitlist"]
+  - upstream/eltntawy-idea-discovery-playbook/skills/validation-experiments (MIT) — technique picker, priced CTA, success and fail thresholds, sequence, ethical fake door [port "then concierge, then a small wizard of oz" "5–15% visitor-to-signup" "say honestly that it is not built yet"]
+  - upstream/gstack/office-hours/sections/phase-2a-startup-diagnostic.md (MIT) — demand-reality and status-quo questions; waitlists and interest are not demand [port "also ask the status-quo question"]
+  - upstream/phuryn-pm-skills/pm-product-discovery/skills/brainstorm-experiments-new (MIT) — "at least X% of Y will do Z" hypothesis line [port "will <action>"]
 ---
 
 # Customer Discovery

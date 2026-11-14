@@ -7,14 +7,16 @@ description: >-
   one-change completion checks (use verification).
 version: 1.1.1
 sources:
-  - upstream/everything-claude-code/skills/{eval-harness,agent-eval,gan-style-harness} (MIT)
-  - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-improvement-loops,harness-engineering,evaluation,advanced-evaluation} (MIT) — incl. judge position bias
-  - upstream/anthropics-skills/skills/skill-creator, skills/mcp-builder/reference/evaluation.md (Apache-2.0)
-  - upstream/gstack/eval-plan (MIT)
-  - upstream/compound-engineering-plugin/.agents/skills/ce-skill-work/references/evaluate.md (MIT)
-  - upstream/anthropics-skills/skills/claude-api/shared/evals/{eval-audit,build-eval,eval-hillclimb}.md (Apache-2.0) — grade the end state, start from real failures, report spread, held-out split
-  - upstream/compound-engineering-plugin/docs (MIT) — blinded arms, small-n paired evals
-  - upstream/compound-engineering-plugin/docs/solutions/skill-design/callee-skill-evals-need-caller-shaped-tasks.md (MIT) — caller-shaped tasks, overreach grading, pre-existing items in touched files
+  - upstream/everything-claude-code/skills/{eval-harness,agent-eval,gan-style-harness} (MIT) — pass@k and pass^k, worktree per run, cost per run [port "pass^k — all k tries succeed" "a git worktree per run" "record tokens and cost per run"]
+  - upstream/everything-claude-code/{skills/agent-eval,skills/gan-style-harness,scripts/eval-harness.js} (MIT) — YAML task and judge schema, a runner, a results layout, weighted rubric with an iterate-to-threshold loop [gap the skill ships no task format, runner or results file]
+  - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-improvement-loops,harness-engineering,evaluation,advanced-evaluation} (MIT) — hidden graders, raw traces to the optimiser, judge position bias [port "never sees how it is judged" "feed the optimiser raw traces" "position bias"]
+  - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/advanced-evaluation (MIT) — length, verbosity and self-enhancement judge biases; scale calibration; justification before score [gap only position bias is covered]
+  - upstream/anthropics-skills/skills/skill-creator, skills/mcp-builder/reference/evaluation.md (Apache-2.0) — trigger tuning split, tool-server question rules [port "split them 60/40" "answerable with read-only operations"]
+  - upstream/gstack/eval-plan (MIT) — eval planning [idea]
+  - upstream/compound-engineering-plugin/.agents/skills/ce-skill-work/references/evaluate.md (MIT) — skill evaluation [idea]
+  - upstream/anthropics-skills/skills/claude-api/shared/evals/{eval-audit,build-eval,eval-hillclimb}.md (Apache-2.0) — grade the end state, start from real failures, report spread, held-out split [port "graded from artifacts, not narration" "start from real failures" "report the spread" "hold some cases out"]
+  - upstream/compound-engineering-plugin/docs (MIT) — blinded arms, small-n paired evals [port "blind the grader" "small n is directional"]
+  - upstream/compound-engineering-plugin/docs/solutions/skill-design/callee-skill-evals-need-caller-shaped-tasks.md (MIT) — caller-shaped tasks, overreach grading, pre-existing items in touched files [port "tested the way it is called" "grade overreach" "put pre-existing items inside the files"]
 ---
 
 # Agent Evals

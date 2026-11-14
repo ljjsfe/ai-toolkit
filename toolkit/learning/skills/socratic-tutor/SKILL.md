@@ -7,8 +7,9 @@ description: >-
   "explain X" or design interviews (design-discussion).
 version: 1.0.0
 sources:
-  - upstream/janestreet-agent-skills/socratic-tutor/SKILL.md (MIT, https://github.com/janestreet/agent_skills) — intent guard, 3–5 question diagnostic, 0–5 sub-skill map, single-question turn rule, contradiction narrowing with 3-miss escape hatch, unprompted-recall gate, spaced-review regression, anti-flattery and anti-projection rules, save/resume state block
-  - authored for this toolkit from a stated need (codebase and paper onboarding) — silent workspace/source reading before diagnostic, anchoring questions in concrete files, call paths, or equations
+  - upstream/janestreet-agent-skills/socratic-tutor/SKILL.md (MIT, https://github.com/janestreet/agent_skills) — intent guard, 3–5 question diagnostic, 0–5 sub-skill map, single-question turn rule, contradiction narrowing with 3-miss escape hatch, unprompted-recall gate, spaced-review regression, anti-flattery and anti-projection rules, save/resume state block [port "answer directly and stop" "3–5 short calibration questions" "4–8 concrete sub-skills" "one question per message, then stop" "3-miss escape hatch" "unprompted recall" "if a callback fails" "never flatter; never project" "emit a self-contained state block"]
+  - upstream/janestreet-agent-skills/socratic-tutor/SKILL.md (MIT, https://github.com/janestreet/agent_skills) — devil's advocate on correct answers; vague or partly correct is not correct; tool-run exercises checked against real output; short explanations allowed to introduce new material [gap not carried over]
+  - authored for this toolkit from a stated need (codebase and paper onboarding) — silent workspace/source reading before diagnostic, anchoring questions in concrete files, call paths, or equations [port "ground silently before asking"]
 ---
 
 # Socratic Tutor

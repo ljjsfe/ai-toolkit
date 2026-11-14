@@ -6,10 +6,10 @@ description: >-
   floors, and keep incumbent/do-nothing live. Not for product feature scoping (use product-scoping).
 version: 1.2.0
 sources:
-  - upstream/compound-engineering-plugin/skills/ce-pov (MIT) — two evidence floors, reversibility-tiered effort with a consequence override, precedent first, keep-incumbent and do-nothing skepticism, Hold / Reject / Not-our-problem vocabulary, frozen view before a second opinion, "either is viable"
-  - Thoughtworks Technology Radar, https://www.thoughtworks.com/radar/faq — Radar-inspired labels; eligibility and production gates adapted for this toolkit
-  - upstream/wondelai-skills/pragmatic-programmer/references/reversibility.md (MIT) — switching cost measured from fan-out, coupling, tests and config
-  - upstream/optimnow-cloud-finops-skills/plugins/cloud-finops/skills/cloud-finops/references/finops-ai-self-hosted-vs-managed.md (CC BY-SA 4.0 — ideas only, no wording) — readiness factors for self-hosting, generalised here as toolkit policy
+  - upstream/compound-engineering-plugin/skills/ce-pov (MIT) — two evidence floors, reversibility-tiered effort with a consequence override, precedent first, keep-incumbent and do-nothing skepticism, Hold / Reject / Not-our-problem vocabulary, frozen view before a second opinion, "either is viable" [port "two floors, checked separately" "consequence override" "looking for a decision already made" "keep what we have" "not our problem" "write your grade down first" "either is viable"]
+  - Thoughtworks Technology Radar, https://www.thoughtworks.com/radar/faq — Radar-inspired labels; eligibility and production gates adapted for this toolkit [port "a passed trial, use in another of our services"]
+  - upstream/wondelai-skills/pragmatic-programmer/references/reversibility.md (MIT) — switching cost measured from fan-out, coupling, tests and config [port "count files that import it"]
+  - upstream/optimnow-cloud-finops-skills/plugins/cloud-finops/skills/cloud-finops/references/finops-ai-self-hosted-vs-managed.md (CC BY-SA 4.0 — ideas only, no wording) — readiness factors for self-hosting, generalised here as toolkit policy [port "self-hosting stateful infrastructure"]
 ---
 
 # Adopt or Build

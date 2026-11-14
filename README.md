@@ -3,10 +3,11 @@
 A small, opinionated set of skills, rules and hooks for **Claude Code**, **Codex** and
 **Antigravity (`agy`)**, for building full-stack products and agent systems.
 
-Each skill is a curated, complete statement of how to do its job right — a small set of tools
-chosen for being correct, not for being exhaustive. Models keep improving and will do more of
-this on their own; the toolkit as a whole still has to be right. Each skill lists its sources;
-see [CREDITS.md](CREDITS.md).
+Each skill states how to do its job right — a small set of tools chosen for being correct, not
+for being exhaustive. Skills are prose; where an upstream ships executable pieces (scripts,
+validators, templates, storage) the toolkit has not ported yet, that is listed openly as a
+known gap. Every source is tagged `port` (anchored: `scripts/check.py` fails if the cited text
+is missing from the skill), `idea` or `gap`; see [CREDITS.md](CREDITS.md).
 
 ## What is inside
 
@@ -61,7 +62,7 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
   writing voice profile in `toolkit/writing/`); they are merged into that category's skills as
   `PERSONAL.md` at install time.
 - Validation and tests (zero external dependencies):
-  - Full repo check (frontmatter, resident description budget, references, `external.yaml` trial review dates, `CREDITS.md` sync, and unit tests): `python3 scripts/check.py`
+  - Full repo check (frontmatter, resident description budget, references, source coverage tags and their anchors, `external.yaml` trial review dates, `CREDITS.md` sync, unit tests, and tests of any skill `scripts/`): `python3 scripts/check.py`
   - Validator & hook tests alone: `python3 scripts/test_check.py` and `python3 toolkit/hooks/claim-check/test_claim_check.py` (also `pytest -q` compatible).
 - `claim-check` is a cheap tripwire, not proof of verification: it checks that *some* command or
   browser check ran after the last edit, not which one, and it ignores negated or conditional

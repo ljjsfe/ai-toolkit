@@ -6,11 +6,12 @@ description: >-
   blocking edges. Un-reproduced bugs: debugging; behavioral contracts: spec; diff review: code-review.
 version: 1.1.1
 sources:
-  - upstream/mattpocock-skills/skills/engineering/tdd (MIT, commit 5beb35b) — tests at agreed seams, implementation-coupled and tautological tests, horizontal slicing as an anti-pattern, mock only at system boundaries, no refactoring mid-cycle
-  - upstream/mattpocock-skills/skills/engineering/to-tickets (MIT, commit 5beb35b) — tracer-bullet vertical slices, blocking edges and the frontier, expand–contract sequencing for wide refactors, no file paths in tickets
-  - upstream/wondelai-skills/working-with-legacy-code (MIT) — characterization tests at the nearest public seam before changing untested legacy code
-  - upstream/trailofbits-skills/plugins/property-based-testing (CC BY-SA 4.0 — ideas only, no wording) — property checks (roundtrip, idempotence, invariants) alongside example tests for parsers, codecs and state machines
-  - authored for this toolkit from a stated need (green suites that test nothing) — a test never seen red is not evidence
+  - upstream/mattpocock-skills/skills/engineering/tdd (MIT, commit 5beb35b) — tests at agreed seams, implementation-coupled and tautological tests, horizontal slicing as an anti-pattern, mock only at system boundaries, no refactoring mid-cycle [port "agree the seams first" "implementation-coupled" "mock only at system boundaries" "no refactoring mid-cycle"]
+  - upstream/mattpocock-skills/skills/engineering/to-tickets (MIT, commit 5beb35b) — tracer-bullet vertical slices, blocking edges and the frontier, expand–contract sequencing for wide refactors, no file paths in tickets [port "form the frontier" "expand, migrate, contract" "describe behaviour, not file paths"]
+  - upstream/wondelai-skills/working-with-legacy-code (MIT) — characterization tests at the nearest public seam before changing untested legacy code [port "characterization tests at the nearest public seam"]
+  - upstream/trailofbits-skills/plugins/property-based-testing (CC BY-SA 4.0 — ideas only, no wording) — property checks (roundtrip, idempotence, invariants) alongside example tests for parsers, codecs and state machines [port "roundtrip, idempotence, invariant preservation"]
+  - upstream/trailofbits-skills/plugins/property-based-testing (CC BY-SA 4.0 — ideas only, no wording) — property catalogue ordered by strength; vacuous properties through over-filtering; generator design [gap only a one-line pointer in the skill]
+  - authored for this toolkit from a stated need (green suites that test nothing) — a test never seen red is not evidence [port "never seen red"]
 ---
 
 # Test-Driven Development

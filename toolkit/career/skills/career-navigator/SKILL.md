@@ -7,13 +7,13 @@ description: >-
   裁员, PIP, 面试, 谈判, 演练. Big life bets: liu-ayi.
 version: 1.9.1
 sources:
-  - user-authored
-  - "authored for this toolkit — getting inside the circle: attach early to a rising leader, the favour ledger; the staged roadmap, choosing whom to back, rehearsal protocol, dossier and after-action review; influence-campaign structure"
-  - 'Ethan Evans (former Amazon VP), talks and newsletter on big-company politics — ideas only, paraphrased: headcount as currency, reorg motives, polite fictions, never mutiny alone, funnel vs umbrella managers, early champions, exit leverage, credit tactics, scope defence, carrot-dangling, managing out, executive presence, the big-company speedrun; his numbers are one company''s and are marked as such'
-  - 'Carla Harris (Vice Chairman, Morgan Stanley), "Expect to Win" and "Strategize to Win" and interviews — ideas only, paraphrased: sponsor vs mentor, the three sponsor conditions, the direct sponsor ask, designing your perception with three adjectives, interview and layoff narratives'
-  - 'Dawei Feng (VP, Intel Client Computing Group), 领航 12 public lecture "Sales: the base skill of workplace influence" (Oct 2026) — ideas only, paraphrased: run an internal proposal as an enterprise sale, key influencers, why buy / why you / why now, debate prep, ask before you commit, Open and Walk, orchestrating resources, recharging relationships'
-  - 'Chris Voss, "Never Split the Difference" (2016) — calibrated "how" questions; ideas only, paraphrased'
-  - 'Jeffrey Pfeffer, "7 Rules of Power" (2022; Chinese edition 《权力进化论》) and "Power" (2010) — ideas only, paraphrased: performance predicts advancement weakly, perceived power over likability, the boss''s self-interest'
+  - user-authored — the career playbook and dossier workflow [port "if ~/.career/dossier.md exists"]
+  - "authored for this toolkit — getting inside the circle: attach early to a rising leader, the favour ledger; the staged roadmap, choosing whom to back, rehearsal protocol, dossier and after-action review; influence-campaign structure [port "getting inside the circle" "choosing whom to back" "get a sponsor and scope" "seed champions six months ahead"]"
+  - 'Ethan Evans (former Amazon VP), talks and newsletter on big-company politics — ideas only, paraphrased: headcount as currency, reorg motives, polite fictions, funnel vs umbrella managers, early champions, exit leverage, credit tactics, scope defence, carrot-dangling, managing out, executive presence, the big-company speedrun; his numbers are one company''s and are marked as such [port "headcount is the currency" "polite fictions — leverage without a threat" "umbrella or funnel manager" "when the carrot keeps dangling" "the big-company speedrun"]'
+  - 'Carla Harris (Vice Chairman, Morgan Stanley), "Expect to Win" and "Strategize to Win" and interviews — ideas only, paraphrased: sponsor vs mentor, the three sponsor conditions, the direct sponsor ask, designing your perception with three adjectives, interview and layoff narratives [port "a mentor gives you advice" "what qualifies a sponsor" "pick three adjectives"]'
+  - 'Dawei Feng (VP, Intel Client Computing Group), 领航 12 public lecture "Sales: the base skill of workplace influence" (Oct 2026) — ideas only, paraphrased: run an internal proposal as an enterprise sale, key influencers, why buy / why you / why now, debate prep, ask before you commit, Open and Walk, orchestrating resources [port "enterprise sale is run" "don''t go in naked" "ask before you answer" "negotiate: open and walk"]'
+  - 'Chris Voss, "Never Split the Difference" (2016) — calibrated "how" questions; ideas only, paraphrased [port "make the other side solve your problem"]'
+  - 'Jeffrey Pfeffer, "7 Rules of Power" (2022; Chinese edition 《权力进化论》) and "Power" (2010) — ideas only, paraphrased: performance predicts advancement weakly, perceived power over likability, the boss''s self-interest [port "job performance predicts promotion" "being liked matters less" "your manager has their own review too"]'
 ---
 
 # Career Navigator

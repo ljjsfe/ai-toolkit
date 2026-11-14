@@ -7,15 +7,15 @@ description: >-
   use agent-security.
 version: 1.5.0
 sources:
-  - upstream/villetakanen-asdlc-io/src/content/practices/agents-md-spec.md, src/content/recipes/write-agents-md.md (MIT) — enforcement ladder, corrective lines as friction, init output as candidates
-  - upstream/claude-plugins-official/plugins/claude-md-management (Apache-2.0) — command and path currency check; generic and one-off cut tests
-  - upstream/karanb192-claude-code-hooks/plugins/dead-rules-audit (MIT) — promote repeatedly violated rules to a hook
-  - upstream/compound-engineering-plugin/docs/solutions/{developer-experience/always-on-agents-md.md, workflow/measuring-a-packs-effect-needs-non-inferable-rules.md, skill-design/authoring-auto-invoke-standing-instructions.md} (MIT) — load-when notes, sample output for helpers, standing-instruction phrasing
-  - Claude Code memory docs, https://code.claude.com/docs/en/memory — AGENTS.md versus CLAUDE.md loading (checked 2026-10-15)
-  - Codex AGENTS.md docs, https://learn.chatgpt.com/docs/agent-configuration/agents-md — discovery from project root to launch directory (checked 2026-10-15)
-  - Google Antigravity customization docs, https://antigravity.google/docs/rules-workflows — AGENTS.md/GEMINI.md discovery, 24 KB/20k-token caps, .agents/rules trigger modes (checked 2026-11-11)
-  - authored for this toolkit from a stated need (an internal spec-driven workflow reviewed 2026-10-30) — harvest after delivery, a human gate before any writeback, route each lesson to the place that owns it
-  - 'Gloaguen et al., "Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?" (2026), https://arxiv.org/abs/2602.11988 — context files cost over 20% more without general gains; overviews unhelpful'
+  - upstream/villetakanen-asdlc-io/src/content/practices/agents-md-spec.md, src/content/recipes/write-agents-md.md (MIT) — enforcement ladder, corrective lines as friction, init output as candidates [port "walk down this ladder" "treat corrections as friction" "treat every line as a candidate"]
+  - upstream/claude-plugins-official/plugins/claude-md-management (Apache-2.0) — command and path currency check; generic and one-off cut tests [port "every command in it runs" "advice any competent engineer"]
+  - upstream/karanb192-claude-code-hooks/plugins/dead-rules-audit (MIT) — promote repeatedly violated rules to a hook [port "count violations over a few sessions"]
+  - upstream/compound-engineering-plugin/docs/solutions/{developer-experience/always-on-agents-md.md, workflow/measuring-a-packs-effect-needs-non-inferable-rules.md, skill-design/authoring-auto-invoke-standing-instructions.md} (MIT) — load-when notes, sample output for helpers, standing-instruction phrasing [port "read x when y" "gives one sample output" "a standing instruction to run a skill"]
+  - Claude Code memory docs, https://code.claude.com/docs/en/memory — AGENTS.md versus CLAUDE.md loading (checked 2026-10-15) [port "claude code reads it instead of"]
+  - Codex AGENTS.md docs, https://learn.chatgpt.com/docs/agent-configuration/agents-md — discovery from project root to launch directory (checked 2026-10-15) [port "codex walks root → launch directory"]
+  - Google Antigravity customization docs, https://antigravity.google/docs/rules-workflows — AGENTS.md/GEMINI.md discovery, 24 KB/20k-token caps, .agents/rules trigger modes (checked 2026-11-11) [port "24 kb per-file cap" "files with missing or malformed frontmatter"]
+  - authored for this toolkit from a stated need (an internal spec-driven workflow reviewed 2026-10-30) — harvest after delivery, a human gate before any writeback, route each lesson to the place that owns it [port "harvest after delivery" "write nothing before that"]
+  - 'Gloaguen et al., "Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?" (2026), https://arxiv.org/abs/2602.11988 — context files cost over 20% more without general gains; overviews unhelpful [port "gloaguen et al. 2026"]'
 ---
 
 # Agent Instructions

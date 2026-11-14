@@ -6,12 +6,12 @@ description: >-
   archiving, and artifact-only challenge passes. Not for LLM/agent benchmarks (use agent-evals).
 version: 1.2.2
 sources:
-  - upstream/superpowers/skills/verification-before-completion (MIT) — fresh evidence before claims, partial evidence, what each claim needs
-  - authored for this toolkit from a stated need (results challenged as unverified) — state how and where; answer challenges with evidence
-  - upstream/addyosmani-agent-skills/skills/doubt-driven-development (MIT) — artifact-only adversarial review, bounded cycles, "doubt theater"
-  - upstream/gstack/ship (MIT) — freshness by content, not by commit count
-  - upstream/fission-ai-openspec v1.15.0–v2.0.0 skills/openspec-verify-change (MIT, https://github.com/Fission-AI/OpenSpec) — completeness, correctness and coherence per requirement; a skipped check never passes; descoped (not applicable) separated from removed-requirement verification
-  - authored for this toolkit from a stated need (an internal spec-driven workflow reviewed 2026-10-30) — unrequested behaviour and contradictions as findings; three repair passes, then stop and report
+  - upstream/superpowers/skills/verification-before-completion (MIT) — fresh evidence before claims, partial evidence, what each claim needs [port "no success claim without fresh evidence" "partial evidence proves only its part" "what each claim needs"]
+  - authored for this toolkit from a stated need (results challenged as unverified) — state how and where; answer challenges with evidence [port "say how and where" "when challenged by the user"]
+  - upstream/addyosmani-agent-skills/skills/doubt-driven-development (MIT) — artifact-only adversarial review, bounded cycles, "doubt theater" [port "only the artifact and the requirement" "stop after three rounds" "defending rather than checking"]
+  - upstream/gstack/ship (MIT) — freshness by content, not by commit count [port "evidence expires when the content it checked changes"]
+  - upstream/fission-ai-openspec v1.15.0–v2.0.0 skills/openspec-verify-change (MIT, https://github.com/Fission-AI/OpenSpec) — completeness, correctness and coherence per requirement; a skipped check never passes; descoped (not applicable) separated from removed-requirement verification [port "not verified never counts as covered" "a removed requirement is not"]
+  - authored for this toolkit from a stated need (an internal spec-driven workflow reviewed 2026-10-30) — unrequested behaviour and contradictions as findings; three repair passes, then stop and report [port "look the other way too" "fix and recheck at most three times"]
 ---
 
 # Verification

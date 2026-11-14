@@ -6,13 +6,14 @@ description: >-
   artifact-verified completion. Not for designing agent products (use agent-architecture).
 version: 1.3.0
 sources:
-  - upstream/superpowers/skills/{subagent-driven-development,dispatching-parallel-agents,executing-plans} (MIT) — explicit model per worker, fix rounds, a ledger that survives compaction
-  - upstream/oh-my-claudecode/skills/team (MIT)
-  - upstream/compound-engineering-plugin/skills/ce-work/references/execution-strategy.md (MIT) — exclusive file ownership, orchestrator-only git, bounded batch concurrency
-  - upstream/anthropics-skills/skills/claude-api/shared/managed-agents-multiagent.md — when delegation fits
-  - upstream/seanellyjames-deep-research-skill/SKILL.md (MIT) — concurrency cap and no nested spawning
-  - upstream/villetakanen-asdlc-io (MIT) — declared dependencies and a divergence rule in the task brief
-  - "authored for this toolkit — Oracle-by-blast-radius model tiering (Fast / Workhorse / Frontier), subagent-only tier switching to preserve prompt cache, command-log redirection, two-strike escalation, and cross-family / cross-tier review order"
+  - upstream/superpowers/skills/{subagent-driven-development,dispatching-parallel-agents,executing-plans} (MIT) — explicit model per worker, fix rounds, a ledger that survives compaction [port "progress lives in a ledger file" "explicit tier / model" "fix loop — bounded escalation"]
+  - upstream/superpowers/skills/subagent-driven-development (MIT) — two-stage review after every task (spec compliance, then code quality) plus a final whole-branch review; the DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED worker status protocol; implementer and reviewer prompt templates and brief scripts [gap not carried over]
+  - upstream/oh-my-claudecode/skills/team (MIT) — staged plan, prd, exec, verify, fix pipeline with entry and exit gates; risk-based reviewer escalation; stuck-worker watchdog and reassignment; shutdown and resume protocol [gap previously credited by name only; none of it is in the skill]
+  - upstream/compound-engineering-plugin/skills/ce-work/references/execution-strategy.md (MIT) — exclusive file ownership, orchestrator-only git, bounded batch concurrency [port "no file appears in two clusters" "single-writer operations" "keep concurrency small"]
+  - upstream/anthropics-skills/skills/claude-api/shared/managed-agents-multiagent.md — when delegation fits [port "inline or delegate"]
+  - upstream/seanellyjames-deep-research-skill/SKILL.md (MIT) — concurrency cap and no nested spawning [port "workers do not spawn their own subagents"]
+  - upstream/villetakanen-asdlc-io (MIT) — declared dependencies and a divergence rule in the task brief [port "declared now, not discovered at merge" "if the brief or spec turns out wrong"]
+  - 'authored for this toolkit — Oracle-by-blast-radius model tiering (Fast / Workhorse / Frontier), subagent-only tier switching to preserve prompt cache, command-log redirection, two-strike escalation, and cross-family / cross-tier review order [port "route model tiers on subagent spawn" "redirect noisy commands" "a workhorse stalls twice" "prefer a different model family"]'
 ---
 
 # Agent Orchestration

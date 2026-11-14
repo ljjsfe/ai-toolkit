@@ -3,10 +3,13 @@ name: macro-regime
 description: Read the macroeconomic regime from the latest dated official data — a fixed nine-row dashboard, no classification when inputs are missing, and transmission to a specific business through named channels. Use for rates, inflation, recession risk or how macro conditions affect a business or plan.
 version: 1.0.1
 sources:
-  - upstream/yennanliu-investskill/plugins/us-stock-analysis/skills/economics-analysis (MIT) — never use remembered readings; provenance header; memory means low confidence; conflicting sources shown, never averaged
-  - upstream/anthropics-financial-services/plugins/partner-built/lseg/skills/macro-rates-monitor (Apache-2.0) — fixed dashboard; real rate = nominal − breakeven; 2s10s and 3M-10Y slopes; cycle, policy, real-rate and financial-conditions synthesis
-  - upstream/tradermonty-claude-trading-skills/skills/macro-regime-detector (MIT) — fail closed on missing inputs; require a sustained signal before calling a regime change
-  - upstream/tradermonty-claude-trading-skills/skills/scenario-analyzer (MIT) — first- and second-order transmission to sectors with a confidence per link; independent second pass
+  - upstream/yennanliu-investskill/plugins/us-stock-analysis/skills/economics-analysis (MIT) — never use remembered readings; provenance header; memory means low confidence; conflicting sources shown, never averaged [port "remembered values are" "marked low confidence" "conflicting sources are shown, not averaged"]
+  - upstream/yennanliu-investskill/plugins/us-stock-analysis/skills/economics-analysis (MIT) — recession indicators (Sahm rule, NY Fed recession probability, leading index, inversion duration and lead time) [gap the description promises recession risk but no row measures it]
+  - upstream/anthropics-financial-services/plugins/partner-built/lseg/skills/macro-rates-monitor (Apache-2.0) — fixed dashboard; real rate = nominal − breakeven; 2s10s and 3M-10Y slopes; cycle, policy, real-rate and financial-conditions synthesis [port "same dashboard every time" "breakeven = nominal − real" "2s10s and 3m-10y slopes" "state the cycle position, the policy stance"]
+  - upstream/anthropics-financial-services/plugins/partner-built/lseg/{.mcp.json,skills/macro-rates-monitor} (Apache-2.0) — a live data connector; the skill swaps it for free FRED series but gives no fetch route (CSV endpoint or API key from the environment) [gap an agent without web access cannot fill the dashboard]
+  - upstream/tradermonty-claude-trading-skills/skills/macro-regime-detector (MIT) — fail closed on missing inputs; require a sustained signal before calling a regime change [port "missing inputs block the call" "persist across more than one release"]
+  - upstream/tradermonty-claude-trading-skills/skills/macro-regime-detector/{references/regime_detection_methodology.md,scripts/scorer.py} (MIT) — sustained defined as 6- and 12-month moving-average crossovers with confirmation scoring; cross-asset components incl. stock-bond correlation; stored prior readings to compare against [gap persistence is one release count and no earlier dashboard is kept]
+  - upstream/tradermonty-claude-trading-skills/skills/scenario-analyzer (MIT) — first- and second-order transmission to sectors with a confidence per link; independent second pass [port "a direction and a confidence" "what customers' customers do" "challenge the transmission links"]
 ---
 
 # Macro Regime

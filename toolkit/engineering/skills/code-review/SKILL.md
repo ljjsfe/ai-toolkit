@@ -7,12 +7,15 @@ description: >-
   system-design.
 version: 1.2.5
 sources:
-  - upstream/compound-engineering-plugin/skills/ce-code-review/references/{personas/*,action-class-rubric.md,subagent-template.md} (MIT) — correctness, security, performance and reliability lenses; P0–P3; check callers, guards and framework defaults
-  - upstream/compound-engineering-plugin/skills/ce-simplify-code/references/personas/efficiency-reviewer.md (MIT) — unbounded structures, listener leaks
-  - upstream/gstack/review (MIT) — sideways sweep, gate-integrity inventory, quote-or-cap confidence
-  - upstream/villetakanen-asdlc-io (MIT) — the repo's own instruction files as a review contract; stale specs as missing work
-  - upstream/mattpocock-skills/skills/engineering/code-review (MIT) — spec and standards as separate axes, smell vocabulary as fallback, repo conventions override
-  - upstream/claude-plugins-official/plugins/code-review/commands/code-review.md (Apache-2.0) — independent per-finding verification; untouched-line, pre-existing, tool-catchable and explicitly silenced issues are not findings; git history, earlier PR comments and in-code guidance as review lenses
+  - upstream/compound-engineering-plugin/skills/ce-code-review/references/{action-class-rubric.md,subagent-template.md} (MIT) — P0–P3; check callers, guards and framework defaults [port "data loss, security hole" "framework defaults"]
+  - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/* (MIT) — per-lens checklists (correctness sentinel and lifecycle-writer checks, reliability timeouts, retries and error-path leaks), anchored 25/50/75/100 confidence, per-persona do-not-flag lists [gap reduced to a one-line list of lenses]
+  - upstream/compound-engineering-plugin/skills/ce-simplify-code/references/personas/efficiency-reviewer.md (MIT) — unbounded structures, listener leaks [port "collections that only grow" "listeners never removed"]
+  - upstream/gstack/review (MIT) — sideways sweep, weakened-gate inventory, quote-or-cap confidence [port "sweep sideways" "weakened gates are findings" "capped at low confidence"]
+  - upstream/gstack/review/{checklist.md,gate-integrity.md} (MIT) — enum/value completeness trace, RH-1…16 gate-weakening pattern catalog, scope-creep check [gap not carried over]
+  - upstream/villetakanen-asdlc-io (MIT) — the repo's own instruction files as a review contract; stale specs as missing work [port "cite the specific rule when broken" "leaves it stale"]
+  - upstream/mattpocock-skills/skills/engineering/code-review (MIT) — spec and standards as separate axes, repo conventions override [port "two axes, reported separately" "the repo's own conventions override"]
+  - upstream/mattpocock-skills/skills/engineering/code-review (MIT) — smell vocabulary as fallback [gap the smell list and fixes are not in the skill]
+  - upstream/claude-plugins-official/plugins/code-review/commands/code-review.md (Apache-2.0) — independent per-finding verification; untouched-line, pre-existing, tool-catchable and explicitly silenced issues are not findings; git history, earlier PR comments and in-code guidance as review lenses [port "serious findings survive an independent refutation" "silenced by an ignore comment" "earlier pull requests touching these files"]
 ---
 
 # Code Review

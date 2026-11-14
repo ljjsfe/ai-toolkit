@@ -2,18 +2,22 @@
 name: debugging
 description: >-
   Find a bug's root cause before changing code: build a fast red/green reproduction first, route by
-  failure shape (flaky, order-dependent, race, perf), isolate the failing layer (UI, API, backend,
-  DB), and stop after three failed fixes. For active production outages use production-ops.
-version: 1.0.1
+  failure shape (flaky, order-dependent, race, perf), isolate the failing layer (client vs
+  server), and stop after three failed fixes. For active production outages use production-ops.
+version: 1.0.2
 sources:
-  - upstream/superpowers/skills/systematic-debugging (MIT) — root cause first, read the full error, one change at the source, three failed fixes means stop
-  - upstream/compound-engineering-plugin/skills/ce-debug/references/{investigate,fix}.md (MIT) — observation-cited hypotheses, explicit invalidation
-  - upstream/mattpocock-skills/skills/engineering/diagnosing-bugs (MIT) — reproduction loop as the first deliverable
-  - upstream/gstack/investigate (MIT) — failure-shape routing; rerun, timeout and skip are not hypotheses
-  - upstream/compound-engineering-plugin/skills/ce-debug (MIT) — convergent vs divergent fixes
-  - upstream/gstack/qa (MIT) — regression-test value bar
-  - upstream/addyosmani-agent-skills/skills/debugging-and-error-recovery (MIT) — check the layer (UI, network, backend)
-  - authored for this toolkit from a stated need (frontend-or-backend triage) — request/response boundary isolation steps
+  - upstream/superpowers/skills/systematic-debugging (MIT) — root cause first, three failed fixes means stop [port "build the reproduction before theorising" "three failed fixes"]
+  - upstream/superpowers/skills/systematic-debugging (MIT) — read the full error; one change at the source; backward root-cause tracing; condition-based waiting; find-polluter.sh [gap none of these are in the skill]
+  - upstream/compound-engineering-plugin/skills/ce-debug/references/{investigate,fix}.md (MIT) — observation-cited hypotheses, explicit invalidation [port "every hypothesis cites an observation" "invalidate its hypothesis out loud"]
+  - upstream/compound-engineering-plugin/skills/ce-debug/references/investigate.md (MIT) — environment sanity check, dirty tree as a suspect, assumption audit, bisect with the repro, tracker and PR history search [gap not carried over]
+  - upstream/mattpocock-skills/skills/engineering/diagnosing-bugs (MIT) — reproduction loop as the first deliverable [port "one command that goes red"]
+  - upstream/mattpocock-skills/skills/engineering/diagnosing-bugs (MIT) — ladder of ways to build a feedback loop, minimise step, 3–5 ranked falsifiable hypotheses, tagged debug logs with a cleanup grep [gap not carried over]
+  - upstream/gstack/investigate (MIT; retired upstream in 2026-11 after a null eval) — failure-shape routing; rerun, timeout and skip are not hypotheses [port "route by failure shape" "is never a hypothesis"]
+  - upstream/compound-engineering-plugin/skills/ce-debug (MIT) — convergent vs divergent fixes [idea]
+  - upstream/gstack/qa (MIT) — regression-test value bar [port "keep the reproduction as a regression test"]
+  - upstream/addyosmani-agent-skills/skills/debugging-and-error-recovery (MIT) — check the layer (UI, network, backend) [port "find the failing layer"]
+  - upstream/addyosmani-agent-skills/skills/debugging-and-error-recovery (MIT) — database layer isolation; error output treated as untrusted data [gap not carried over]
+  - authored for this toolkit from a stated need (frontend-or-backend triage) — request/response boundary isolation steps [port "replay the request with curl"]
 ---
 
 # Debugging

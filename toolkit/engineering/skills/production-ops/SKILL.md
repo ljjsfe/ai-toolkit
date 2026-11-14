@@ -4,18 +4,21 @@ description: >-
   Ship safe production changes (expand-migrate-contract schema/data migrations, idempotent retries,
   deploys, rollbacks, burn-rate alerts) and run live incidents (mitigate first, capture evidence,
   confirm signal recovery). For non-urgent bugs use debugging.
-version: 1.1.0
+version: 1.1.1
 sources:
-  - upstream/everything-claude-code/skills/{database-migrations,docker-patterns} (MIT) — expand-migrate-contract, CONCURRENTLY, batched backfills
-  - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/data-migration-reviewer.md (MIT) — broken dual-write transitions
-  - upstream/supabase-agent-skills/skills/supabase-postgres-best-practices (MIT) — SET lock_timeout before lock-taking ALTER TABLE on live tables
-  - upstream/jeffallan-claude-skills/skills/microservices-architect (MIT) — idempotency keys, idempotent saga steps, explicit retry budgets
-  - upstream/gstack/{land-and-deploy,canary} (MIT) — risk-scaled verification, baseline deviation, merge-shape-aware revert
-  - upstream/jeffallan-claude-skills/skills/{sre-engineer,monitoring-expert} (MIT) — multi-window burn-rate alerts, trend-based capacity alerts
-  - upstream/addyosmani-agent-skills/skills/observability-and-instrumentation (MIT) — entry-point log field
-  - upstream/everything-claude-code/skills/{latency-critical-systems,springboot-patterns} (MIT) — split latency signals; forwarded-header spoofing
-  - upstream/jeffallan-claude-skills/skills/devops-engineer/references/incident-response.md (MIT) — evidence before state-destroying actions, routing by incident type and regulatory clock, re-check after remediation
-  - upstream/axiomhq-skills/skills/sre (MIT) — discover the data's real fields before querying
+  - upstream/everything-claude-code/skills/{database-migrations,docker-patterns} (MIT) — expand-migrate-contract, CONCURRENTLY, batched backfills [port "expand → migrate → contract" "create index concurrently" "backfills in keyset batches"]
+  - upstream/everything-claude-code/skills/database-migrations (MIT) — forward-only migrations in production; no NOT NULL column without a default on a live table [gap not carried over]
+  - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/data-migration-reviewer.md (MIT) — broken dual-write transitions [port "during a dual-write transition"]
+  - upstream/supabase-agent-skills/skills/supabase-postgres-best-practices (MIT) — SET lock_timeout before lock-taking ALTER TABLE on live tables [port "set a short lock_timeout"]
+  - upstream/jeffallan-claude-skills/skills/microservices-architect (MIT) — idempotency keys, idempotent saga steps, explicit retry budgets [port "unique constraint plus an atomic insert" "every saga step is idempotent" "a retry budget"]
+  - upstream/gstack/{land-and-deploy,canary} (MIT) — risk-scaled verification, baseline deviation, merge-shape-aware revert [port "scale verification to the change" "compare against baseline" "know the merge shape before reverting"]
+  - upstream/gstack/{land-and-deploy,canary} (MIT) — baseline captured before the deploy, a fixed monitoring window with numeric thresholds, unknown scope is not docs-only, bounded deploy waits, a revert PR when branch protection blocks a push [gap not carried over]
+  - upstream/jeffallan-claude-skills/skills/{sre-engineer,monitoring-expert} (MIT) — multi-window burn-rate alerts, trend-based capacity alerts [port "burn rate over multiple windows" "predict_linear"]
+  - upstream/jeffallan-claude-skills/skills/sre-engineer/references/error-budget-policy.md (MIT) — what happens when the error budget runs out [gap not carried over]
+  - upstream/addyosmani-agent-skills/skills/observability-and-instrumentation (MIT) — entry-point log field [port "an entry-point field"]
+  - upstream/everything-claude-code/skills/{latency-critical-systems,springboot-patterns} (MIT) — split latency signals; forwarded-header spoofing [port "data freshness" "trust x-forwarded-for only behind"]
+  - upstream/jeffallan-claude-skills/skills/devops-engineer/references/incident-response.md (MIT) — evidence before state-destroying actions, routing by incident type and regulatory clock, re-check after remediation [port "capture evidence in parallel with mitigation" "route by incident type" "resolved means the original signal recovered"]
+  - upstream/axiomhq-skills/skills/sre (MIT) — discover the data's real fields before querying [port "look at the data's real shape"]
 ---
 
 # Production Ops
@@ -60,7 +63,9 @@ mistake that looks reasonable at the time.
 - **Scale verification to the change:** docs only → smoke check; config → health and status
   codes; backend → error rate, latency and logs against the pre-deploy baseline; frontend or
   mixed → also console errors and a visual check. Compare against baseline, not absolute
-  numbers, and require two consecutive bad checks before rolling back automatically.
+  numbers, and require two consecutive bad checks before raising the alarm. Rolling back is then
+  an incident mitigation: propose it and wait for the go-ahead (see "When something breaks") unless an
+  automated rollback was agreed before the deploy.
 - **Know the merge shape before reverting.** A true merge commit reverts with `git revert -m 1`;
   a squash is one commit; a rebase-merge is a range — reverting only its last commit leaves the
   rest deployed. If the shape is unclear, stop and identify the full range.
