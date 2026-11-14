@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from claim_check import claims_success, should_block  # noqa: E402
+from claim_check import claims_success, review_needs_refutation, should_block  # noqa: E402
 
 HOOK = Path(__file__).with_name("claim_check.py")
 
@@ -240,6 +240,18 @@ class ClaimCheckTests(unittest.TestCase):
         agy = [agy_user("fix"), agy_model("edit", [agy_tc("edit_file")]),
                agy_model("check", [agy_tc("run_command", {"CommandLine": "git diff"})]), agy_model("Done.")]
         self.assertTrue(should_block(agy))
+
+    def test_review_with_p0_needs_a_subagent_refutation(self):
+        report = "Spec conformance: met\nFindings (standards): P1 api.py:40 · token not checked · fix"
+        self.assertTrue(review_needs_refutation([user("review this PR"), asst(text(report))]))
+        dispatched = [user("review this PR"), asst(tool("Agent", {"prompt": "disprove"})), tool_result(), asst(text(report))]
+        self.assertFalse(review_needs_refutation(dispatched))
+        self.assertFalse(review_needs_refutation([user("review"), asst(text(report + " (self-checked)"))]))
+        low = "Spec conformance: met\nFindings (standards): P2 util.py:3 · naming"
+        self.assertFalse(review_needs_refutation([user("review"), asst(text(low))]))
+        self.assertFalse(review_needs_refutation([user("explain P0 vs P1"), asst(text("P0 means outage; P1 means bug."))]))
+        # not a Claude Code transcript: unknown how subagents appear, so never block
+        self.assertFalse(review_needs_refutation([codex_user("review"), codex_asst(report)]))
 
     def test_antigravity_transcript_blocks_and_allows(self):
         blocked = [

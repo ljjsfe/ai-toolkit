@@ -116,6 +116,28 @@
     Chinese counterpart of humanizer: template phrasing, padding and inflated claims, while
     keeping facts, how certain each claim is, and the author's voice.
 
+- name: marketingskills-gtm
+  category: product
+  repo: https://github.com/coreyhaines31/marketingskills
+  license: MIT
+  tools: claude, codex, agy
+  watch: skills/product-marketing, skills/launch, skills/onboarding, skills/signup, skills/churn-prevention, skills/referrals
+  install:
+    - npx -y skills@latest add coreyhaines31/marketingskills -g -a claude-code -a codex -a antigravity -s product-marketing -s launch -s onboarding -s signup -s churn-prevention -s referrals -y
+  covers: >
+    Go-to-market execution the toolkit had no skill for: positioning and ICP context
+    (product-marketing), launch planning, onboarding and activation, signup and trial flows,
+    churn prevention (cancel flows, dunning), referral programmes.
+  why_not_rewritten: >
+    A maintained, MIT, 60k-star collection with recent commits (2026-11-11); rewriting six
+    execution playbooks would restate it. Only these six install: the repo's pricing,
+    ab-testing, competitors, customer-research and copywriting skills would compete with
+    pricing, experiment-readout, market-scan, customer-discovery and writing, which own those
+    jobs here. The full set adds about 18,800 description characters; these six about 1,800.
+  notes: >
+    Evidence still comes from the toolkit's skills: demand from customer-discovery, price
+    from pricing, launch metric reads from experiment-readout.
+
 - name: webapp-testing
   category: engineering
   repo: https://github.com/anthropics/skills

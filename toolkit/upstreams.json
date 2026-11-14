@@ -65,9 +65,10 @@
       "reviewed_on": "2026-11-14"
     },
     "everything-claude-code": {
-      "repo": "affaan-m/everything-claude-code",
+      "repo": "affaan-m/ECC",
       "reviewed_sha": "d2ef2680594f9a17526a6e1a2e18b3d242c5d17b",
-      "reviewed_on": "2026-11-14"
+      "reviewed_on": "2026-11-14",
+      "note": "renamed from affaan-m/everything-claude-code on 2026-10-01 (c05b2d6)"
     },
     "ferdinandobons-startup-skill": {
       "repo": "ferdinandobons/startup-skill",

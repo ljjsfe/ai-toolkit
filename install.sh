@@ -71,6 +71,12 @@ BASE_EXTERNAL_PREFIXES = (
     "agent-browser",
     "webapp-testing",
     "mcp-builder",
+    "product-marketing",
+    "launch",
+    "onboarding",
+    "signup",
+    "churn-prevention",
+    "referrals",
 )
 keep_file = home / ".toolkit-keep"
 if keep_file.is_file():

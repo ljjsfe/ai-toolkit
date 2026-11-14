@@ -67,6 +67,18 @@ INJECTED_PREFIXES = (
     "Caveat:",
     "[Request interrupted",
 )
+# code-review iron law 6: a P0/P1 finding needs an independent refutation before it is reported.
+# Prose alone was skipped in practice (gstack's /review evals); this enforces it where the transcript
+# shows subagent calls (Claude Code). The skill's own fallback, a "self-checked" label, satisfies it.
+SUBAGENT_TOOLS = frozenset({"Agent", "Task"})
+REVIEW_REPORT = re.compile(r"spec conformance|findings \(standards\)|^\s*findings\s*:", re.I | re.M)
+SEVERE_FINDING = re.compile(r"\bP[01]\b")
+REVIEW_REASON = (
+    "This code review reports a P0/P1 finding, but no independent subagent was dispatched this turn "
+    "to refute it (code-review iron law 6). Give each P0/P1 to a fresh subagent with the finding, the "
+    "cited rule and the repository - not your reasoning - and drop or demote what it refutes. If no "
+    "subagent is available, re-check in a separate pass and label those findings self-checked."
+)
 REASON = (
     "You edited files this turn and ran no command after the last edit, but your message "
     "claims success. Run the command that proves the claim (tests, build, a reproduction, "
@@ -212,6 +224,25 @@ def _is_user_prompt(entry: dict) -> bool:
     return isinstance(content, str) and not content.lstrip().startswith(INJECTED_PREFIXES)
 
 
+def review_needs_refutation(entries: list[dict], final_text: str | None = None) -> bool:
+    """A Claude Code turn whose final review report has P0/P1 findings but dispatched no subagent."""
+    start = max((i for i, e in enumerate(entries) if _is_user_prompt(e)), default=-1)
+    turn = entries[start + 1:]
+    claude_turn, dispatched, text = False, False, ""
+    for e in turn:
+        if e.get("type") != "assistant":
+            continue
+        claude_turn = True
+        for c in e.get("message", {}).get("content", []) or []:
+            if isinstance(c, dict) and c.get("type") == "tool_use" and c.get("name") in SUBAGENT_TOOLS:
+                dispatched = True
+            elif isinstance(c, dict) and c.get("type") == "text":
+                text = c.get("text", "")
+    text = final_text if final_text is not None else text
+    return (claude_turn and not dispatched and bool(REVIEW_REPORT.search(text))
+            and bool(SEVERE_FINDING.search(text)) and "self-checked" not in text.lower())
+
+
 def should_block(entries: list[dict], final_text: str | None = None) -> bool:
     """final_text: the last assistant message as given to the hook; falls back to the transcript."""
     start = max((i for i, e in enumerate(entries) if _is_user_prompt(e)), default=-1)
@@ -311,8 +342,12 @@ def main() -> int:
         path = Path(payload.get("transcript_path", ""))
         if not path.is_file():
             return 0
-        if should_block(_entries(path), payload.get("last_assistant_message")):
+        entries = _entries(path)
+        final = payload.get("last_assistant_message")
+        if should_block(entries, final):
             print(json.dumps({"decision": "block", "reason": REASON}))
+        elif review_needs_refutation(entries, final):
+            print(json.dumps({"decision": "block", "reason": REVIEW_REASON}))
     except (OSError, ValueError, TypeError):
         if is_agy:
             print(json.dumps({"decision": "allow"}))
