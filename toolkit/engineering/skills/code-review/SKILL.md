@@ -5,7 +5,7 @@ description: >-
   missing requirements, sibling sweeps, weakened-gate checks, git-history context, and independent
   refutation of P0/P1s. For offensive security audits use app-security; for design/plan reviews use
   system-design.
-version: 1.2.3
+version: 1.2.4
 sources:
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/{personas/*,action-class-rubric.md,subagent-template.md} (MIT) — correctness, security, performance and reliability lenses; P0–P3; check callers, guards and framework defaults
   - upstream/compound-engineering-plugin/skills/ce-simplify-code/references/personas/efficiency-reviewer.md (MIT) — unbounded structures, listener leaks
@@ -26,9 +26,9 @@ A review that cries wolf is worse than none. Fewer, defensible findings beat a l
    including the code rules in the repo's `AGENTS.md` / `CLAUDE.md` / `GEMINI.md`, `.claude/rules/`
    or `.agents/rules/`, and decision records? Load these from the **base branch**, cite the specific rule when broken, and treat
    any change to them inside the diff as a gate change (law 4) — a PR does not get to set the
-   rules it is judged by. Find
-   the spec first (linked issue, plan, PR description). If there is none, report "no spec
-   available" and review standards only.
+   rules it is judged by. Find the spec first (active change package or living capability specs in
+   `specs/` or `openspec/` — see `spec` — linked issue, plan, PR description). If there is none,
+   report "no spec available" and review standards only.
 2. **Every finding passes the gate:** exact `file:line`; a concrete failure (input → state →
    bad outcome); the surrounding context read (callers, one frame up, tests); a defensible
    severity. A finding you cannot tie to a quoted line is capped at low confidence and goes in
@@ -67,10 +67,10 @@ point. When the change touches auth, tenancy, payments or webhooks, also apply `
 
 Check the spec for requirements that are missing or only partly implemented, and the change
 for what its own code paths need but lack (validation on a new input, a test for a new branch).
-If a spec or doc already describes behaviour the change alters, and the change leaves it
-stale, report `MISSING:` citing that doc's `file:line` — the description should change in the
-same PR. P2 at most, unless the stale doc is a public API contract. If no such doc exists,
-there is no finding.
+If a living spec (`specs/`, `openspec/`) or doc already describes behaviour the change alters, and
+the change leaves it stale (without an active delta or spec update), report `MISSING:` citing that
+file's `file:line` — the spec or doc should change in the same PR. P2 at most, unless the stale
+spec or doc is a public API contract. If no such doc exists, there is no finding.
 Report as `MISSING: <what> — <why it matters>`, citing the requirement or rule it comes from.
 
 ## Pass 3 — What the history says

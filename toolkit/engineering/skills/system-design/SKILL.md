@@ -3,9 +3,9 @@ name: system-design
 description: >-
   Design or resize a system with numbers before boxes (RPS, storage, SLO/RPO/RTO, unit/monthly
   cost, failure domains), or review an existing technical design/plan without inventing findings.
-  Not for diffs (code-review), unsettled framing (design-discussion), or agent loops
-  (agent-architecture).
-version: 1.0.1
+  Not for unsettled framing (design-discussion), behavioral specs (spec), agent loops
+  (agent-architecture), or diffs (code-review).
+version: 1.0.2
 sources:
   - upstream/jeffallan-claude-skills/skills/architecture-designer/references/nfr-checklist.md (MIT) — numeric non-functional requirements before design; RPO and RTO as separate targets
   - upstream/everything-claude-code/skills/redis-patterns (MIT) — cache stampede named with a concrete fix
@@ -87,7 +87,9 @@ real cost.
 3. **Every finding names its cost:** what breaks, slows or becomes hard, and when.
 4. **Most consequential first.** In an interactive session raise them one at a time; otherwise
    list them in that order. Never finalise a plan that silently resolves open findings.
-5. Check the numbers the design states, if any; review mode does not demand a full estimate.
+5. Check the numbers the design states, if any, and check that components and failure handling
+   honour any active `spec` (living capability specs or change deltas); review mode does not demand
+   a full estimate.
 
 | test | ask |
 |---|---|
@@ -114,3 +116,7 @@ Lock-in:          per managed service, with exit scenario where claimed
 Failure analysis: failure domains vs RPO/RTO · hot spots and fixes · limits hit first
 Open questions:   numbers that would change the design
 ```
+
+Once the design settles and observable behaviour changes, hand off to `spec` to capture capability
+deltas, human-gated sign-offs and vertical tasks (`design.md` holds the sizing decisions above)
+before starting `tdd`.

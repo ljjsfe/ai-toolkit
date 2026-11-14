@@ -3,8 +3,8 @@ name: design-discussion
 description: >-
   Hold an open-ended design conversation before planning: one question + guess per turn, frame goal
   and constraints before proposing, 2–3 distinct mechanisms, and a live decision log. Trigger on
-  "discuss the design", 讨论方案/聊设计; once settled use system-design or agent-architecture.
-version: 1.1.0
+  "discuss the design", 讨论方案/聊设计; once settled use system-design, spec, or agent-architecture.
+version: 1.1.1
 sources:
   - upstream/superpowers/skills/brainstorming (MIT) — think wide privately, play back in chunks, builder check by a fresh reader, nothing built before approval
   - upstream/addyosmani-agent-skills/skills/interview-me (MIT) — one question with a guess attached, "want vs should want" probe, predict-the-next-three stop test, bare assent is not a yes
@@ -96,6 +96,7 @@ user's answers are still not predictable, say so and step back to the frame inst
 | need | use |
 |---|---|
 | capacity, cost, uptime numbers, or reviewing a finished design | system-design |
+| pinning settled behaviour as capability specs, change deltas and tasks | spec |
 | what to build and what goes into a first version | product-scoping |
 | whether to adopt, build or migrate to a specific technology | adopt-or-build |
 | an agent system's topology, tool surface and stop conditions | agent-architecture |

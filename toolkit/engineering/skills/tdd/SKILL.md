@@ -2,9 +2,9 @@
 name: tdd
 description: >-
   Build test-first in thin vertical slices: agree public seams first, go red-before-green one
-  slice at a time, mock only system boundaries, and slice plans into tickets with real blocking
-  edges. For un-reproduced bugs start with debugging; for reviewing a diff's tests use code-review.
-version: 1.1.0
+  slice at a time, mock only system boundaries, and slice plans or specs into tickets with real
+  blocking edges. Un-reproduced bugs: debugging; behavioral contracts: spec; diff review: code-review.
+version: 1.1.1
 sources:
   - upstream/mattpocock-skills/skills/engineering/tdd (MIT, commit 5beb35b) — tests at agreed seams, implementation-coupled and tautological tests, horizontal slicing as an anti-pattern, mock only at system boundaries, no refactoring mid-cycle
   - upstream/mattpocock-skills/skills/engineering/to-tickets (MIT, commit 5beb35b) — tracer-bullet vertical slices, blocking edges and the frontier, expand–contract sequencing for wide refactors, no file paths in tickets
@@ -33,16 +33,19 @@ Scale it to the change: a small change is one slice, and its seams are stated, n
    brief. No test at a seam that is neither agreed nor recorded.
 3. **Red before green.** Write one failing test, watch it fail for the expected reason, then
    write only the code that makes it pass. One test and one minimal implementation per cycle.
-4. **Expected values come from outside the code:** a known literal, a worked example, the spec.
-   Never a recomputation done the way the code does it.
+4. **Expected values come from outside the code:** a known literal, a worked example, or a
+   `WHEN`/`THEN` scenario in `spec`. Never a recomputation done the way the code does it.
 5. **No refactoring mid-cycle.** Tidy only once the slice is green, with the suite green before
    and after. Planning a larger restructure goes to `system-design`; its diff goes to
    `code-review`.
 
 ## 1. Slice the work
 
-- Draft the slices as a numbered list. Each has a title, what it delivers end to end from the
-  caller's or user's view, what blocks it, and acceptance items as `- [ ]`.
+- Draft the slices as a numbered list (or take them from `tasks.md` in an active `spec` change,
+  citing the `[REQ-...]` IDs each slice delivers). Each has a title, what it delivers end to end
+  from the caller's or user's view, what blocks it, and acceptance items as `- [ ]`. If coding
+  uncovers a missing scenario or an impossible requirement, pause and reconcile via `spec` rather
+  than silently diverging.
 - Put prefactoring first, as its own slice: make the change easy, then make the easy change.
 - Size each slice to fit one fresh agent context.
 - Add a blocking edge only where one slice truly gates another. The slices whose blockers are
@@ -92,7 +95,7 @@ Scale it to the change: a small change is one slice, and its seams are stated, n
 Per slice:
 
 ```
-Slice:       NN title — blocked by …
+Slice:       NN title [REQ-...] — blocked by …
 Seams:       interfaces under test (agreed | assumed)
 Cycles:      test name → why it went red → green (command and result)
 Acceptance:  each item covered · not covered · not verified · not applicable, with its evidence
