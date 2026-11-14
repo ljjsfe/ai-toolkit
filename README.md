@@ -64,9 +64,11 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
 - Validation and tests (zero external dependencies):
   - Full repo check (frontmatter, resident description budget, references, source coverage tags and their anchors, `external.yaml` trial review dates, `CREDITS.md` sync, unit tests, and tests of any skill `scripts/`): `python3 scripts/check.py`
   - Validator & hook tests alone: `python3 scripts/test_check.py` and `python3 toolkit/hooks/claim-check/test_claim_check.py` (also `pytest -q` compatible).
-- `claim-check` is a cheap tripwire, not proof of verification: it checks that *some* command or
-  browser check ran after the last edit, not which one, and it ignores negated or conditional
-  phrases ("not verified", "if tests pass", "还没完成").
+- `claim-check` is a cheap tripwire, not proof of verification: it checks that a command that is
+  not purely read-only (`ls`, `cat`, `git status`… do not count) or a browser check ran after the
+  last edit, not that it was the right one. File writes through the shell (`sed -i`, redirection,
+  `tee`, `git apply`, a script heredoc that writes) count as edits. It ignores negated or
+  conditional phrases ("not verified", "if tests pass", "还没完成").
 
 ## Principles
 

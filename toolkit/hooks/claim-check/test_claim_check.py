@@ -194,6 +194,53 @@ class ClaimCheckTests(unittest.TestCase):
                 self.assertTrue(claims_success(msg))
 
     # ---- Antigravity transcript & CLI tests ---------------------------------------------
+    def test_wider_claim_wording(self):
+        for claim in ("Done — the fix is in.", "Done, pushed the change.", "The bug is resolved.",
+                      "Changes complete.", "Everything works.", "已经修改完毕", "问题已解决"):
+            self.assertTrue(claims_success(claim), claim)
+        for not_claim in ("This is not resolved yet.", "Once everything works we can ship.",
+                          "完成之前还需要跑测试", "It isn't complete."):
+            self.assertFalse(claims_success(not_claim), not_claim)
+
+    def test_read_only_command_does_not_count_as_verification(self):
+        for cmd in ("ls -la src", "git status && git diff", "cat app.py | grep foo", "sed -n 1,20p x.py"):
+            t = [user("fix it"), asst(tool("Edit")), tool_result(),
+                 asst(tool("Bash", {"command": cmd})), tool_result(), asst(text("Fixed."))]
+            self.assertTrue(should_block(t), cmd)
+        t = [user("fix it"), asst(tool("Edit")), tool_result(),
+             asst(tool("Bash", {"command": "python -m pytest -q 2>&1 | tail -5"})), tool_result(), asst(text("Fixed."))]
+        self.assertFalse(should_block(t))
+
+    def test_shell_edit_counts_as_edit(self):
+        for cmd in ("sed -i '' 's/a/b/' app.py", "echo 'x = 1' >> config.py", "printf hi | tee out.txt",
+                    "python3 - <<'EOF'\nopen('a.py','w').write('x')\nEOF", "git apply fix.patch"):
+            t = [user("fix it"), asst(tool("Bash", {"command": cmd})), tool_result(), asst(text("Fixed."))]
+            self.assertTrue(should_block(t), cmd)
+
+    def test_shell_edit_followed_by_a_real_run_in_the_same_command(self):
+        t = [user("fix it"), asst(tool("Bash", {"command": "sed -i 's/a/b/' app.py && pytest -q"})),
+             tool_result(), asst(text("Fixed."))]
+        self.assertFalse(should_block(t))
+        t = [user("fix it"), asst(tool("Bash", {"command": "pytest -q && sed -i 's/a/b/' app.py"})),
+             tool_result(), asst(text("Fixed."))]
+        self.assertTrue(should_block(t))
+
+    def test_non_writing_shell_is_not_an_edit(self):
+        for cmd in ("python3 - <<'EOF'\nif a > b:\n    print(a)\nEOF", "make test > /dev/null 2>&1",
+                    "npm test 2>&1 | tail -3"):
+            t = [user("check"), asst(tool("Edit")), tool_result(),
+                 asst(tool("Bash", {"command": cmd})), tool_result(), asst(text("Fixed."))]
+            self.assertFalse(should_block(t), cmd)
+
+    def test_codex_and_agy_command_arguments_are_read(self):
+        codex_ls = {"type": "response_item", "payload": {"type": "function_call", "name": "exec_command",
+                                                          "arguments": json.dumps({"cmd": ["bash", "-lc", "ls"]})}}
+        self.assertTrue(should_block([codex_user("patch"), codex_call("apply_patch", "custom_tool_call"),
+                                      codex_ls, codex_asst("Fixed.")]))
+        agy = [agy_user("fix"), agy_model("edit", [agy_tc("edit_file")]),
+               agy_model("check", [agy_tc("run_command", {"CommandLine": "git diff"})]), agy_model("Done.")]
+        self.assertTrue(should_block(agy))
+
     def test_antigravity_transcript_blocks_and_allows(self):
         blocked = [
             agy_user("fix bug"),

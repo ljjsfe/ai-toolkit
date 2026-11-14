@@ -6,7 +6,10 @@ command (or browser verification tool) after the last edit, and its final messag
 success. Blocks once per stop and tells the agent to verify. Fails open on any error.
 
 Supports Claude Code, Antigravity (agy), and Codex Stop hook payloads and transcripts.
-A tripwire, not proof: any command call after the last edit satisfies it, whatever it ran.
+A tripwire, not proof. A shell command counts as a run unless every part of it is read-only
+(ls, cat, grep, git status, ...); a shell command that writes files (sed -i, redirection, tee,
+git apply, a Python heredoc that writes) counts as an edit, and as a run only if a non-read-only
+part follows the write.
 """
 from __future__ import annotations
 
@@ -36,9 +39,12 @@ CLAIM = re.compile(
     rf"\bfixed\b(?!-[a-z]|\s+({FIXED_ADJECTIVE_NOUNS})\b)"
     r"|\b(works now|is working|all (tests )?pass(ed|ing|es)?|tests (now )?pass(ed|ing|es)?|"
     r"(successfully )?deployed (to|successfully)|verified|ready to (merge|ship)|"
-    r"all done|it'?s done|is done)\b"
-    r"|\b(done|deployed)\s*([.!]|$)"
-    r"|(完成了|已完成|全部完成|修好了|已修复|修复完成|改好了|写好了|搞定|测试通过|测试已通过|都通过|部署好了|已部署)",
+    r"all done|it'?s done|is done|(is|are|been|now) resolved|"
+    r"(is|are|now|changes|implementation|work|task|migration|refactor) (now )?complete|"
+    r"(everything|it|all|this|that) works|all working)\b"
+    r"|\b(done|deployed)\s*([.!,:;—–-]|$)"
+    r"|(完成了|已完成|全部完成|修好了|已修复|修复完成|改好了|写好了|搞定|测试通过|测试已通过|都通过|部署好了|已部署|"
+    r"完毕|已解决|解决了|已经好了|没问题了|已修改|修改好了|已实现|实现好了|已上线)",
     re.IGNORECASE,
 )
 # A claim preceded closely in the same clause by a negation or conditional ("not verified",
@@ -94,6 +100,59 @@ def _is_edit_tool(name: str, args: dict | None = None) -> bool:
 
 def _is_run_tool(name: str) -> bool:
     return name in RUN_TOOLS or name.startswith(RUN_TOOL_PREFIXES)
+
+
+HEREDOC_RE = re.compile(r"<<-?\s*(['\"]?)(\w+)\1[^\n]*\n(.*?)\n\s*\2\s*(?=\n|$)", re.S)
+SHELL_WRITE_RE = re.compile(
+    r"\bsed\s+(-[a-zA-Z]*i\b|--in-place)|\bperl\s+-[a-zA-Z]*i|\btee\b(?!\s+/dev/null)|"
+    r"\bgit\s+(apply|am|checkout\s+--|restore)\b|\bpatch\s|"
+    r"(?<![0-9&>])>>?\s*(?!&|/dev/null)[^\s|&;<>]+"
+)
+SCRIPT_WRITE_RE = re.compile(r"""open\([^)]*['"][wax]\+?b?['"]|\.write_text\(|\.write_bytes\(|writeFileSync|fs\.write""")
+READ_ONLY_RE = re.compile(
+    r"^\s*(ls|ll|cat|head|tail|less|more|grep|rg|ag|find|fd|pwd|echo|printf|wc|which|type|file|stat|"
+    r"tree|du|df|env|date|whoami|cd|true|sed\s+-n|awk\s+'[^']*print|"
+    r"git\s+(status|diff|log|show|branch|remote|rev-parse|ls-files|blame))\b"
+)
+SEGMENT_SPLIT = re.compile(r"&&|\|\||;|\n|\|")
+
+
+def _shell_effect(cmd: str) -> tuple[bool, bool]:
+    """(writes files, runs something non-read-only after its last write) for one shell command."""
+    bodies = [m.group(3) for m in HEREDOC_RE.finditer(cmd)]
+    shell = HEREDOC_RE.sub(" ", cmd)
+    segments = [seg for seg in SEGMENT_SPLIT.split(shell) if seg.strip()]
+    write_idx = [i for i, seg in enumerate(segments) if SHELL_WRITE_RE.search(seg)]
+    if any(SCRIPT_WRITE_RE.search(b) for b in bodies):
+        # The heredoc body runs in the segment that opened it; treat the last segment carrying one as a write.
+        carriers = [i for i, seg in enumerate(SEGMENT_SPLIT.split(HEREDOC_RE.sub(" <<HEREDOC ", cmd))) if "<<HEREDOC" in seg]
+        write_idx += carriers or [0]
+    last_write = max(write_idx, default=-1)
+    after = segments[last_write + 1:] if last_write >= 0 else segments
+    runs = any(not READ_ONLY_RE.match(seg) for seg in after)
+    return last_write >= 0, runs
+
+
+def _command_of(args: object) -> str | None:
+    """The shell command from a tool call's arguments (Claude `command`, agy `CommandLine`, Codex `cmd`)."""
+    if isinstance(args, str):
+        try:
+            args = json.loads(args)
+        except json.JSONDecodeError:
+            return args
+    if not isinstance(args, dict):
+        return None
+    for key in ("command", "CommandLine", "cmd"):
+        v = args.get(key)
+        if isinstance(v, list):
+            # Codex passes argv, usually ["bash", "-lc", "<script>"]: the script is what ran.
+            if len(v) >= 3 and str(v[0]).rsplit("/", 1)[-1] in ("bash", "sh", "zsh") and str(v[1]).startswith("-") and "c" in str(v[1]):
+                v = str(v[-1])
+            else:
+                v = " ".join(str(x) for x in v)
+        if isinstance(v, str) and v.strip():
+            return v
+    return None
 
 
 def _entries(path: Path) -> list[dict]:
@@ -157,7 +216,22 @@ def should_block(entries: list[dict], final_text: str | None = None) -> bool:
     """final_text: the last assistant message as given to the hook; falls back to the transcript."""
     start = max((i for i, e in enumerate(entries) if _is_user_prompt(e)), default=-1)
     turn = entries[start + 1 :]
-    step, last_edit, last_run, transcript_text = 0, -1, -1, ""
+    step, last_edit, last_run, transcript_text = 0, -1.0, -1.0, ""
+
+    def record(name: str, args: object) -> None:
+        nonlocal last_edit, last_run
+        if _is_edit_tool(name, args if isinstance(args, dict) else None):
+            last_edit = step
+        elif _is_run_tool(name):
+            cmd = _command_of(args) if name in RUN_TOOLS else None
+            if cmd is None:  # unknown arguments or a browser tool: count it as a run
+                last_run = step
+                return
+            writes, runs = _shell_effect(cmd)
+            if writes:
+                last_edit = step
+            if runs:
+                last_run = step + 0.5 if writes else step
 
     for e in turn:
         etype = e.get("type")
@@ -169,12 +243,7 @@ def should_block(entries: list[dict], final_text: str | None = None) -> bool:
                     continue
                 step += 1
                 if c.get("type") == "tool_use":
-                    name = c.get("name", "")
-                    args = c.get("input") if isinstance(c.get("input"), dict) else None
-                    if _is_edit_tool(name, args):
-                        last_edit = step
-                    elif _is_run_tool(name):
-                        last_run = step
+                    record(c.get("name", ""), c.get("input"))
                 elif c.get("type") == "text":
                     transcript_text = c.get("text", "")
 
@@ -187,12 +256,7 @@ def should_block(entries: list[dict], final_text: str | None = None) -> bool:
                 if not isinstance(tc, dict):
                     continue
                 step += 1
-                name = tc.get("name", "")
-                args = tc.get("args") if isinstance(tc.get("args"), dict) else None
-                if _is_edit_tool(name, args):
-                    last_edit = step
-                elif _is_run_tool(name):
-                    last_run = step
+                record(tc.get("name", ""), tc.get("args"))
 
         # Codex rollout response_item entry
         elif etype == "response_item":
@@ -202,11 +266,7 @@ def should_block(entries: list[dict], final_text: str | None = None) -> bool:
             ptype = p.get("type")
             if ptype in ("function_call", "custom_tool_call"):
                 step += 1
-                name = p.get("name", "")
-                if _is_edit_tool(name):
-                    last_edit = step
-                elif _is_run_tool(name):
-                    last_run = step
+                record(p.get("name", ""), p.get("arguments", p.get("input")))
             elif ptype == "message" and p.get("role") == "assistant":
                 parts = p.get("content", [])
                 if isinstance(parts, list):
