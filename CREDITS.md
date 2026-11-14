@@ -167,6 +167,7 @@ Procedure carried over; anchored in the skill text.
 - upstream/phuryn-pm-skills/pm-execution/skills/create-prd (MIT) — value proposition with an explicit alternatives slot; findings enter the PRD only if they change a decision — used in: product-scoping
 - upstream/phuryn-pm-skills/pm-execution/skills/strategy-red-team (MIT) — load-bearing claims, steelman then attack, "fails if", ranked cheapest tests, no manufactured doubt — used in: product-scoping
 - upstream/jalald-verified-research/skills/verified-research/SKILL.md (MIT) — research budgets, top-up size, escalation triggers, origin counting, claims-only checker — used in: verified-research
+- upstream/jalald-verified-research/skills/verified-research/scripts/{audit_report.py,check_links.py,evidence.py} (MIT; rewritten for this skill's R/D record format) — cited URLs no record holds, missing record numbers, uncited specific sentences, the claims list for the checker, live link and passage checks with blocked-network detection, independent-origin counts through derived records, stale sources — used in: verified-research
 - upstream/seanellyjames-deep-research-skill/SKILL.en.md (MIT) — premise framing, falsifiable hypotheses, claim headings — used in: verified-research
 - upstream/wanshuiyin-auto-claude-code-research-in-sleep/skills/citation-audit/SKILL.md (MIT) — wrong-context verdict — used in: verified-research
 - upstream/everything-claude-code/skills/research-ops/SKILL.md (MIT) — sorting user material; statement-type tags — used in: verified-research
@@ -256,7 +257,7 @@ The upstream has this capability and the toolkit does not (yet).
 - upstream/ai-analyst-lab-ai-analyst/.claude/skills/triangulation (MIT) — paths run in isolated subagents with per-path record fields — missing: independence is asked for in one line with no mechanism — used in: experiment-readout
 - upstream/wondelai-skills/monetizing-innovation/references/wtp-conversations.md (MIT) — the exact WTP question scripts, a simplified conjoint procedure, B2C sample sizes — missing: not carried over — used in: pricing
 - upstream/phuryn-pm-skills/pm-execution/skills/create-prd (MIT) — the six-part value proposition and the ask-up-to-three-questions-before-writing rule — missing: only who / current tool / why switch is kept — used in: product-scoping
-- upstream/jalald-verified-research/skills/verified-research/scripts/{audit_report.py,check_links.py,evidence.py} (MIT) — mechanical detection of cited URLs no researcher gathered, dead links and quotes missing from their page, independent-origin counts and stale sources; the red-team phase for contested runs — missing: the checker pass relies on reading alone — used in: verified-research
+- upstream/jalald-verified-research/skills/verified-research/references/verification.md (MIT) — the red-team phase for contested runs — missing: not carried over — used in: verified-research
 - upstream/ahao-writing-dna-distiller (MIT) — the measuring pipeline (distill_metrics.py for sentence-length spread, short/long ratio, punctuation, nominalisation and risky-word density), beat sheets and structure archetypes, the form-vs-content forbidden map, the AI-flavour firewall self-check — missing: the voice profile has no way to measure its ranges — used in: writing
 
 ## Adopted external projects (installed from their own source; not included)

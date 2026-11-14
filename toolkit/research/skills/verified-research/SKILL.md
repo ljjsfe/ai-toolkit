@@ -4,10 +4,11 @@ description: >-
   Research contested or high-stakes questions across opened primary sources: frame hypotheses first,
   fix search/check budgets, trace claims to independent origins, verify every citation in a separate
   checker pass, and argue from records. Competitor/demand scans: market-scan; single facts: answer.
-version: 1.2.2
+version: 1.3.0
 sources:
   - upstream/jalald-verified-research/skills/verified-research/SKILL.md (MIT) — research budgets, top-up size, escalation triggers, origin counting, claims-only checker [port "research budgets come from jalald" "move up one size only when a named trigger" "origins, not urls" "the claims list and the records, not the draft"]
-  - upstream/jalald-verified-research/skills/verified-research/scripts/{audit_report.py,check_links.py,evidence.py} (MIT) — mechanical detection of cited URLs no researcher gathered, dead links and quotes missing from their page, independent-origin counts and stale sources; the red-team phase for contested runs [gap the checker pass relies on reading alone]
+  - upstream/jalald-verified-research/skills/verified-research/scripts/{audit_report.py,check_links.py,evidence.py} (MIT; rewritten for this skill's R/D record format) — cited URLs no record holds, missing record numbers, uncited specific sentences, the claims list for the checker, live link and passage checks with blocked-network detection, independent-origin counts through derived records, stale sources [port "def cmd_draft" "def cmd_links" "def origins_of" "no record holds it" "network looks blocked" "before the checker runs, run"]
+  - upstream/jalald-verified-research/skills/verified-research/references/verification.md (MIT) — the red-team phase for contested runs [gap not carried over]
   - upstream/seanellyjames-deep-research-skill/SKILL.en.md (MIT) — premise framing, falsifiable hypotheses, claim headings [port "what the question takes for granted" "two or three that evidence could falsify" "headings are claims"]
   - upstream/wanshuiyin-auto-claude-code-research-in-sleep/skills/citation-audit/SKILL.md (MIT) — wrong-context verdict [port "wrong context is the costly one"]
   - upstream/everything-claude-code/skills/research-ops/SKILL.md (MIT) — sorting user material; statement-type tags [port "already evidenced, needs checking, open" "tag each sentence"]
@@ -91,6 +92,21 @@ borrows a source sentence that does not state it.
 - **Dated.** Anything that changes — price, version, law, ranking — is reported as of a date.
 
 ## 4. Check — never by the writer
+
+Before the checker runs, run `scripts/research_audit.py` (standard-library Python):
+
+1. `research_audit.py records records.md` — every record has its fields; origins are counted.
+   Add `--since <date>` for fast-changing facts (prices, versions, statistics) to list stale sources.
+2. `research_audit.py draft draft.md --records records.md --out claims.md` — fix every error: a
+   cited R/D that does not exist, or a URL in the draft that no record holds (not opened this
+   session, or invented). Each "uncited" sentence gets a record or is cut; a "single origin"
+   section gets a second origin or a lower confidence. `claims.md` is the claims list the checker
+   receives.
+3. `research_audit.py links records.md` when the shell has network access — dead links and
+   passages missing from their page. Re-open BLOCKED or NOT FOUND pages with a fetch tool before
+   dropping them; if it reports the network is blocked, say links were not machine-checked.
+
+If Python cannot run, do these checks by hand and say the script was not run.
 
 The checker is a fresh subagent (if subagents are unavailable, run a dedicated post-draft
 verification pass from the claims list alone and label the output `self-checked`); in a quick run,
