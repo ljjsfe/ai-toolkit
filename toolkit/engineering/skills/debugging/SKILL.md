@@ -4,13 +4,14 @@ description: >-
   Find a bug's root cause before changing code: build a fast red/green reproduction first, route by
   failure shape (flaky, order-dependent, race, perf), isolate the failing layer (UI, API,
   backend, DB), and stop after three failed fixes. For active production outages use production-ops.
-version: 1.1.0
+version: 1.1.1
 sources:
   - upstream/superpowers/skills/systematic-debugging (MIT) — root cause first, three failed fixes means stop [port "build the reproduction before theorising" "three failed fixes"]
   - upstream/superpowers/skills/systematic-debugging (MIT) — read the full error; one change at the source; backward root-cause tracing; condition-based waiting; find-polluter.sh [port "Read the whole error before anything else" "One change at a time, at the source" "Backward root-cause tracing" "Condition-based waiting" "halves the candidate set each round"]
   - upstream/compound-engineering-plugin/skills/ce-debug/references/{investigate,fix}.md (MIT) — observation-cited hypotheses, explicit invalidation [port "every hypothesis cites an observation" "invalidate its hypothesis out loud"]
   - upstream/compound-engineering-plugin/skills/ce-debug/references/investigate.md (MIT) — environment sanity check, dirty tree as a suspect, assumption audit, bisect with the repro, tracker and PR history search [port "Uncommitted work is a suspect, not background" "Environment sanity and the dirty tree" "Assumption audit" "hand the reproduction to git bisect run" "search the issue tracker and earlier pull requests"]
   - upstream/mattpocock-skills/skills/engineering/diagnosing-bugs (MIT) — reproduction loop as the first deliverable [port "one command that goes red"]
+  - upstream/mattpocock-skills/skills/engineering/diagnosing-bugs (MIT, commit f3fc563) — a red forced by mutation counts only after a diff shows the mutation landed [port "diff it against an untouched copy"]
   - upstream/mattpocock-skills/skills/engineering/diagnosing-bugs (MIT) — ladder of ways to build a feedback loop, minimise step, 3–5 ranked falsifiable hypotheses, tagged debug logs with a cleanup grep [port "Feedback-loop ladder" "every remaining element is load-bearing" "Ranked, falsifiable hypotheses" "Tagged debug logs"]
   - upstream/gstack/investigate (MIT; retired upstream in 2026-11 after a null eval) — failure-shape routing; rerun, timeout and skip are not hypotheses [port "route by failure shape" "is never a hypothesis"]
   - upstream/compound-engineering-plugin/skills/ce-debug (MIT) — convergent vs divergent fixes [idea]
@@ -59,6 +60,8 @@ doubt, use the full process.
 
 - Build the loop (law 1), then **minimise**: cut inputs, callers, config and steps one at a
   time, re-running after each cut, until every remaining element is load-bearing.
+- Forced the red by editing code or a fixture? Diff it against an untouched copy before you
+  believe the red: if the edit never took effect, the failure comes from something else.
 - Check the environment before the code: branch, installed dependencies, runtime version,
   required environment variables, stale build output. **A dirty tree is the first suspect** —
   stash the uncommitted work safely and re-run the loop (exact procedure in

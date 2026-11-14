@@ -31,6 +31,8 @@ read the version-matched docs there before guessing Next 16+ APIs.
   into the client bundle.
 - Deduplicate non-`fetch` server DB/SDK reads shared across layout and page RSCs in one request
   with `React.cache()`.
+- `ViewTransition` / `addTransitionType` are stable from React 19.3 (no canary needed); Next.js
+  App Router already bundles canary React, so never install `react@canary` there.
 - If the project uses React Compiler, do not add manual `useMemo` / `useCallback` /
   `React.memo` for performance; check the build config first.
 - `suppressHydrationWarning` goes on the exact element whose content differs (a timestamp), never
@@ -40,6 +42,10 @@ read the version-matched docs there before guessing Next 16+ APIs.
 - Next 15+: `fetch` is **not cached by default** and GET route handlers are dynamic by default.
   Opt in to caching explicitly; Next 16 replaces `unstable_cache` with `"use cache"` + `cacheLife`
   + `cacheTag`.
+- Next 16+ `cacheComponents: true` errors on any file still exporting `dynamic`, `revalidate`
+  or `fetchCache`; `experimental.dynamicIO` (renamed `cacheComponents`) aborts the build.
+- Next 16.4: `navigation()` and `prefetch()` from `next/cache` replace the canary-only
+  `unstable_navigation` / `unstable_prefetch`.
 - Next 16: `middleware.ts` is renamed `proxy.ts` (export `proxy`), and it runs on the Node.js
   runtime. Do not "fix" `proxy.ts` back to `middleware.ts`.
 - Defer non-blocking post-response work (analytics, audit logs) with `after()` from `next/server`

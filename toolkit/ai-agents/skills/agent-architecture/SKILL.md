@@ -5,12 +5,13 @@ description: >-
   topology, append-only state, tool surface, context/cache pipeline, stop conditions, and human
   gates. Not for dispatching subagents in this session (use agent-orchestration); pair with
   agent-security once tools or credentials are involved.
-version: 1.1.0
+version: 1.2.0
 sources:
   - upstream/humanlayer-12-factor-agents/content/factor-05, factor-07, factor-09 (prose CC BY-SA 4.0 — ideas only, no wording) — unified event-log state, human contact as a tool call, compact errors with a ceiling [port "one append-only event log is the state" "human gate that is a tool call" "consecutive-error ceiling"]
   - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{multi-agent-patterns,tool-design,context-optimization,context-compression,self-managed-context,filesystem-context,long-horizon-prompting,harness-engineering} (MIT) — fan-out caps, verbatim pass-through, few general tools, cache-aware ordering, staged reduction, files for large outputs, persistence paired with verification, harness surfaces [port "cap fan-out at about 3–5 workers" "do not let the supervisor paraphrase" "a few general primitives" "order the prompt from stable to volatile" "an edit is priced by its tail" "reduce in stages" "large outputs go to files" "pair persistence with verification" "harness surfaces"]
   - upstream/everything-claude-code/skills/{agent-architecture-audit,prompt-caching-strategy,regex-vs-llm-structured-text,cost-aware-llm-pipeline} (MIT) — layered review, cache savings from usage counters, code-first parsing, pinned model per role [port "walk the layers in order" "claim savings only" "parse with code first" "pin the model per role"]
   - upstream/everything-claude-code/skills/agent-architecture-audit (MIT) — the full 12-layer stack (incl. distillation, active recall, hidden repair loops, stale persistence), ready rg anti-pattern queries, per-finding symptom / mechanism / evidence / confidence, code-first fix order, severity model and report schema [port "falsify each wrapper layer before blaming the model" "hidden repair loops" "stale persistence" "Ready anti-pattern queries" "symptom, mechanism, source layer, root cause, evidence" "Fix in code before touching prompt wording" "Fix order — code first, prompt last" "primary_failure_mode" "Severity model"]
+  - upstream/oh-my-claudecode/skills/autopilot/SKILL.md (MIT) — AFK assumption protocol for unattended runs (assumptions with basis and reversibility, hard-to-reverse guesses parked, report led by veto-ranked assumptions) [port "when no human can be reached" "statement, basis, reversibility" "build only its reversible direction" "ranked by how likely the returning"]
   - upstream/vila-lab/docs/architecture.md (CC BY-NC-SA 4.0 — ideas only, no wording) — agent system architecture [idea]
 ---
 
@@ -106,6 +107,16 @@ Before granting autonomy, assign every file and resource to one of four surfaces
 | editable | the code or document being worked on | read and write |
 | append-only | run logs, results — failed attempts included | add, never edit or delete |
 | human-controlled | budget, deploys, merges, credentials | request via the human gate |
+
+**When no human can be reached** (headless or overnight run, unanswered question), the agent
+keeps going but never guesses silently:
+
+- Record each guess that would have been a question as an assumption — statement, basis,
+  reversibility — in an assumptions file the human will read.
+- A guess that is hard to undo, surprising, or a real trade-off is not assumed: park it as a
+  pending decision (options, recommendation) and build only its reversible direction, or defer it.
+- The completion report opens with the open assumptions, ranked by how likely the returning
+  human is to veto each.
 
 ## Output — the design note
 

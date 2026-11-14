@@ -39,6 +39,15 @@ separate OS user or in a container that cannot see the task file, the graders or
 wrapper that copies the usage block from the agent CLI's JSON output. The runner never
 estimates them.
 
+## Grader check before a paid run
+
+The runner has no built-in grader check; build one from a second task file with the same
+`checks` and `judge` and stub arms instead of agents. Each arm copies a prepared state into the
+workspace (cwd), e.g. `["cp", "-R", "/abs/overlays/reference/.", "."]`, plus `start` (`["true"]`, leaves the workspace as given),
+`naive` and one `decoy-*` arm per right-shape, wrong-content variant. Run it with `--runs 1`:
+`reference` must pass and every other arm must fail. Fix any grader that fails this before
+running the real task file.
+
 ## Judge contract
 
 The judge command runs in the workspace after the checks and prints (scores here on the

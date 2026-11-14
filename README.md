@@ -17,7 +17,7 @@ is missing from the skill), `idea` or `gap`; see [CREDITS.md](CREDITS.md).
 | AI agents | `agent-architecture` · `agent-orchestration` · `agent-evals` · `agent-security` · `agent-instructions` (AGENTS.md / CLAUDE.md / GEMINI.md) |
 | learning | `socratic-tutor` — Socratic mastery of a codebase, paper or technical domain with 0–5 skill maps and spaced recall |
 | research and market | `verified-research` · `market-scan` (competitors and unmet demand) · `macro-regime` |
-| product | `customer-discovery` (validate ideas with real users) · `product-scoping` · `pricing` · `experiment-readout` (A/B tests and launches) · `adopt-or-build` |
+| product | `customer-discovery` (validate ideas with real users) · `product-scoping` · `pricing` · `experiment-readout` (A/B tests and launches) · `analysis-design` (data analysis before querying: metric spec, data quality, plan stress-test) · `adopt-or-build` |
 | investing | `thesis-ledger` · `valuation-audit` — decision support for individual investors; never buy/sell advice |
 | strategy | `liu-ayi` — a strategic-analysis framework built on order-and-institution checks, base rates and calibrated decisions |
 | career | `career-navigator` |
@@ -30,7 +30,11 @@ Design taste is delegated to [impeccable](https://github.com/pbakaus/impeccable)
 [last30days](https://github.com/mvanhorn/last30days-skill), de-AI prose editing to
 [humanizer](https://github.com/blader/humanizer) and [humanizer-zh](https://github.com/op7418/Humanizer-zh), browser UI verification to
 [webapp-testing](https://github.com/anthropics/skills) (or optional [agent-browser](https://github.com/vercel-labs/agent-browser)), safety hooks to
-[claude-code-hooks](https://github.com/karanb192/claude-code-hooks) (optional), and handoff to Codex
+[claude-code-hooks](https://github.com/karanb192/claude-code-hooks) (optional), go-to-market
+execution (positioning, launch, onboarding, signup, churn, referrals) to six skills of
+[marketingskills](https://github.com/coreyhaines31/marketingskills), web-platform guidance to
+[modern-web-guidance](https://github.com/GoogleChrome/modern-web-guidance) (optional trial; sends
+search queries to Google unless `DISABLE_TELEMETRY=1`), and handoff to Codex
 to [codex-plugin-cc](https://github.com/openai/codex-plugin-cc) — installed from their own
 sources (see `toolkit/external.yaml`).
 
@@ -47,9 +51,10 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
 ```
 
 - `--external` runs each non-optional installer listed in `toolkit/external.yaml` scoped to the
-  selected target(s): impeccable, last30days, emilkowalski/skills, humanizer, humanizer-zh,
-  webapp-testing, and (for Claude Code) codex-plugin-cc. Entries marked `optional` — currently
-  taste-skill, agent-browser, mcp-builder, mcp-server-dev, claude-security and claude-code-hooks —
+  selected target(s): impeccable, last30days, emilkowalski/skills, humanizer (pinned to v3.1.0),
+  humanizer-zh, six marketingskills GTM skills, webapp-testing, and (for Claude Code) codex-plugin-cc. Entries marked `optional` — currently
+  taste-skill, agent-browser, mcp-builder, mcp-server-dev, claude-security, claude-code-hooks and
+  modern-web-guidance —
   are printed, not installed. Any entry placed on `status: trial` must declare `trial_start` and
   `trial_review_by` dates, enforced by `scripts/check.py`.
 - Skills are stored once in `~/.agents/skills/`, which Codex reads directly; Claude Code gets

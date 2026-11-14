@@ -4,7 +4,7 @@ description: >-
   Design and read product A/B tests and launch metric shifts: pre-registered primary/guardrail
   rules, SRM halt gate, power/sample arithmetic, bias-vs-noise separation, and multiple-comparison
   correction. Trigger on 实验结果, AB测试读数, "did this launch work?". For AI evals use agent-evals.
-version: 1.1.0
+version: 1.2.0
 sources:
   - upstream/ai-analyst-lab-ai-analyst/.claude/skills/srm-check (MIT) — SRM as a blocking gate, per-period SRM, investigation paths [port "sample ratio mismatch halts the readout" "per-period check" "where to look"]
   - upstream/ai-analyst-lab-ai-analyst/.claude/skills/guardrails (MIT) — clear / trade-off / degraded verdicts, net impact in shared units [port "the bound crosses the tolerance" "net-impact line"]
@@ -16,6 +16,7 @@ sources:
   - upstream/ai-analyst-lab-ai-analyst/.claude/skills/triangulation (MIT) — paths run in isolated subagents with per-path record fields [gap independence is asked for in one line with no mechanism]
   - upstream/posthog-experiments/products/experiments/skills/diagnosing-experiment-health (MIT, method only) — age and exposed-population checks, systematic vs statistical, mechanisms need evidence [port "how far through the run" "who is exposed vs who the decision is about" "name a mechanism only with evidence" "waiting fixes noise, not bias"]
   - upstream/posthog-experiments/products/experiments/skills/diagnosing-experiment-health/references/interpretation.md (MIT, method only) — peeking, multiple comparisons, MDE and sample arithmetic, "target reached" is not a result [port "stopping when the result first looks significant" "about a 23% chance" "halving the mde quadruples" "an effect of mde size would likely have shown"]
+  - upstream/posthog-experiments/products/experiments/skills/diagnosing-experiment-health/references/{bias-and-skew.md,mid-run-changes.md,numbers-vs-sql.md} (MIT, method only) — assignment checks (multi-variant units above 0.1% with at least 5, a flag shared by running experiments, metric filters that leave the denominator fixed, a code fallback logged as a variant) [port "units seen in more than one variant" "passes 0.1% of exposed units with at least 5" "two live tests on one flag" "changes who counts as converted, not who is in the experiment" "a code fallback logged as an exposure"]
 ---
 
 # Experiment Readout
@@ -72,6 +73,24 @@ below in order; a gate that fails stops the readout or changes what it may claim
 - On failure: stop. Report expected vs observed, then where to look — assignment logic that
   excludes some users, treatment failing to load or log for one arm, pipeline loss, a restart
   or split change mid-run. Offer a clean time window only if the per-period check shows one.
+- **Assignment checks — run beside SRM; any hit can bias the readout (classify it in Gate 4):**
+  - **Units seen in more than one variant.** Count units with exposures under two or more
+    variant keys. PostHog's warning fires once that share passes 0.1% of exposed units with at
+    least 5 such units; dropping them (the usual default) on an uneven split removes them
+    unevenly. Look for an identity change or merge, a split edit mid-run, or a cached page
+    carrying the assignment.
+  - **A flag shared with another running experiment.** Two live tests on one flag or
+    assignment key are not independent: a pause or ship on one moves the other, and a re-run
+    on the same key gives returning users their old draw. Each experiment gets its own key.
+  - **A filter that drops events but not units** (a numbers check, not a bias). A filter on
+    metric events changes who counts as converted, not who is in the experiment — the exposed
+    count stays fixed and the numbers are right for that definition. To restrict the population,
+    set eligibility at exposure (targeting, an exposure-event filter or a custom exposure event),
+    and say which definition the numbers used.
+  - **A code fallback logged as an exposure.** When the flag returns nothing and the code
+    falls back to a default variant and logs it, that arm gains units the flag never
+    assigned — even while the flag is off. Exposures in a variant the flag cannot serve, or
+    one arm still gaining exposures while the flag is off, point here.
 
 ## Gate 3 — Progress and population
 
@@ -136,6 +155,7 @@ narrows the doubt but is not proof. State what would have to be true for the cha
 ```
 Experiment: <name>   Decision rule (pre-registered): <rule, or "none — exploratory">
 SRM: χ²=<x> p=<p> vs <designed split> → PASS / HALT  (periods checked: <n>, correction: <m>, segments: <pass/fail>)
+Assignment: multi-variant <n> (<x>%) · shared flag y/n · metric-only filters y/n · fallback exposures y/n
 Progress: day <d>, <n> of <planned> exposed (<x>%)   Design: fixed / sequential
 Population: exposed = <who>; decision covers = <who>; match: yes / no / unknown
 Primary: <metric> <effect> [<interval>] p=<p> (adjusted: <p_adj>) — test: <prop-test | welch | ratio>

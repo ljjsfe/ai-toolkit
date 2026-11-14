@@ -5,10 +5,11 @@ description: >-
   deterministic checks, artifact-based live grading, and piloted spend caps. Use for LLM/agent
   benchmarks and regression suites; not for product A/B experiments (use experiment-readout) or
   one-change completion checks (use verification).
-version: 1.2.0
+version: 1.3.0
 sources:
   - upstream/everything-claude-code/skills/{eval-harness,agent-eval,gan-style-harness} (MIT) — pass@k and pass^k, worktree per run, cost per run [port "pass^k — all k tries succeed" "a git worktree per run" "record tokens and cost per run"]
   - upstream/everything-claude-code/{skills/agent-eval,skills/gan-style-harness,scripts/eval-harness.js} (MIT) — YAML task and judge schema, a runner, a results layout, weighted rubric with an iterate-to-threshold loop [port "Use the runner instead of ad-hoc scripts" "Results layout" "Judge contract" "Iterate to a threshold, not forever" "Iterate-to-threshold loop" "Σ(weight × score) / Σ(weight)" "pass_hat_k (chance all k pass)"]
+  - upstream/everything-claude-code/{docker/gateguard-effectiveness,docs/gateguard/question-effectiveness.md} (MIT) — grader check against reference, naive and decoy overlays before billing; placebo and ablated arms; the all-pass pilot as a ceiling that measured nothing [port "grade the graders before any paid run" "right shape, wrong content" "add a placebo arm" "the eval measured nothing" "Grader check before a paid run"]
   - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-improvement-loops,harness-engineering,evaluation,advanced-evaluation} (MIT) — hidden graders, raw traces to the optimiser, judge position bias [port "never sees how it is judged" "feed the optimiser raw traces" "position bias"]
   - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/advanced-evaluation (MIT) — length, verbosity and self-enhancement judge biases; scale calibration; justification before score [port "design out length and verbosity bias" "self-enhancement bias" "Scale calibration" "justification before the score" "Justification before score" "Length is not quality"]
   - upstream/anthropics-skills/skills/skill-creator, skills/mcp-builder/reference/evaluation.md (Apache-2.0) — trigger tuning split, tool-server question rules [port "split them 60/40" "answerable with read-only operations"]
@@ -93,6 +94,11 @@ gate, a refusal), stop each run at that step instead of running the whole workfl
 
 ## Step 4 — Price it before scaling
 
+0. **Grade the graders before any paid run.** Every grader must score a reference solution as
+   pass, and the untouched start state, a naive answer and decoys (right shape, wrong content)
+   as fail; a grader that passes a decoy checks form, not content. When testing a hook, skill
+   or prompt, add a placebo arm (same cost and shape, no real content) and ablated arms (one
+   part removed) so a win can be attributed.
 1. Dry run on real input shapes with a stub model — zero cost, catches plumbing bugs.
 2. Pilot 3 cases per arm on the real model; read the actual usage, not an estimate.
 3. Set a spend cap from the pilot; get approval for anything above it.
@@ -100,6 +106,10 @@ gate, a refusal), stop each run at that step instead of running the whole workfl
 
 ## Step 5 — Read the result honestly
 
+- **If every arm passes every run, the eval measured nothing** (a ceiling; all failing is a
+  floor). With no variance there is nothing to compare: redesign the tasks so they can fail
+  before reading cost or turn differences. ECC's GateGuard pilot is the example — 72 sessions
+  across four arms, every one passed, so its hypotheses stayed untested rather than refuted.
 - **Small n is directional.** Three runs per arm is a floor, not proof: state results as a
   direction unless the separation is clean.
 - **Report the spread (min / median / max), not just the mean.**

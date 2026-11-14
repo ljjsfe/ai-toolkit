@@ -5,10 +5,11 @@ description: >-
   with zero invented facts ([NEED: ...] placeholders, competing openings, platform rules, de-AI
   editing pass, fresh-reader check). Trigger on 写文章, 发帖, 公众号, 推文, 写稿. Not for resumes
   (career-navigator) or AGENTS.md/CLAUDE.md (agent-instructions).
-version: 1.2.0
+version: 1.3.0
 sources:
   - upstream/khazix-skills/khazix-writer (MIT) — first-hand observation is what a model cannot supply; ask the writer for it [port "first-hand detail comes from the writer"]
   - upstream/marketingskills/skills/copywriting/references/ai-tells.md (MIT) — placeholder for missing proof instead of an invented fact; the swap test [port "never fill it with something" "apply the swap test"]
+  - upstream/marketingskills/skills/copywriting/references/ai-tells.md (MIT) — second-generation tells and the writer behind the copy (uneven density, honest limits, never invent experience); persona-built opinions replaced by asking the writer [port "sentences shaped like wisdom" "reflexive specificity" "too balanced" "uneven density" "honest limits" "never invent experience"]
   - upstream/ahao-writing-dna-distiller (MIT) — voice as ranges and verbatim samples by function, not averages; prescriptive rules over descriptions [port "ranges, not averages" "verbatim samples grouped by job" "rules written as instructions"]
   - upstream/ahao-writing-dna-distiller (MIT) — the measuring pipeline (distill_metrics.py for sentence-length spread, short/long ratio, punctuation, nominalisation and risky-word density), beat sheets and structure archetypes, the form-vs-content forbidden map, the AI-flavour firewall self-check [port "sentence-length spread" "def doc_metrics" "that sequence is a structure archetype" "content goes in a forbidden map" "ai-flavour self-check (run after the de-ai pass)"]
   - upstream/everything-claude-code/skills/brand-voice (MIT) — a banned move must be observed in the writer's own corpus; report splits instead of averaging [port "only bans that the corpus shows" "splits, not blends"]
@@ -62,6 +63,11 @@ it is allowed to claim**. This skill fixes those two things and runs a de-AI lin
      templates, and chatbot wrappers;
    - Replace inflated significance verbs (`pivotal`, `underscores`, `赋能`, `重塑`) with plain
      verbs and concrete facts;
+   - Then scan for the tells that survive a first pass — sentences shaped like wisdom,
+     self-narration, tidy closers, staccato bursts, perfect balance between sections,
+     reflexive specificity — and, without a profile, ask the writer where the piece should
+     be uneven; the table and the questions are in `references/second-pass-tells.md` (read
+     when a cleaned draft still reads as generated, or sounds like nobody);
    - Preserve every fact, number, quote, condition, epistemic hedge (`may`, `reported`, `可能`,
      `据称`), the `PERSONAL.md` voice rules, and every `[NEED: ...]` marker verbatim.
    With a profile in place, also run `scripts/voice_metrics.py <corpus> --draft <draft>` and

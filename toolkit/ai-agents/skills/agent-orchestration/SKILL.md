@@ -4,11 +4,13 @@ description: >-
   Coordinate subagents or parallel workers: compaction-safe ledger, Oracle-and-blast-radius
   model tiering, disjoint file ownership, single-writer git/config ops, and independent
   artifact-verified completion. Not for designing agent products (use agent-architecture).
-version: 1.4.0
+version: 1.5.0
 sources:
   - upstream/superpowers/skills/{subagent-driven-development,dispatching-parallel-agents,executing-plans} (MIT) — explicit model per worker, fix rounds, a ledger that survives compaction [port "progress lives in a ledger file" "explicit tier / model" "fix loop — bounded escalation"]
   - upstream/superpowers/skills/subagent-driven-development (MIT) — two-stage review after every task (spec compliance, then code quality) plus a final whole-branch review; the DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED worker status protocol; implementer and reviewer prompt templates and brief scripts [port "first spec compliance" "then code quality" "final whole-branch review on the Frontier tier" "DONE_WITH_CONCERNS" "NEEDS_CONTEXT" "never the same brief again" "Implementer brief" "Task reviewer brief (spec compliance, then code quality)" "Scoped re-review brief"]
   - upstream/oh-my-claudecode/skills/team (MIT) — staged plan, prd, exec, verify, fix pipeline with entry and exit gates; risk-based reviewer escalation; stuck-worker watchdog and reassignment; shutdown and resume protocol [port "an entry and exit gate per stage" "capped verify→fix loop" "Risk-based reviewer escalation" "Stuck-worker watchdog and reassignment" "check once, then reassign" "A worker fails two tasks" "Resume after a crash or compaction" "Stage handoff file" "Send each live worker a shutdown request"]
+  - upstream/oh-my-claudecode/skills/{team,autopilot}/SKILL.md (MIT) — subagent nesting depth and concurrency are Claude Code settings whose defaults changed across 2.1.217–2.1.219 [port "toolkit policy, not a runtime limit" "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH"]
+  - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/long-horizon-prompting/references/mass-handoff-contracts.md (MIT) — degenerate-value rejection at handoff gates, bounded recall orders, the reviser as bottleneck [port "reject too-good-to-be-true results" "bounded recall order" "the reviser can be the bottleneck"]
   - upstream/compound-engineering-plugin/skills/ce-work/references/execution-strategy.md (MIT) — exclusive file ownership, orchestrator-only git, bounded batch concurrency [port "no file appears in two clusters" "single-writer operations" "keep concurrency small"]
   - upstream/anthropics-skills/skills/claude-api/shared/managed-agents-multiagent.md — when delegation fits [port "inline or delegate"]
   - upstream/seanellyjames-deep-research-skill/SKILL.md (MIT) — concurrency cap and no nested spawning [port "workers do not spawn their own subagents"]
@@ -82,7 +84,10 @@ If wrong:    what to do if the brief or spec turns out wrong — stop and report
 Model:       explicit tier / model
 ```
 
-Workers do not spawn their own subagents. Workers must redirect noisy commands (test suites,
+Workers do not spawn their own subagents — toolkit policy, not a runtime limit: Claude Code
+sets nesting depth with `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` (its default changed between
+2.1.217 and 2.1.219) and caps parallel subagents with `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, so
+check the host's settings before planning nested delegation. Workers must redirect noisy commands (test suites,
 builds, large logs) to a file and inspect only the relevant tail or matches so raw output never
 floods their own context, returning only the artifact path and a short summary. Keep concurrency
 small: 3–5 workers if you read each result in full, up to about 7 if workers return only paths
@@ -133,6 +138,15 @@ When a worker's result fails verification:
 | after 4 | stop delegating; the orchestrator decides — fix it, re-scope, or ask the user |
 
 Never retry with the same brief and no new information.
+
+- **Gates reject too-good-to-be-true results,** not only failures: degenerate or implausible
+  values (a perfect score, NaN, an empty diff reported as DONE, metrics that should differ but
+  match) usually mean something upstream broke.
+- **A failed gate becomes a bounded recall order** to one worker: target, failed checks,
+  narrowed scope, acceptance criteria, max retries (counted against the table above), so a
+  review finding never reopens the whole artifact.
+- **The reviser can be the bottleneck.** Strong feedback is wasted on a fixer that cannot act
+  on it; give the fixer a tier comparable to the reviewer that found the problem.
 
 While async workers run, do independent work or yield cleanly when the host wakes on worker
 completion — never poll in a sleep loop, and give the user a one-line status before yielding.

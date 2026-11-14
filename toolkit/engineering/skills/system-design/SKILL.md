@@ -5,13 +5,14 @@ description: >-
   cost, failure domains), or review an existing technical design/plan without inventing findings.
   Not for unsettled framing (design-discussion), behavioral specs (spec), agent loops
   (agent-architecture), or diffs (code-review).
-version: 1.1.0
+version: 1.2.0
 sources:
   - upstream/jeffallan-claude-skills/skills/architecture-designer/references/nfr-checklist.md (MIT) — numeric non-functional requirements before design; RPO and RTO as separate targets [port "numbers before boxes" "resilience as three numbers"]
   - upstream/everything-claude-code/skills/redis-patterns (MIT) — cache stampede named with a concrete fix [port "cache stampede when a hot key expires"]
   - upstream/jeffallan-claude-skills/skills/cloud-architect/references/multi-cloud.md (MIT) — lock-in tier per service type; multi-cloud only for a named exit scenario [port "grade each one's lock-in" "is not a reason for multi-cloud"]
-  - upstream/gstack/{plan-eng-review,review} (MIT) — named review battery; two-real-callers rule for extraction [port "boring by default" "two verified real callers"]
-  - upstream/gstack/plan-eng-review/sections/review-sections.md (MIT) — complexity smell (8+ files or 2+ new classes), code-path test-coverage tracing, the critical-gap rule (no test, no handling, silent failure) [port "touches 8 or more files or adds 2 or more new classes" "trace every changed code path" "no test, no error handling, and it would fail silently"]
+  - upstream/gstack/plan-eng-review (MIT; retired upstream 2026-11-07 as a standalone skill after a null eval; its method lives on as /autoplan Phase 3) — boring-by-default test [port "boring by default"]
+  - upstream/gstack/review (MIT) — two-real-callers rule for extraction [port "two verified real callers"]
+  - upstream/gstack/plan-eng-review/sections/review-sections.md (MIT; retired upstream 2026-11-07 as a standalone skill after a null eval; its method lives on as /autoplan Phase 3) — complexity smell (8+ files or 2+ new classes), the critical-gap rule (no test, no handling, silent failure) [port "touches 8 or more files or adds 2 or more new classes" "no test, no error handling, and it would fail silently"]
   - upstream/compound-engineering-plugin/skills/ce-doc-review (MIT) — adequate needs no change; name the downstream cost [port "is a valid outcome" "every finding names its cost"]
   - upstream/compound-engineering-plugin/skills/ce-doc-review/references/{personas/*,synthesis-and-presentation}.md (MIT) — coherence, feasibility and adversarial persona reviewers with independent verification [port "the document disagreeing with itself" "whether it can be built as written" "whether it is *right*" "a reviewer's claim is a lead, not a finding"]
   - upstream/mattpocock-skills/skills/engineering/{domain-modeling,triage,codebase-design} (MIT) — decision-record gate, prior-solution search, deletion and seam tests [port "record a decision only when it is hard to reverse" "check it does not already exist" "deletion test" "one adapter behind an interface"]
@@ -82,13 +83,17 @@ real cost.
 
 ## Review mode — an existing design, plan or refactor
 
+Evidence on review ceremony is thin and points one way: gstack retired its standalone plan-review
+skill on 2026-11-07 after plain Opus 5.5 found 15 of 16 seeded flaws unaided and the skill cost
+7.1 times more. So spend the effort on the numbered checks below and the cost of each finding,
+and keep step 8's persona passes for large or risky documents only.
+
 1. **"This is fine" is a valid outcome.** Judge whether the document would guide correct work,
    not how detailed it is; do not invent findings.
 2. **Check it does not already exist** — in this codebase, a dependency, or a prior rejected
    proposal — searching by concept, not by the proposal's wording.
 3. **Every finding names its cost:** what breaks, slows or becomes hard, and when.
-4. **Most consequential first.** In an interactive session raise them one at a time; otherwise
-   list them in that order. Never finalise a plan that silently resolves open findings.
+4. **Most consequential first.** Never finalise a plan that silently resolves open findings.
 5. Check the numbers the design states, if any, and check that components and failure handling
    honour any active `spec` (living capability specs or change deltas); review mode does not demand
    a full estimate.
@@ -96,17 +101,11 @@ real cost.
    or services (count the proposed change, not files read for context), stop before the other
    tests and ask whether a smaller arrangement with the same features and contracts exists; put
    each proposed cut to the user separately.
-7. **Trace every changed code path to a test** — the paths this plan adds or changes, not the
-   whole system. From each entry point (route, handler, job, exported function) follow the
-   planned flow through its branches and error paths, and mark each tested, happy path only, or
-   gap. Existing behaviour the change puts at risk with no regression test is a required test.
-   A plan that already covers its paths gets no finding here (item 1). Once code exists this
-   check moves to `code-review` (testing lens); writing the tests is `tdd`.
-8. **Critical gap rule.** For each new path, name one realistic production failure and say
+7. **Critical gap rule.** For each new or changed path, name one realistic production failure and say
    whether it has a test, has error handling, and whether the user would see a clear error or
    nothing. A failure with no test, no error handling, and it would fail silently is a **critical
    gap**: it blocks the plan until one of the three is fixed.
-9. **Large or risky documents get persona passes.** Run coherence, feasibility and adversarial
+8. **Large or risky documents get persona passes.** Run coherence, feasibility and adversarial
    reviewers as separate fresh subagents, then verify every claim yourself before it becomes a
    finding. Lenses, prompt and verification steps: `references/review-personas.md` — read when
    the plan is large or touches money, auth, migrations or a public contract.
@@ -126,7 +125,7 @@ a real trade-off.
 ## Output
 
 Review mode: verdict (proceed / proceed with changes / rethink) · findings by consequence ·
-critical gaps · code-path coverage (tested / happy-only / gap per path) · what already exists ·
+critical gaps · what already exists ·
 open questions that change the design. Design mode:
 
 ```

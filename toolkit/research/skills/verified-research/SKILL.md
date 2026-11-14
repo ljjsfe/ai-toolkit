@@ -4,13 +4,14 @@ description: >-
   Research contested or high-stakes questions across opened primary sources: frame hypotheses first,
   fix search/check budgets, trace claims to independent origins, verify every citation in a separate
   checker pass, and argue from records. Competitor/demand scans: market-scan; single facts: answer.
-version: 1.4.0
+version: 1.5.0
 sources:
   - upstream/jalald-verified-research/skills/verified-research/SKILL.md (MIT) — research budgets, top-up size, escalation triggers, origin counting, claims-only checker [port "research budgets come from jalald" "move up one size only when a named trigger" "origins, not urls" "the claims list and the records, not the draft"]
   - upstream/jalald-verified-research/skills/verified-research/scripts/{audit_report.py,check_links.py,evidence.py} (MIT; rewritten for this skill's R/D record format) — cited URLs no record holds, missing record numbers, uncited specific sentences, the claims list for the checker, live link and passage checks with blocked-network detection, independent-origin counts through derived records, stale sources [port "def cmd_draft" "def cmd_links" "def origins_of" "no record holds it" "network looks blocked" "before the checker runs, run"]
   - upstream/jalald-verified-research/skills/verified-research/{SKILL.md,references/briefs.md,references/analysis.md} (MIT) — the red-team phase for contested runs [port "the red team gets the bottom line and the key findings" "changes the conclusion / lowers confidence / minor" "if it finds nothing, it says what it tried" "before the checker, so one check covers"]
   - upstream/seanellyjames-deep-research-skill/SKILL.en.md (MIT) — premise framing, falsifiable hypotheses, claim headings [port "what the question takes for granted" "two or three that evidence could falsify" "headings are claims"]
   - upstream/wanshuiyin-auto-claude-code-research-in-sleep/skills/citation-audit/SKILL.md (MIT) — wrong-context verdict [port "wrong context is the costly one"]
+  - upstream/wanshuiyin-auto-claude-code-research-in-sleep/skills/citation-crosscheck/SKILL.md (MIT) — the checker re-fetches each source blind to the record, extracts what it states, then diffs field by field [port "blind extraction first, comparison second" "authors in order, year, venue or" "compare field by field" "reading the claim first anchors the checker"]
   - upstream/everything-claude-code/skills/research-ops/SKILL.md (MIT) — sorting user material; statement-type tags [port "already evidenced, needs checking, open" "tag each sentence"]
   - Mike Caulfield, SIFT ("the four moves"), https://hapgood.us/2019/06/19/sift-the-four-moves/ — lateral reading, tracing claims (method only) [port "read the publisher sideways" "trace upstream"]
 ---
@@ -141,6 +142,18 @@ The checker gets the claims list and the records, not the draft, so it cannot re
 argument into the page. Direct records: it re-opens the source and quotes the passage it
 relied on. Derived records: it recomputes the arithmetic from the inputs, or tests whether
 the step follows from them; it does not look for a page that states the result.
+
+**Blind extraction first, comparison second.** For each direct record the checker first gets
+only the locator (URL, or title and first author) and the subject of the claim — not the
+claim, the passage or the record's other fields. It opens the source and writes what the
+source itself states: for a paper or report its title, authors in order, year, venue or
+publisher and identifier (DOI, arXiv id); for the subject, the figure, date, scope or
+qualifier, and who is said to have said or done it. Only then does it read the claim and the
+record and compare field by field — same / differs (both values written out) / absent — and
+assign the verdict below from that comparison. Reading the claim first anchors the checker
+on it, which is how a dropped author, a wrong year or a lost qualifier survives a check. The
+upstream does this for bibliographic fields; applying it to the claim's own fields is toolkit
+policy. Without subagents, do the extraction for all records before opening the claims list.
 
 | verdict | the source or derivation… | then |
 |---|---|---|

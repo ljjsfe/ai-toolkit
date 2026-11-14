@@ -138,6 +138,40 @@
     Evidence still comes from the toolkit's skills: demand from customer-discovery, price
     from pricing, launch metric reads from experiment-readout.
 
+- name: modern-web-guidance
+  category: engineering
+  repo: https://github.com/GoogleChrome/modern-web-guidance
+  license: Apache-2.0 (code), CC-BY-4.0 (guides)
+  tools: claude, codex, agy
+  optional: true
+  status: trial
+  trial_start: 2026-11-14
+  trial_review_by: 2026-12-15
+  watch: skills/modern-web-guidance
+  install:
+    - npx -y skills@latest add GoogleChrome/modern-web-guidance -g -a claude-code -a codex -a antigravity -s modern-web-guidance -y
+  covers: >
+    Vanilla web-platform guidance with Baseline support data and fallbacks (v1.0.0, 2026-11-10;
+    co-stewarded with Edge, Firefox and MDN): platform APIs that replace JS libraries (popover,
+    invokers, anchor positioning, view transitions, customizable select), Core Web Vitals (INP,
+    LCP, long tasks), forms and autofill, accessibility, browser security (Trusted Types, CSP,
+    passkeys), Temporal and Intl; a legacy-scan for modernisation. Nothing in the toolkit covers
+    these; rules/typescript-web.md covers framework traps and overlaps only on React ViewTransition
+    (its rule names the stable React version; this covers the browser API).
+  why_not_rewritten: >
+    About 209 guides re-checked against browser support data by the browser vendors, changing
+    weekly; prose here could not keep up.
+  notes: >
+    Optional on purpose; install it yourself after deciding. Its CLI sends the agent name, guide
+    IDs and search queries to Google unless DISABLE_TELEMETRY=1 is set in your shell profile
+    (README "Telemetry & Privacy"). It fetches modern-web-guidance@latest from npm at use time.
+    Its description costs about 855 characters resident (toolkit skills cap at 360). Skip the
+    separate chrome-extensions skill. Claude Code's claude-plugins-official copy is frozen at
+    v0.0.194, so use this install line or the googlechrome marketplace. On conflict, mobile-native
+    wins on viewport units (svh for heroes, not dvh), review-animations on UI easing (no ease-in,
+    under 300ms), and project rules over its "preferred local standard" claim. Trial passes if,
+    on three real UI tasks, it changes the outcome versus impeccable alone.
+
 - name: webapp-testing
   category: engineering
   repo: https://github.com/anthropics/skills

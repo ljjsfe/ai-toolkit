@@ -4,10 +4,11 @@ description: >-
   Threat-model and harden an agent with tools, MCP servers, file/network access, credentials, or
   money: untrusted text and self-notes as data, code-level authority, deny-by-default, human-gated
   destructive calls, and supply-chain checks. For surrounding web/API security use app-security.
-version: 1.1.0
+version: 1.2.0
 sources:
   - upstream/everything-claude-code/skills/{agent-security-hardening,mcp-dependency-review,prompt-caching-strategy,llm-trading-agent-security} (MIT) — deny-wins policy, path containment, sentinel-secret test, MCP pinning tiers, cache keys are not access checks, trading limits [port "deny wins, and the unclassifiable is denied" "is_relative_to" "sentinel secret" "pin the server version" "authorise before the lookup" "per-action and rolling"]
   - upstream/everything-claude-code/skills/{agent-security-hardening,llm-trading-agent-security} (MIT) — trust-boundary map (source, parser, validator, side effect); identifier allowlists and argv separation; env-value validation; private temp files; tool-output bounding with truncation markers and control-character stripping; a tests-cover-it completion gate per hardening step; transaction deadlines and MEV protection [port "Trust-boundary map" "source → parser → validator → side effect" "allowlist pattern with a hard length cap" "separate argv elements after" "Reject missing or whitespace-only environment values" "created atomically with mode" "append a truncation marker with the original size" "strip control characters and terminal escape sequences" "a tests-cover-it completion gate per step" "short transaction deadline" "private mempool or protected RPC for MEV protection" "Final verification gate"]
+  - upstream/supabase-agent-skills/skills/supabase/SKILL.md (MIT) — scoped personal access tokens for the Management API, CLI and MCP server instead of full-access classic tokens [port "account-wide token is not least privilege" "scoped personal access tokens"]
   - upstream/vila-lab/README.md, docs/architecture.md (CC BY-NC-SA 4.0 — ideas only, no wording) — agent system threat surfaces [idea]
   - upstream/everything-claude-code/the-security-guide.md (MIT) — Simon Willison's "lethal trifecta" (private data, untrusted content, an outbound channel), behind "The dangerous combination" [port "a channel that can send data out"]
   - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-managed-context,harness-engineering,self-improvement-loops} (MIT) — self-written notes as untrusted input; graders locked from the agent [port "instruction-shaped text into its own notes" "edit its own grader will"]
@@ -40,7 +41,9 @@ context. Secure the program, not the prompt.
 5. **Least privilege per run and per agent.** Read-only credentials by default; write scopes
    are granted per task and expire with it. Subagents inherit the parent's permissions unless
    restricted — give each worker its own narrower tool allowlist and credential, so logs show
-   which agent did what.
+   which agent did what. A platform's account-wide token is not least privilege: for an agent,
+   CLI or MCP server, create a token scoped to the organisations, projects and permissions the
+   task needs (e.g. Supabase's scoped personal access tokens for its Management API, CLI and MCP).
 
 ## The dangerous combination
 

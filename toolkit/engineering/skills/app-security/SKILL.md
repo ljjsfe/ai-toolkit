@@ -5,7 +5,7 @@ description: >-
   test authorisation with a second identity/tenant, and report only findings with a concrete
   attack path. Use before shipping auth, tenancy, payments, or webhooks (diff review: code-review;
   LLM/tool agents: agent-security).
-version: 1.2.0
+version: 1.3.0
 sources:
   - upstream/gstack/cso (MIT) — boundary and invariant census first, sibling propagation, exploitability gating, three separate judgements, independent re-derivation, webhook review order, two-user and two-tenant negative controls [port "map before you hunt" "tested with a second identity" "look for its siblings" "are separate judgements" "re-derive the result" "trace the whole middleware and handler chain"]
   - upstream/gstack/cso/{SKILL.md,sections/audit-phases.md} (MIT) — OWASP Top 10 coverage map, secrets in git history, dependency supply chain, CI pull_request_target, reproduction contract, complete / partial / not-assessed report header [port "Copy this table into the report" "Secrets in code and git history" "Dependency supply chain" "pull_request_target or workflow_run" "Reproduction contract" "the same request is refused" "complete, partial or not assessed"]
@@ -15,6 +15,8 @@ sources:
   - upstream/trailofbits-skills/plugins/fp-check (CC BY-SA 4.0 — ideas only, no wording) — catalogue of false-positive patterns and exploitability/PoC passes [port "False-positive patterns" "A guard earlier on the path" "No concurrency, no race"]
   - upstream/getsentry-skills/skills/security-review (Apache-2.0) — attacker-controlled vs server-controlled input [port "values set by operators"]
   - upstream/getsentry-skills/skills/security-review/references (Apache-2.0) — per-class references (injection, XSS, SSRF, deserialization, path traversal, session and JWT, crypto) and the full do-not-flag list [port "Path traversal" "JWT and bearer tokens" "Deserialisation" "Do-not-flag list" "Server-controlled sources"]
+  - upstream/getsentry-skills/skills/security-model (Apache-2.0, commit d04211a) — optional persistent SECURITY_MODEL.md (boundaries, invariants with IDs, reportable classes, narrow exclusions) read from the base revision by later reviews; owner confirms anything that suppresses findings; suspected gaps stay out of it [port "SECURITY_MODEL.md" "read it from the base branch" "only the owner can confirm"]
+  - upstream/trailofbits-skills/plugins/post-patch-validation (CC BY-SA 4.0 — ideas only, no wording) — fix validation against the vulnerable base and the patch, root-cause variants, preserved behaviour, stated evidence level [port "on the vulnerable base" "other routes to the same root cause" "the evidence level reached"]
   - upstream/stripe-ai/skills/stripe-best-practices (MIT) — verify settled payment status before fulfillment on async payment webhooks [port "settled payment status"]
 ---
 
@@ -95,7 +97,12 @@ reported separately as **fix confirmed**; a verified finding does not wait for i
    order) succeeds when it should not, and the test checks *that* outcome — B received A's
    data — not merely a non-zero exit or an error printed somewhere.
 3. **After the fix, the same request is refused and the legitimate control still passes**,
-   with the identical assertion, and the existing test suite stays green.
+   with the identical assertion, and the existing test suite stays green. Run it on both
+   revisions: the exploit must succeed on the vulnerable base and fail on the patch — a check
+   that never succeeded anywhere proves nothing. Also try other routes to the same root cause
+   (another endpoint, encoding or caller reaching the same flawed check) and the behaviour the fix
+   must keep. Report the evidence level reached — source reading, build, or runtime; only a
+   runtime result earns **fix confirmed**.
 4. **Nothing under the harness was changed to get there:** no mocks replacing the very check
    under test, no loosened assertions, no edits to fixtures or test runner config. Mocks may
    stand in for third parties, never for the boundary being tested.
@@ -103,6 +110,18 @@ reported separately as **fix confirmed**; a verified finding does not wait for i
 Partial evidence (a static trace, or a run where step 1, 2 or 4 does not hold) is reported as
 **traced** or **plausible**, not verified. Write the reproduction as the four-field claim plus
 concrete values — no placeholders.
+
+## Optional output — SECURITY_MODEL.md
+
+When the user wants the map kept, write the boundary map (law 1) as a `SECURITY_MODEL.md` at the repo
+root (or beside a component with its own boundary) — never in `SECURITY.md`, which GitHub treats
+as the disclosure policy. It holds exposure, trust boundaries, invariants with stable IDs
+(`INV-1`…) and the code that enforces each, reportable finding classes with severity context,
+and narrow exclusions (a class plus a location, accepted risks with a review-by date). Later
+reviews read it from the base branch, cite invariant IDs in findings, and treat edits to it in a
+diff as a gate change. Anything that suppresses or downgrades findings is a decision only the
+owner can confirm; leave it marked unresolved otherwise. Suspected gaps go to the user, never into
+the file, or later reviews learn to skip them.
 
 ## Confidence
 
@@ -118,6 +137,7 @@ concrete values — no placeholders.
 ```
 Status:                   complete / partial / not assessed — then scope and material gaps
 Scope and boundary map:   actors · assets · entry points · tenant boundaries · invariants
+                          (optionally written to SECURITY_MODEL.md, above)
 Coverage:                 the class table, each row assessed / not assessed (why) / n/a
 Findings:                 severity · confidence · evidence · attack path · siblings checked · fix
 Unconfirmed (critical):   labelled hypotheses, with what would confirm them

@@ -9,6 +9,7 @@ data-and-containers:
   - upstream/everything-claude-code/agents/database-reviewer.md (MIT) — structure from this source and the next; cursor pagination instead of OFFSET [port "paginate with a cursor"]
   - upstream/everything-claude-code/skills/{postgres-patterns,docker-patterns} (MIT) — RLS auth call wrapped in a subquery; pinned tags, non-root, no secrets in layers, ports bound to 127.0.0.1 [port "(select auth.uid()) = user_id" "only on 127.0.0.1"]
   - upstream/supabase-agent-skills/skills/supabase-postgres-best-practices (MIT) — SECURITY DEFINER search_path pinning, RLS predicate indexing and recursion, transaction-mode pooler limits [port "set search_path = ''" "index every column referenced in rls" "connection poolers in transaction mode"]
+  - upstream/supabase-agent-skills/skills/supabase/SKILL.md (MIT) — views bypass RLS unless created with security_invoker on PG15+ [port "views bypass rls by default" "with (security_invoker = true)"]
 flutter:
   - upstream/everything-claude-code/agents/flutter-reviewer.md (MIT) — mounted check after await, cancel subscriptions and controllers in dispose [port "if (!context.mounted) return;" "cancel every manual"]
   - upstream/everything-claude-code/rules/dart/coding-style.md (MIT) — sealed classes with exhaustive switches [port "exhaustive switches need no"]
@@ -21,3 +22,5 @@ typescript-web:
   - upstream/everything-claude-code/rules/react/security.md (MIT) — Server Actions are public endpoints [port "server actions are public http endpoints"]
   - upstream/vercel-labs-agent-skills/skills/{react-best-practices,composition-patterns} (MIT) — children/slots over render functions across RSC boundaries, React.cache() per-request dedup, Next.js after() [port "jsx slot props" "with react.cache()" "with after() from next/server"]
   - upstream/vercel-next-js/skills (MIT) — Next.js 16 "use cache" / cacheLife / cacheTag and local version-matched docs in node_modules/next/dist/docs/ [port "cachelife + cachetag" "read the version-matched docs"]
+  - upstream/vercel-next-js/{skills/next-cache-components-adoption,docs/01-app/03-api-reference/04-functions/{navigation,prefetch}.mdx} (MIT) — cacheComponents rejects dynamic/revalidate/fetchCache exports and the old dynamicIO key; navigation()/prefetch() lose the unstable_ prefix in 16.4 [port "errors on any file still exporting" "experimental.dynamicIO" "replace the canary-only"]
+  - upstream/vercel-labs-agent-skills/skills/react-view-transitions (MIT) — ViewTransition and addTransitionType stable from React 19.3; no react@canary under the App Router [port "stable from react 19.3" "never install react@canary there"]

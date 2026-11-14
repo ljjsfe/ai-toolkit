@@ -5,7 +5,7 @@ description: >-
   missing requirements, sibling sweeps, weakened-gate checks, git-history context, and independent
   refutation of P0/P1s. For offensive security audits use app-security; for design/plan reviews use
   system-design.
-version: 1.3.0
+version: 1.4.0
 sources:
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/{action-class-rubric.md,subagent-template.md} (MIT) — P0–P3; check callers, guards and framework defaults [port "data loss, security hole" "framework defaults"]
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/* (MIT) — per-lens checklists (correctness sentinel and lifecycle-writer checks, reliability timeouts, retries and error-path leaks), anchored 25/50/75/100 confidence, per-persona do-not-flag lists [port "Sentinel meaning changes" "Every writer of a lifecycle state" "Deleted-but-referenced files" "Swallowed errors" "Leaks on error paths" "Retry storms" "Anchored confidence" "Do-not-flag list"]
@@ -15,7 +15,9 @@ sources:
   - upstream/villetakanen-asdlc-io (MIT) — the repo's own instruction files as a review contract; stale specs as missing work [port "cite the specific rule when broken" "leaves it stale"]
   - upstream/mattpocock-skills/skills/engineering/code-review (MIT) — spec and standards as separate axes, repo conventions override [port "two axes, reported separately" "the repo's own conventions override"]
   - upstream/mattpocock-skills/skills/engineering/code-review (MIT) — smell vocabulary as fallback [port "Smell vocabulary (standards fallback)" "Speculative generality" "Refused bequest"]
-  - upstream/claude-plugins-official/plugins/code-review/commands/code-review.md (Apache-2.0) — independent per-finding verification; untouched-line, pre-existing, tool-catchable and explicitly silenced issues are not findings; git history, earlier PR comments and in-code guidance as review lenses [port "serious findings survive an independent refutation" "silenced by an ignore comment" "earlier pull requests touching these files"]
+  - upstream/claude-plugins-official/plugins/code-review/commands/code-review.md (Apache-2.0) — independent per-finding verification; untouched-line, pre-existing, tool-catchable and explicitly silenced issues are not findings [port "serious findings survive an independent refutation" "silenced by an ignore comment"]
+  - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/maintainability-reviewer.md (MIT) — unrequested public surface and dependencies the standard library or a repo helper could replace (PR #1852) [port "public surface the stated intent rules out" "a new dependency doing what the standard library"]
+  - authored for this toolkit (toolkit policy) — Pass 3 history lens (blame, earlier pull requests, invariant comments); the upstream command dropped its history agents in its 2026-10-26 rewrite [port "earlier pull requests touching these files"]
 ---
 
 # Code Review
@@ -74,7 +76,8 @@ a status, and the **enum/value completeness trace** when it adds a value or wide
 When the change touches auth, tenancy, payments or webhooks, also apply `app-security`.
 When it changes frontend UI, mobile web layout, or motion, also apply `impeccable`,
 `mobile-native`, and explicitly invoke `review-animations` (if installed; see
-`toolkit/external.yaml`).
+`toolkit/external.yaml`); for browser-support, platform-API or Core Web Vitals questions, also
+`modern-web-guidance` when installed.
 
 ## Pass 2 — What is missing
 
@@ -90,10 +93,17 @@ Report as `MISSING: <what> — <why it matters>`, citing the requirement or rule
 list hunks that serve none. Also list every behaviour the diff changes — a default, an exit
 code, a stored value, a route, a side effect — that the PR description or commit messages do
 not mention. Report these as `UNASKED: <change> — <file:line>`; each is a question for the
-author (split it out, or add it to the spec), not automatically a defect. Acceptance text edited in the same diff is a
+author (split it out, or add it to the spec), not automatically a defect. Two kinds count even
+when small: public surface the stated intent rules out or plainly narrows away (an export,
+endpoint, flag, config key or parameter) — a terse description that just does not mention it is
+not evidence — and a new dependency doing what the standard library, the platform or an existing
+repo helper already does (name the replacement). Acceptance text edited in the same diff is a
 weakened gate: see "Spec edited to match" in `references/gate-patterns.md`.
 
 ## Pass 3 — What the history says
+
+Toolkit policy (no current upstream runs this as a separate sweep); keep it to the changed lines.
+
 
 - **Blame and log of the changed lines:** was this code written this way to fix something? A
   change that undoes an earlier fix, or reintroduces a reverted pattern, is a finding.

@@ -4,7 +4,7 @@ description: >-
   Validate demand with real users before building: pre-written kill conditions, past-behaviour-only
   interview scripts, commitment-graded evidence per segment, and priced fake-door/concierge tests.
   Trigger on 用户访谈, 验证需求, "would people pay?". Market map: market-scan; scope: product-scoping.
-version: 1.1.0
+version: 1.2.0
 sources:
   - upstream/sreshtalluri-mom-test/skills/mom-test (MIT) — past-behaviour rule, reflexes for bad data, evidence ladder [port "ask only about past and current behaviour" "grade every fact on the ladder"]
   - upstream/sreshtalluri-mom-test/skills/mom-test-check-questions (MIT) — question failure tests and reframe shapes [port "rewrite it into one of the shapes"]
@@ -17,6 +17,11 @@ sources:
   - upstream/eltntawy-idea-discovery-playbook/skills/validation-experiments (MIT) — technique picker, priced CTA, success and fail thresholds, sequence, ethical fake door [port "then concierge, then a small wizard of oz" "5–15% visitor-to-signup" "say honestly that it is not built yet"]
   - upstream/gstack/office-hours/sections/phase-2a-startup-diagnostic.md (MIT) — demand-reality and status-quo questions; waitlists and interest are not demand [port "also ask the status-quo question"]
   - upstream/phuryn-pm-skills/pm-product-discovery/skills/brainstorm-experiments-new (MIT) — "at least X% of Y will do Z" hypothesis line [port "will <action>"]
+  - upstream/sreshtalluri-mom-test/skills/mom-test-roleplay (MIT) — practice mode with a hidden persona sheet, difficulty 1–5, answer rules that reward past-behaviour questions, debrief on the scorecard [port "build a persona sheet privately" "has no real problem, is warm, does not decide" "asked about a specific past instance, current behaviour, cost or what they tried" "mark each hidden fact found or missed"]
+  - upstream/sreshtalluri-mom-test/skills/mom-test-prep (MIT) — one-page prep sheet (riskiest assumption, scary question first, broad opener, commitment to ask for) [port "scary question (ask in the first five minutes)" "commitment to ask for, with a date"]
+  - upstream/sreshtalluri-mom-test/skills/mom-test-next-question (MIT) — classify the statement, list the gaps, rank follow-ups by stage [port "classify the statement" "rank the follow-ups by stage" "never from its topic"]
+  - upstream/sreshtalluri-mom-test/skills/mom-test-outreach (MIT) — five-part cold message, no product link, intro, follow-up, one-attempt revival [port "never link to or describe the product" "one honest unknown" "one attempt only"]
+  - upstream/phuryn-pm-skills/pm-market-research/skills/survey-design (MIT) — is a survey the right tool, start from the decision, behaviour questions, pilot, honest sample and non-response reporting [port "a survey counts; it does not explain" "every survey question maps to one research question" "send it to a small group first" "how many answered (the response rate)"]
 ---
 
 # Customer Discovery
@@ -129,6 +134,23 @@ email-only waitlist, views, likes and unqualified clicks do not validate demand.
 heuristic from the upstream (adjust per segment): 5–15% visitor-to-signup can be healthy on
 warm niche traffic; under 1% on cold paid traffic is often a kill signal for that offer. After
 the call to action, say honestly that it is not built yet.
+
+A survey counts how common something is; it does not explain why. Before writing or reading
+one, use `references/survey-design.md` (read when a survey is proposed or its results are
+being reported).
+
+## Step 6 — Practice, prep and outreach
+
+- **Practice:** the agent plays a customer with hidden facts at difficulty 1–5, then grades
+  the founder on the 15-row scorecard. A practice run is never evidence for the ledger.
+- **Prep:** a one-page sheet per conversation — riskiest assumption, the scary question asked
+  first, a broad opener, and (solution stage) the commitment to ask for, with a date.
+- **Next question:** classify what the customer just said, list what is still missing, and
+  rank follow-ups by stage.
+
+The persona rules, the prep sheet and the ranking table are in `references/practice.md` (read
+when rehearsing, preparing a call, or choosing a follow-up). Message rules for cold
+outreach, intros and follow-ups are in `references/outreach.md` (read before writing one).
 
 Where demand might exist: market-scan. What goes in the first version: product-scoping.
 Price-point evidence: pricing.

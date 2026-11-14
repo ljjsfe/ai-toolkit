@@ -4,7 +4,7 @@ description: >-
   Audit a stock valuation (never buy/sell advice): require dated quote + diluted share count, read
   price-implied expectations first, cross-check >=2 method families, audit terminal value vs ROIC/r/g,
   and split return into fundamentals vs rerating. Trigger on 估值, 贵不贵, 合理价值, "is X cheap?".
-version: 1.3.0
+version: 1.4.0
 sources:
   - upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — structure of §1 (snapshot rows, red flags); method-by-business pairings (reorganised); 3%, 5%, 25%, ±30% thresholds; same-family rule; joint-upgrade and double-count checks; DCF shown only when its inputs can be written out; return split incl. EV path; no-rerating case [port "over 3% apart" "apart by more than about 5%" "more than about 25% apart" "roughly ±30% off the anchor" "only a different family counts" "it is being paid for twice" "counts as a value only when its ledger is complete" "no-rerating case" "split in currency through the bridge"]
   - upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — a named data route for quote, consensus and share count; currency conversion for ADRs and foreign issuers; a unit-magnitude check; scenarios that change operating inputs, not only the multiple; A/B/C grades for forward-revenue evidence; the mid-cycle EPS formula and contract-coverage adjustment for cyclicals [port "name the route before the numbers" "convert EPS and every denominator into the price currency" "check the magnitude before writing" "changes only the multiple is a multiple sensitivity" "grade each block of forward revenue" "median net margin over a full cycle" "contract-locked part"]
@@ -16,6 +16,7 @@ sources:
   - upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/comps-analysis/SKILL.md (Apache-2.0) — median, drop doubtful peers, quartiles, 10% source gap [port "drop a doubtful peer" "on an input by more than 10%"]
   - upstream/yennanliu-investskill/prompts/dcf-valuation.md (MIT) — g below r; TV above 80% flag [port "the perpetuity formula has no meaning there" "the answer rests on the perpetuity"]
   - upstream/yennanliu-investskill/prompts/stock-valuation.md (MIT) — SBC-adjusted FCF; no EV bridge for P/E price [port "fcf is shown net of it" "is not bridged again"]
+  - upstream/yennanliu-investskill/plugins/us-stock-analysis/skills/*/SKILL.md, Data & Sources section (MIT) — conflicting sources resolved primary over aggregator, then most recent dated; both shown; never averaged [port "wins over an aggregator or data vendor" "the most recently dated one wins" "never take the midpoint of the two"]
   - upstream/tradermonty-claude-trading-skills/skills/kanchi-dividend-sop/references/valuation-and-one-off-checks.md (MIT) — REIT row; one-off profit checks [port "p/ffo or p/affo" "strip disposal gains"]
   - upstream/tradermonty-claude-trading-skills/skills/kanchi-dividend-sop/references/valuation-and-one-off-checks.md (MIT) — margin expansion without matching revenue quality; a dividend funded by debt [port "margin expansion that revenue quality does not explain" "a dividend paid from new debt or asset sales" "two or more of these one-off flags"]
 ---
@@ -93,6 +94,11 @@ Clean the denominators before any multiple touches them:
   Guidance and consensus are source types, not grades. Per block write gross size, size that
   can execute this period, size in the base case and why the rest is out.
 - Two data sources disagreeing on an input by more than 10%: resolve or flag before use.
+  Resolve in this order: the primary record (filing, company release, exchange data) wins over
+  an aggregator or data vendor; between sources of the same rank, the most recently dated one
+  wins. Write both values with source and date, say which one the model uses and why, and never
+  take the midpoint of the two. If neither rule decides it, flag the input and run the value on
+  both (toolkit policy).
 
 ## 2. Read the price first
 

@@ -4,10 +4,11 @@ description: >-
   Hold an open-ended design conversation before planning: one question + guess per turn, frame goal
   and constraints before proposing, 2–3 distinct mechanisms, and a live decision log. Trigger on
   "discuss the design", 讨论方案/聊设计; once settled use system-design, spec, or agent-architecture.
-version: 1.2.0
+version: 1.3.0
 sources:
   - upstream/superpowers/skills/brainstorming (MIT) — think wide privately, nothing built before approval [port "generate several privately" "nothing gets built during the discussion"]
   - upstream/superpowers/skills/brainstorming/{SKILL.md,builder-check-prompt.md} (MIT) — design played back in short chunks each ending with a what-is-missing question; builder check as a required subagent pass with a prompt and three-pile triage; sizing and splitting the work [port "end the chunk by asking what is wrong or missing" "dispatch a fresh subagent" "minor, my call" "say how big the work is" "several independent designs"]
+  - upstream/superpowers/skills/brainstorming/SKILL.md (MIT, v7.0.2) — ask only when the answer changes what gets built, else state the call as a proposal; why first, open-ended, no example answers; process steps are your own calls (release notes report blind-graded filler questions falling from 41 to 23) [port "would change what gets built" "no example answers attached" "never ask about process"]
   - upstream/addyosmani-agent-skills/skills/interview-me (MIT) — one question with a guess attached, "want vs should want" probe, predict-the-next-three stop test, bare assent is not a yes [port "with your guess attached" "justifying to an imagined reviewer" "reaction to the next three questions" "covers only what you actually showed"]
   - upstream/addyosmani-agent-skills/skills/idea-refine (MIT) — directions must differ, not vary; name what each bets on; a not-doing list [port "differ in mechanism, not in parameters" "and the bet it makes" "what this deliberately will not do"]
   - upstream/mattpocock-skills/skills/engineering/domain-modeling (MIT) — sharpen overloaded terms, edge-case scenarios, check the code, ADR only when hard to reverse, surprising and a real trade-off [port "overloaded nouns" "boundary scenarios" "check the code and raise" "surprising without context"]
@@ -28,9 +29,17 @@ sentence before starting the loop.
 
 ## Iron laws
 
-1. **One question per message, with your guess attached.** Ask the single question whose answer
-   most changes the design, state what you expect the answer to be and why, then wait. A list of
+1. **One question per message, with your guess attached (except the why).** Ask only a question whose answer
+   would change what gets built and that neither the request nor the code answers; otherwise state
+   your call and reason as a proposal the user can correct. Ask the single question that most
+   changes the design, state what you expect the answer to be and why, then wait. A list of
    questions gets skimmed answers and locks in a framing before the first answer arrives.
+   **Exception — the why.** If the user has not said why they want this, ask that first, as one
+   open question in their terms with no example answers attached and no guess: offered options
+   replace their intent with yours. The guess applies to factual and design questions after that.
+   **Never ask about process** (writing things up, where files go, whether to look further, how
+   to show something): those are your calls — do them and say so. Not process: the mode check
+   before the loop, consent before sending anything off the machine, and the blindspot offer.
 2. **No approaches before the frame.** Until the goal, the binding constraints and the test for
    "good" are stated (or recorded as assumptions), do not propose a solution. Before the first
    proposal, ask what the user already has in mind; your framing anchors theirs.

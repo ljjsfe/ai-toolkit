@@ -13,8 +13,10 @@ Procedure carried over; anchored in the skill text.
 - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{multi-agent-patterns,tool-design,context-optimization,context-compression,self-managed-context,filesystem-context,long-horizon-prompting,harness-engineering} (MIT) — fan-out caps, verbatim pass-through, few general tools, cache-aware ordering, staged reduction, files for large outputs, persistence paired with verification, harness surfaces — used in: agent-architecture
 - upstream/everything-claude-code/skills/{agent-architecture-audit,prompt-caching-strategy,regex-vs-llm-structured-text,cost-aware-llm-pipeline} (MIT) — layered review, cache savings from usage counters, code-first parsing, pinned model per role — used in: agent-architecture
 - upstream/everything-claude-code/skills/agent-architecture-audit (MIT) — the full 12-layer stack (incl. distillation, active recall, hidden repair loops, stale persistence), ready rg anti-pattern queries, per-finding symptom / mechanism / evidence / confidence, code-first fix order, severity model and report schema — used in: agent-architecture
+- upstream/oh-my-claudecode/skills/autopilot/SKILL.md (MIT) — AFK assumption protocol for unattended runs (assumptions with basis and reversibility, hard-to-reverse guesses parked, report led by veto-ranked assumptions) — used in: agent-architecture
 - upstream/everything-claude-code/skills/{eval-harness,agent-eval,gan-style-harness} (MIT) — pass@k and pass^k, worktree per run, cost per run — used in: agent-evals
 - upstream/everything-claude-code/{skills/agent-eval,skills/gan-style-harness,scripts/eval-harness.js} (MIT) — YAML task and judge schema, a runner, a results layout, weighted rubric with an iterate-to-threshold loop — used in: agent-evals
+- upstream/everything-claude-code/{docker/gateguard-effectiveness,docs/gateguard/question-effectiveness.md} (MIT) — grader check against reference, naive and decoy overlays before billing; placebo and ablated arms; the all-pass pilot as a ceiling that measured nothing — used in: agent-evals
 - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-improvement-loops,harness-engineering,evaluation,advanced-evaluation} (MIT) — hidden graders, raw traces to the optimiser, judge position bias — used in: agent-evals
 - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/advanced-evaluation (MIT) — length, verbosity and self-enhancement judge biases; scale calibration; justification before score — used in: agent-evals
 - upstream/anthropics-skills/skills/skill-creator, skills/mcp-builder/reference/evaluation.md (Apache-2.0) — trigger tuning split, tool-server question rules — used in: agent-evals
@@ -33,6 +35,8 @@ Procedure carried over; anchored in the skill text.
 - upstream/superpowers/skills/{subagent-driven-development,dispatching-parallel-agents,executing-plans} (MIT) — explicit model per worker, fix rounds, a ledger that survives compaction — used in: agent-orchestration
 - upstream/superpowers/skills/subagent-driven-development (MIT) — two-stage review after every task (spec compliance, then code quality) plus a final whole-branch review; the DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED worker status protocol; implementer and reviewer prompt templates and brief scripts — used in: agent-orchestration
 - upstream/oh-my-claudecode/skills/team (MIT) — staged plan, prd, exec, verify, fix pipeline with entry and exit gates; risk-based reviewer escalation; stuck-worker watchdog and reassignment; shutdown and resume protocol — used in: agent-orchestration
+- upstream/oh-my-claudecode/skills/{team,autopilot}/SKILL.md (MIT) — subagent nesting depth and concurrency are Claude Code settings whose defaults changed across 2.1.217–2.1.219 — used in: agent-orchestration
+- upstream/muratcankoylan-agent-skills-for-context-engineering/skills/long-horizon-prompting/references/mass-handoff-contracts.md (MIT) — degenerate-value rejection at handoff gates, bounded recall orders, the reviser as bottleneck — used in: agent-orchestration
 - upstream/compound-engineering-plugin/skills/ce-work/references/execution-strategy.md (MIT) — exclusive file ownership, orchestrator-only git, bounded batch concurrency — used in: agent-orchestration
 - upstream/anthropics-skills/skills/claude-api/shared/managed-agents-multiagent.md — when delegation fits — used in: agent-orchestration
 - upstream/seanellyjames-deep-research-skill/SKILL.md (MIT) — concurrency cap and no nested spawning — used in: agent-orchestration
@@ -40,6 +44,7 @@ Procedure carried over; anchored in the skill text.
 - authored for this toolkit — Oracle-by-blast-radius model tiering (Fast / Workhorse / Frontier), subagent-only tier switching to preserve prompt cache, command-log redirection, two-strike escalation, and cross-family / cross-tier review order — used in: agent-orchestration
 - upstream/everything-claude-code/skills/{agent-security-hardening,mcp-dependency-review,prompt-caching-strategy,llm-trading-agent-security} (MIT) — deny-wins policy, path containment, sentinel-secret test, MCP pinning tiers, cache keys are not access checks, trading limits — used in: agent-security
 - upstream/everything-claude-code/skills/{agent-security-hardening,llm-trading-agent-security} (MIT) — trust-boundary map (source, parser, validator, side effect); identifier allowlists and argv separation; env-value validation; private temp files; tool-output bounding with truncation markers and control-character stripping; a tests-cover-it completion gate per hardening step; transaction deadlines and MEV protection — used in: agent-security
+- upstream/supabase-agent-skills/skills/supabase/SKILL.md (MIT) — scoped personal access tokens for the Management API, CLI and MCP server instead of full-access classic tokens — used in: agent-security
 - upstream/everything-claude-code/the-security-guide.md (MIT) — Simon Willison's "lethal trifecta" (private data, untrusted content, an outbound channel), behind "The dangerous combination" — used in: agent-security
 - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-managed-context,harness-engineering,self-improvement-loops} (MIT) — self-written notes as untrusted input; graders locked from the agent — used in: agent-security
 - Gambit Security, "AI Agents Are Hacking Online Retailers for $25 a Company" (2026), https://gambit.security/blog-posts/autonomous-ai-agents-online-retailers-25-a-company — used in: agent-security
@@ -57,6 +62,8 @@ Procedure carried over; anchored in the skill text.
 - upstream/trailofbits-skills/plugins/fp-check (CC BY-SA 4.0 — ideas only, no wording) — catalogue of false-positive patterns and exploitability/PoC passes — used in: app-security
 - upstream/getsentry-skills/skills/security-review (Apache-2.0) — attacker-controlled vs server-controlled input — used in: app-security
 - upstream/getsentry-skills/skills/security-review/references (Apache-2.0) — per-class references (injection, XSS, SSRF, deserialization, path traversal, session and JWT, crypto) and the full do-not-flag list — used in: app-security
+- upstream/getsentry-skills/skills/security-model (Apache-2.0, commit d04211a) — optional persistent SECURITY_MODEL.md (boundaries, invariants with IDs, reportable classes, narrow exclusions) read from the base revision by later reviews; owner confirms anything that suppresses findings; suspected gaps stay out of it — used in: app-security
+- upstream/trailofbits-skills/plugins/post-patch-validation (CC BY-SA 4.0 — ideas only, no wording) — fix validation against the vulnerable base and the patch, root-cause variants, preserved behaviour, stated evidence level — used in: app-security
 - upstream/stripe-ai/skills/stripe-best-practices (MIT) — verify settled payment status before fulfillment on async payment webhooks — used in: app-security
 - third-party skill adapted from Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 — description rewritten for routing, template arrow z-order and legend placement aligned to spec (MIT; see LICENSE in this folder) — used in: architecture-diagram
 - third-party skill from Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 (MIT) — worked examples (web app, microservices, AWS serverless) shipped under resources/examples with the AWS legend moved below its region — used in: architecture-diagram
@@ -69,12 +76,15 @@ Procedure carried over; anchored in the skill text.
 - upstream/villetakanen-asdlc-io (MIT) — the repo's own instruction files as a review contract; stale specs as missing work — used in: code-review
 - upstream/mattpocock-skills/skills/engineering/code-review (MIT) — spec and standards as separate axes, repo conventions override — used in: code-review
 - upstream/mattpocock-skills/skills/engineering/code-review (MIT) — smell vocabulary as fallback — used in: code-review
-- upstream/claude-plugins-official/plugins/code-review/commands/code-review.md (Apache-2.0) — independent per-finding verification; untouched-line, pre-existing, tool-catchable and explicitly silenced issues are not findings; git history, earlier PR comments and in-code guidance as review lenses — used in: code-review
+- upstream/claude-plugins-official/plugins/code-review/commands/code-review.md (Apache-2.0) — independent per-finding verification; untouched-line, pre-existing, tool-catchable and explicitly silenced issues are not findings — used in: code-review
+- upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/maintainability-reviewer.md (MIT) — unrequested public surface and dependencies the standard library or a repo helper could replace (PR #1852) — used in: code-review
+- authored for this toolkit (toolkit policy) — Pass 3 history lens (blame, earlier pull requests, invariant comments); the upstream command dropped its history agents in its 2026-10-26 rewrite — used in: code-review
 - upstream/superpowers/skills/systematic-debugging (MIT) — root cause first, three failed fixes means stop — used in: debugging
 - upstream/superpowers/skills/systematic-debugging (MIT) — read the full error; one change at the source; backward root-cause tracing; condition-based waiting; find-polluter.sh — used in: debugging
 - upstream/compound-engineering-plugin/skills/ce-debug/references/{investigate,fix}.md (MIT) — observation-cited hypotheses, explicit invalidation — used in: debugging
 - upstream/compound-engineering-plugin/skills/ce-debug/references/investigate.md (MIT) — environment sanity check, dirty tree as a suspect, assumption audit, bisect with the repro, tracker and PR history search — used in: debugging
 - upstream/mattpocock-skills/skills/engineering/diagnosing-bugs (MIT) — reproduction loop as the first deliverable — used in: debugging
+- upstream/mattpocock-skills/skills/engineering/diagnosing-bugs (MIT, commit f3fc563) — a red forced by mutation counts only after a diff shows the mutation landed — used in: debugging
 - upstream/mattpocock-skills/skills/engineering/diagnosing-bugs (MIT) — ladder of ways to build a feedback loop, minimise step, 3–5 ranked falsifiable hypotheses, tagged debug logs with a cleanup grep — used in: debugging
 - upstream/gstack/investigate (MIT; retired upstream in 2026-11 after a null eval) — failure-shape routing; rerun, timeout and skip are not hypotheses — used in: debugging
 - upstream/gstack/qa (MIT) — regression-test value bar — used in: debugging
@@ -83,6 +93,7 @@ Procedure carried over; anchored in the skill text.
 - authored for this toolkit from a stated need (frontend-or-backend triage) — request/response boundary isolation steps — used in: debugging
 - upstream/superpowers/skills/brainstorming (MIT) — think wide privately, nothing built before approval — used in: design-discussion
 - upstream/superpowers/skills/brainstorming/{SKILL.md,builder-check-prompt.md} (MIT) — design played back in short chunks each ending with a what-is-missing question; builder check as a required subagent pass with a prompt and three-pile triage; sizing and splitting the work — used in: design-discussion
+- upstream/superpowers/skills/brainstorming/SKILL.md (MIT, v7.0.2) — ask only when the answer changes what gets built, else state the call as a proposal; why first, open-ended, no example answers; process steps are your own calls (release notes report blind-graded filler questions falling from 41 to 23) — used in: design-discussion
 - upstream/addyosmani-agent-skills/skills/interview-me (MIT) — one question with a guess attached, "want vs should want" probe, predict-the-next-three stop test, bare assent is not a yes — used in: design-discussion
 - upstream/addyosmani-agent-skills/skills/idea-refine (MIT) — directions must differ, not vary; name what each bets on; a not-doing list — used in: design-discussion
 - upstream/mattpocock-skills/skills/engineering/domain-modeling (MIT) — sharpen overloaded terms, edge-case scenarios, check the code, ADR only when hard to reverse, surprising and a real trade-off — used in: design-discussion
@@ -113,8 +124,9 @@ Procedure carried over; anchored in the skill text.
 - upstream/jeffallan-claude-skills/skills/architecture-designer/references/nfr-checklist.md (MIT) — numeric non-functional requirements before design; RPO and RTO as separate targets — used in: system-design
 - upstream/everything-claude-code/skills/redis-patterns (MIT) — cache stampede named with a concrete fix — used in: system-design
 - upstream/jeffallan-claude-skills/skills/cloud-architect/references/multi-cloud.md (MIT) — lock-in tier per service type; multi-cloud only for a named exit scenario — used in: system-design
-- upstream/gstack/{plan-eng-review,review} (MIT) — named review battery; two-real-callers rule for extraction — used in: system-design
-- upstream/gstack/plan-eng-review/sections/review-sections.md (MIT) — complexity smell (8+ files or 2+ new classes), code-path test-coverage tracing, the critical-gap rule (no test, no handling, silent failure) — used in: system-design
+- upstream/gstack/plan-eng-review (MIT; retired upstream 2026-11-07 as a standalone skill after a null eval; its method lives on as /autoplan Phase 3) — boring-by-default test — used in: system-design
+- upstream/gstack/review (MIT) — two-real-callers rule for extraction — used in: system-design
+- upstream/gstack/plan-eng-review/sections/review-sections.md (MIT; retired upstream 2026-11-07 as a standalone skill after a null eval; its method lives on as /autoplan Phase 3) — complexity smell (8+ files or 2+ new classes), the critical-gap rule (no test, no handling, silent failure) — used in: system-design
 - upstream/compound-engineering-plugin/skills/ce-doc-review (MIT) — adequate needs no change; name the downstream cost — used in: system-design
 - upstream/compound-engineering-plugin/skills/ce-doc-review/references/{personas/*,synthesis-and-presentation}.md (MIT) — coherence, feasibility and adversarial persona reviewers with independent verification — used in: system-design
 - upstream/mattpocock-skills/skills/engineering/{domain-modeling,triage,codebase-design} (MIT) — decision-record gate, prior-solution search, deletion and seam tests — used in: system-design
@@ -125,12 +137,15 @@ Procedure carried over; anchored in the skill text.
 - upstream/wondelai-skills/working-with-legacy-code (MIT) — characterization tests at the nearest public seam before changing untested legacy code — used in: tdd
 - upstream/trailofbits-skills/plugins/property-based-testing (CC BY-SA 4.0 — ideas only, no wording) — property checks (roundtrip, idempotence, invariants) alongside example tests for parsers, codecs and state machines — used in: tdd
 - upstream/trailofbits-skills/plugins/property-based-testing (CC BY-SA 4.0 — ideas only, no wording) — property catalogue ordered by strength; vacuous properties through over-filtering; generator design — used in: tdd
+- upstream/mattpocock-skills/skills/engineering/diagnosing-bugs (MIT, commit f3fc563) — prove a forced mutation landed by diffing against a pristine copy — used in: tdd
 - authored for this toolkit from a stated need (green suites that test nothing) — a test never seen red is not evidence — used in: tdd
 - upstream/superpowers/skills/verification-before-completion (MIT) — fresh evidence before claims, partial evidence, what each claim needs — used in: verification
 - authored for this toolkit from a stated need (results challenged as unverified) — state how and where; answer challenges with evidence — used in: verification
 - upstream/addyosmani-agent-skills/skills/doubt-driven-development (MIT) — artifact-only adversarial review, bounded cycles, "doubt theater" — used in: verification
 - upstream/gstack/ship (MIT) — freshness by content, not by commit count — used in: verification
 - upstream/fission-ai-openspec v1.15.0–v2.0.0 skills/openspec-verify-change (MIT, https://github.com/Fission-AI/OpenSpec) — completeness, correctness and coherence per requirement; a skipped check never passes; descoped (not applicable) separated from removed-requirement verification — used in: verification
+- upstream/compound-engineering-plugin/skills/ce-debug/references/fix.md (MIT, PR #2039, an audit of 45 real runs) — a fix to text a model reads is proven by a model run on old vs new text, not by the text being present — used in: verification
+- upstream/trailofbits-skills/plugins/post-patch-validation (CC BY-SA 4.0 — ideas only, no wording) — the repro must succeed on the unfixed base and fail on the fix; name how far the evidence goes (source, build, runtime) — used in: verification
 - authored for this toolkit from a stated need (an internal spec-driven workflow reviewed 2026-10-30) — unrequested behaviour and contradictions as findings; three repair passes, then stop and report — used in: verification
 - upstream/yennanliu-investskill/prompts/thesis-tracker.md (MIT) — structure from this source; ledger fields, four statuses and their bars, last-confirmed vs check outcome, 3–5 KPIs, pre-mortem, next check — used in: thesis-ledger
 - upstream/yennanliu-investskill/prompts/thesis-tracker.md (MIT) — a parseable saved-entry format and location, with a fenced-block fallback the user stores — used in: thesis-ledger
@@ -155,6 +170,7 @@ Procedure carried over; anchored in the skill text.
 - upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/comps-analysis/SKILL.md (Apache-2.0) — median, drop doubtful peers, quartiles, 10% source gap — used in: valuation-audit
 - upstream/yennanliu-investskill/prompts/dcf-valuation.md (MIT) — g below r; TV above 80% flag — used in: valuation-audit
 - upstream/yennanliu-investskill/prompts/stock-valuation.md (MIT) — SBC-adjusted FCF; no EV bridge for P/E price — used in: valuation-audit
+- upstream/yennanliu-investskill/plugins/us-stock-analysis/skills/*/SKILL.md, Data & Sources section (MIT) — conflicting sources resolved primary over aggregator, then most recent dated; both shown; never averaged — used in: valuation-audit
 - upstream/tradermonty-claude-trading-skills/skills/kanchi-dividend-sop/references/valuation-and-one-off-checks.md (MIT) — REIT row; one-off profit checks — used in: valuation-audit
 - upstream/tradermonty-claude-trading-skills/skills/kanchi-dividend-sop/references/valuation-and-one-off-checks.md (MIT) — margin expansion without matching revenue quality; a dividend funded by debt — used in: valuation-audit
 - upstream/janestreet-agent-skills/socratic-tutor/SKILL.md (MIT, https://github.com/janestreet/agent_skills) — intent guard, 3–5 question diagnostic, 0–5 sub-skill map, single-question turn rule, contradiction narrowing with 3-miss escape hatch, unprompted-recall gate, spaced-review regression, anti-flattery and anti-projection rules, save/resume state block — used in: socratic-tutor
@@ -178,6 +194,11 @@ Procedure carried over; anchored in the skill text.
 - Thoughtworks Technology Radar, https://www.thoughtworks.com/radar/faq — Radar-inspired labels; eligibility and production gates adapted for this toolkit — used in: adopt-or-build
 - upstream/wondelai-skills/pragmatic-programmer/references/reversibility.md (MIT) — switching cost measured from fan-out, coupling, tests and config — used in: adopt-or-build
 - upstream/optimnow-cloud-finops-skills/plugins/cloud-finops/skills/cloud-finops/references/finops-ai-self-hosted-vs-managed.md (CC BY-SA 4.0 — ideas only, no wording) — readiness factors for self-hosting, generalised here as toolkit policy — used in: adopt-or-build
+- upstream/ai-analyst-lab-ai-analyst/.claude/skills/question-framing (MIT) — goal, decision, metric, hypothesis ladder; the "what would you do differently" test; reporting vs analysis; justified dimensions; falsifiable success criteria; impact and feasibility ordering — used in: analysis-design
+- upstream/ai-analyst-lab-ai-analyst/.claude/skills/stress-test (MIT) — data availability before method, hypothesis, baseline, survivorship, segment reversal, concurrent changes, kill criteria, output fit, each with a pass/warn/fail verdict — used in: analysis-design
+- upstream/ai-analyst-lab-ai-analyst/.claude/skills/metric-spec (MIT) — unambiguous definition, explicit denominator, window and exclusions, one name per meaning, ratio parts moving on their own, grain key, driver decomposition, limitations — used in: analysis-design
+- upstream/ai-analyst-lab-ai-analyst/.claude/skills/data-quality-check (MIT) — minimum probe, severity classes, freshness, completeness, duplicates, referential integrity, impossible values, the proceed decision, no silent fixes — used in: analysis-design
+- upstream/ai-analyst-lab-ai-analyst/.claude/skills/tracking-gaps (MIT) — requirements before inventory, four availability statuses, workarounds with confidence, prioritised instrumentation requests — used in: analysis-design
 - upstream/sreshtalluri-mom-test/skills/mom-test (MIT) — past-behaviour rule, reflexes for bad data, evidence ladder — used in: customer-discovery
 - upstream/sreshtalluri-mom-test/skills/mom-test-check-questions (MIT) — question failure tests and reframe shapes — used in: customer-discovery
 - upstream/sreshtalluri-mom-test/skills/mom-test-debrief (MIT) — 19-rung ladder, facts vs interpretations, assumption statuses, segment split in batch mode — used in: customer-discovery
@@ -189,6 +210,11 @@ Procedure carried over; anchored in the skill text.
 - upstream/eltntawy-idea-discovery-playbook/skills/validation-experiments (MIT) — technique picker, priced CTA, success and fail thresholds, sequence, ethical fake door — used in: customer-discovery
 - upstream/gstack/office-hours/sections/phase-2a-startup-diagnostic.md (MIT) — demand-reality and status-quo questions; waitlists and interest are not demand — used in: customer-discovery
 - upstream/phuryn-pm-skills/pm-product-discovery/skills/brainstorm-experiments-new (MIT) — "at least X% of Y will do Z" hypothesis line — used in: customer-discovery
+- upstream/sreshtalluri-mom-test/skills/mom-test-roleplay (MIT) — practice mode with a hidden persona sheet, difficulty 1–5, answer rules that reward past-behaviour questions, debrief on the scorecard — used in: customer-discovery
+- upstream/sreshtalluri-mom-test/skills/mom-test-prep (MIT) — one-page prep sheet (riskiest assumption, scary question first, broad opener, commitment to ask for) — used in: customer-discovery
+- upstream/sreshtalluri-mom-test/skills/mom-test-next-question (MIT) — classify the statement, list the gaps, rank follow-ups by stage — used in: customer-discovery
+- upstream/sreshtalluri-mom-test/skills/mom-test-outreach (MIT) — five-part cold message, no product link, intro, follow-up, one-attempt revival — used in: customer-discovery
+- upstream/phuryn-pm-skills/pm-market-research/skills/survey-design (MIT) — is a survey the right tool, start from the decision, behaviour questions, pilot, honest sample and non-response reporting — used in: customer-discovery
 - upstream/ai-analyst-lab-ai-analyst/.claude/skills/srm-check (MIT) — SRM as a blocking gate, per-period SRM, investigation paths — used in: experiment-readout
 - upstream/ai-analyst-lab-ai-analyst/.claude/skills/guardrails (MIT) — clear / trade-off / degraded verdicts, net impact in shared units — used in: experiment-readout
 - upstream/ai-analyst-lab-ai-analyst/.claude/skills/experiment (MIT) — pre-registered config, not-viable power checkpoint, stricter SRM threshold while monitoring, Holm correction, outcome classes — used in: experiment-readout
@@ -197,6 +223,7 @@ Procedure carried over; anchored in the skill text.
 - upstream/ai-analyst-lab-ai-analyst/.claude/skills/triangulation (MIT) — independent methods for non-randomised changes; agreement is not proof — used in: experiment-readout
 - upstream/posthog-experiments/products/experiments/skills/diagnosing-experiment-health (MIT, method only) — age and exposed-population checks, systematic vs statistical, mechanisms need evidence — used in: experiment-readout
 - upstream/posthog-experiments/products/experiments/skills/diagnosing-experiment-health/references/interpretation.md (MIT, method only) — peeking, multiple comparisons, MDE and sample arithmetic, "target reached" is not a result — used in: experiment-readout
+- upstream/posthog-experiments/products/experiments/skills/diagnosing-experiment-health/references/{bias-and-skew.md,mid-run-changes.md,numbers-vs-sql.md} (MIT, method only) — assignment checks (multi-variant units above 0.1% with at least 5, a flag shared by running experiments, metric filters that leave the denominator fixed, a code fallback logged as a variant) — used in: experiment-readout
 - upstream/wondelai-skills/monetizing-innovation/SKILL.md (MIT) — value metric before level, segment by willingness to pay, zero pushback as the under-pricing signature — used in: pricing
 - upstream/wondelai-skills/monetizing-innovation/references/wtp-conversations.md (MIT) — top-box scoring, haircut stated numbers, curve not average, red flags in answers — used in: pricing
 - upstream/wondelai-skills/monetizing-innovation/references/wtp-conversations.md (MIT) — the exact WTP question scripts, a simplified conjoint procedure, B2C sample sizes — used in: pricing
@@ -204,6 +231,7 @@ Procedure carried over; anchored in the skill text.
 - upstream/aidevgtm-gtm-cofounder/skills/12-pricing/SKILL.md (MIT) — deflected payment requests as the strongest signal, value-metric decision tree, the free/paid line (give away individual value), metric then packaging then number, value-multiple heuristic — used in: pricing
 - upstream/marketingskills/skills/pricing/SKILL.md (MIT) — new-customers-first rollout, small existing cohort, grandfathering as a transition, the ultra-low-price trap — used in: pricing
 - upstream/marketingskills/skills/pricing/references/pricing-page-teardown.md (MIT) — reviewing the page for AI agents as well as humans — used in: pricing
+- upstream/marketingskills/skills/pricing/{SKILL.md,references/research-methods.md} (MIT) — Van Westendorp measures price perception, not demand — used in: pricing
 - upstream/gstack/plan-ceo-review (MIT) — four explicit scope modes chosen before review — used in: product-scoping
 - upstream/phuryn-pm-skills/pm-product-discovery/skills/opportunity-solution-tree (MIT) — opportunities not features, three solutions per opportunity, opportunity score — used in: product-scoping
 - upstream/phuryn-pm-skills/pm-execution/skills/create-prd (MIT) — value proposition with an explicit alternatives slot; findings enter the PRD only if they change a decision — used in: product-scoping
@@ -214,6 +242,7 @@ Procedure carried over; anchored in the skill text.
 - upstream/jalald-verified-research/skills/verified-research/{SKILL.md,references/briefs.md,references/analysis.md} (MIT) — the red-team phase for contested runs — used in: verified-research
 - upstream/seanellyjames-deep-research-skill/SKILL.en.md (MIT) — premise framing, falsifiable hypotheses, claim headings — used in: verified-research
 - upstream/wanshuiyin-auto-claude-code-research-in-sleep/skills/citation-audit/SKILL.md (MIT) — wrong-context verdict — used in: verified-research
+- upstream/wanshuiyin-auto-claude-code-research-in-sleep/skills/citation-crosscheck/SKILL.md (MIT) — the checker re-fetches each source blind to the record, extracts what it states, then diffs field by field — used in: verified-research
 - upstream/everything-claude-code/skills/research-ops/SKILL.md (MIT) — sorting user material; statement-type tags — used in: verified-research
 - Mike Caulfield, SIFT ("the four moves"), https://hapgood.us/2019/06/19/sift-the-four-moves/ — lateral reading, tracing claims (method only) — used in: verified-research
 - user-authored framework (v1, 2026-03), restructured — used in: liu-ayi
@@ -221,6 +250,7 @@ Procedure carried over; anchored in the skill text.
 - Hume, Burke and Hayek on evolved institutions; Tetlock on reference classes and calibration (public literature) — used in: liu-ayi
 - upstream/khazix-skills/khazix-writer (MIT) — first-hand observation is what a model cannot supply; ask the writer for it — used in: writing
 - upstream/marketingskills/skills/copywriting/references/ai-tells.md (MIT) — placeholder for missing proof instead of an invented fact; the swap test — used in: writing
+- upstream/marketingskills/skills/copywriting/references/ai-tells.md (MIT) — second-generation tells and the writer behind the copy (uneven density, honest limits, never invent experience); persona-built opinions replaced by asking the writer — used in: writing
 - upstream/ahao-writing-dna-distiller (MIT) — voice as ranges and verbatim samples by function, not averages; prescriptive rules over descriptions — used in: writing
 - upstream/ahao-writing-dna-distiller (MIT) — the measuring pipeline (distill_metrics.py for sentence-length spread, short/long ratio, punctuation, nominalisation and risky-word density), beat sheets and structure archetypes, the form-vs-content forbidden map, the AI-flavour firewall self-check — used in: writing
 - upstream/everything-claude-code/skills/brand-voice (MIT) — a banned move must be observed in the writer's own corpus; report splits instead of averaging — used in: writing
@@ -235,6 +265,7 @@ Procedure carried over; anchored in the skill text.
 - upstream/everything-claude-code/agents/database-reviewer.md (MIT) — structure from this source and the next; cursor pagination instead of OFFSET — used in: rule data-and-containers
 - upstream/everything-claude-code/skills/{postgres-patterns,docker-patterns} (MIT) — RLS auth call wrapped in a subquery; pinned tags, non-root, no secrets in layers, ports bound to 127.0.0.1 — used in: rule data-and-containers
 - upstream/supabase-agent-skills/skills/supabase-postgres-best-practices (MIT) — SECURITY DEFINER search_path pinning, RLS predicate indexing and recursion, transaction-mode pooler limits — used in: rule data-and-containers
+- upstream/supabase-agent-skills/skills/supabase/SKILL.md (MIT) — views bypass RLS unless created with security_invoker on PG15+ — used in: rule data-and-containers
 - upstream/everything-claude-code/agents/flutter-reviewer.md (MIT) — mounted check after await, cancel subscriptions and controllers in dispose — used in: rule flutter
 - upstream/everything-claude-code/rules/dart/coding-style.md (MIT) — sealed classes with exhaustive switches — used in: rule flutter
 - upstream/jeffallan-claude-skills/skills/spring-boot-engineer (MIT) — WebSecurityConfigurerAdapter removal, no block() in WebFlux — used in: rule java
@@ -243,6 +274,8 @@ Procedure carried over; anchored in the skill text.
 - upstream/everything-claude-code/rules/react/security.md (MIT) — Server Actions are public endpoints — used in: rule typescript-web
 - upstream/vercel-labs-agent-skills/skills/{react-best-practices,composition-patterns} (MIT) — children/slots over render functions across RSC boundaries, React.cache() per-request dedup, Next.js after() — used in: rule typescript-web
 - upstream/vercel-next-js/skills (MIT) — Next.js 16 "use cache" / cacheLife / cacheTag and local version-matched docs in node_modules/next/dist/docs/ — used in: rule typescript-web
+- upstream/vercel-next-js/{skills/next-cache-components-adoption,docs/01-app/03-api-reference/04-functions/{navigation,prefetch}.mdx} (MIT) — cacheComponents rejects dynamic/revalidate/fetchCache exports and the old dynamicIO key; navigation()/prefetch() lose the unstable_ prefix in 16.4 — used in: rule typescript-web
+- upstream/vercel-labs-agent-skills/skills/react-view-transitions (MIT) — ViewTransition and addTransitionType stable from React 19.3; no react@canary under the App Router — used in: rule typescript-web
 
 ## Ideas drawn on
 
@@ -263,6 +296,9 @@ The upstream has this capability and the toolkit does not (yet).
 - upstream/tradermonty-claude-trading-skills/skills/trader-memory-core/scripts/thesis_review.py (MIT) — MAE/MFE postmortem from price history and recorded lessons — missing: needs a price feed; not ported — used in: thesis-ledger
 - upstream/yennanliu-investskill/plugins/us-stock-analysis/skills/economics-analysis (MIT) — the NY Fed term-spread recession model and the Conference Board leading index (neither on FRED) — missing: not fetched; read them from the publisher when a call depends on them — used in: macro-regime
 - upstream/tradermonty-claude-trading-skills/skills/macro-regime-detector/{references/regime_detection_methodology.md,scripts/scorer.py} (MIT) — 6- and 12-month moving-average crossovers with confirmation scoring; cross-asset components incl. stock-bond correlation — missing: not ported — used in: macro-regime
+- upstream/ai-analyst-lab-ai-analyst/.claude/skills/stress-test (MIT) — the A to F letter grade over the seven verdicts — missing: the plan gets per-check verdicts and a go / fix / redesign call, no letter grade — used in: analysis-design
+- upstream/ai-analyst-lab-ai-analyst/.claude/skills/metric-spec (MIT) — registering specs in a metrics store and compiling single-aggregate metrics into deterministic queries — missing: specs live in the analysis brief; no registry or metric compiler — used in: analysis-design
+- upstream/ai-analyst-lab-ai-analyst/.claude/skills/data-quality-check (MIT) — outlier tests and a rolling time-series anomaly scan run as tested helpers — missing: the profiler covers nulls, keys, dates and timezones only; outliers and anomalies are checked by hand — used in: analysis-design
 - upstream/ai-analyst-lab-ai-analyst/helpers/stats/experiment_stats/{sequential.py,variance_reduction.py} (MIT) — always-valid confidence sequences for repeated looks; CUPED variance reduction — missing: not ported; a sequential design needs an external tool — used in: experiment-readout
 - upstream/ai-analyst-lab-ai-analyst/.claude/skills/triangulation (MIT) — paths run in isolated subagents with per-path record fields — missing: independence is asked for in one line with no mechanism — used in: experiment-readout
 
@@ -274,6 +310,8 @@ The upstream has this capability and the toolkit does not (yet).
 - emil-design-engineering (MIT) — https://github.com/emilkowalski/skills
 - humanizer (MIT) — https://github.com/blader/humanizer
 - humanizer-zh (MIT) — https://github.com/op7418/Humanizer-zh
+- marketingskills-gtm (MIT) — https://github.com/coreyhaines31/marketingskills
+- modern-web-guidance (Apache-2.0 (code), CC-BY-4.0 (guides)) — https://github.com/GoogleChrome/modern-web-guidance
 - webapp-testing (Apache-2.0) — https://github.com/anthropics/skills
 - agent-browser (Apache-2.0) — https://github.com/vercel-labs/agent-browser
 - mcp-builder (Apache-2.0) — https://github.com/anthropics/skills

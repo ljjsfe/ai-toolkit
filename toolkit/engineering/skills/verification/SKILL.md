@@ -4,13 +4,15 @@ description: >-
   Back completion claims ("done", "fixed", "passing", "deployed") with fresh session evidence:
   exact command and environment, re-runs after edits, item-by-item spec/requirement coverage before
   archiving, and artifact-only challenge passes. Not for LLM/agent benchmarks (use agent-evals).
-version: 1.2.2
+version: 1.3.0
 sources:
   - upstream/superpowers/skills/verification-before-completion (MIT) — fresh evidence before claims, partial evidence, what each claim needs [port "no success claim without fresh evidence" "partial evidence proves only its part" "what each claim needs"]
   - authored for this toolkit from a stated need (results challenged as unverified) — state how and where; answer challenges with evidence [port "say how and where" "when challenged by the user"]
   - upstream/addyosmani-agent-skills/skills/doubt-driven-development (MIT) — artifact-only adversarial review, bounded cycles, "doubt theater" [port "only the artifact and the requirement" "stop after three rounds" "defending rather than checking"]
   - upstream/gstack/ship (MIT) — freshness by content, not by commit count [port "evidence expires when the content it checked changes"]
   - upstream/fission-ai-openspec v1.15.0–v2.0.0 skills/openspec-verify-change (MIT, https://github.com/Fission-AI/OpenSpec) — completeness, correctness and coherence per requirement; a skipped check never passes; descoped (not applicable) separated from removed-requirement verification [port "not verified never counts as covered" "a removed requirement is not"]
+  - upstream/compound-engineering-plugin/skills/ce-debug/references/fix.md (MIT, PR #2039, an audit of 45 real runs) — a fix to text a model reads is proven by a model run on old vs new text, not by the text being present [port "a model run on the old text and on the new"]
+  - upstream/trailofbits-skills/plugins/post-patch-validation (CC BY-SA 4.0 — ideas only, no wording) — the repro must succeed on the unfixed base and fail on the fix; name how far the evidence goes (source, build, runtime) [port "red on the unfixed code" "how far the evidence reached"]
   - authored for this toolkit from a stated need (an internal spec-driven workflow reviewed 2026-10-30) — unrequested behaviour and contradictions as findings; three repair passes, then stop and report [port "look the other way too" "fix and recheck at most three times"]
 ---
 
@@ -30,7 +32,8 @@ produced earlier.
    the code, config and dependencies it saw. If any of those changed since, re-run; a
    message-only amend changes nothing.
 4. **Partial evidence proves only its part.** Lint passing is not a build; a build is not a
-   test; tests passing is not the requirement met; an agent saying "success" is not a diff.
+   test; tests passing is not the requirement met; an agent saying "success" is not a diff. Say
+   how far the evidence reached — source read, built, or run — and claim no further.
 
 ## What each claim needs
 
@@ -38,7 +41,8 @@ produced earlier.
 |---|---|---|
 | tests pass | test output, 0 failures, exit 0 | an earlier run, a subset |
 | builds | build command exit 0 | lint or type-check alone |
-| bug fixed | the original reproduction now passes | "code changed" |
+| bug fixed | the original reproduction was red on the unfixed code and is green on the fix | "code changed"; a repro only ever run on the fix |
+| prompt, skill or instruction text fixed | a model run on the old text and on the new one, showing the behaviour changed (`agent-evals` for more than one case) | a check that the new text is present — that proves the edit, not the behaviour |
 | deployed | the running version or commit hash read from the target, plus a live check | "the pipeline finished" |
 | UI works | the page driven in a real browser (e.g. `webapp-testing` or `agent-browser`): screenshot/snapshot plus console with no errors; for UI edge cases or mobile web, also check realistic worst-case data (`break-ui`) and real-device/viewport behaviour (`mobile-native`) when installed | the component compiling, a passing unit test |
 | requirement met | each requirement checked off against observed behaviour | tests passing |

@@ -17,6 +17,8 @@ paths:
 - Supabase / Postgres RLS: wrap auth calls in a subquery — `(SELECT auth.uid()) = user_id` — so
   they are evaluated once per query, not per row; index every column referenced in RLS predicates;
   avoid mutual cross-table RLS policies (`A → B → A`) that recurse.
+- Postgres views bypass RLS by default (they run as the view owner): on PG15+ create them
+  `WITH (security_invoker = true)`; older versions, revoke `anon`/`authenticated` or use an unexposed schema.
 - Postgres `SECURITY DEFINER` functions must pin `SET search_path = ''`, schema-qualify all
   referenced objects, and live outside API-exposed schemas (`public` in PostgREST).
 - Connection poolers in transaction mode (e.g. PgBouncer port 6543): never rely on session-level
