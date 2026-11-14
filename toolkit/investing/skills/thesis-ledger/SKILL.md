@@ -4,21 +4,22 @@ description: >-
   Write and track stock or options theses as dated, falsifiable KPI claims: status bars (intact /
   weakened / broken / insufficient evidence), stale-data blocks, price != evidence, fact/price/wording
   drift split, and 12m pre-mortem. Trigger on 投资逻辑, 持仓复盘, 季报对照. Valuation: valuation-audit.
-version: 1.2.2
+version: 1.3.0
 sources:
   - upstream/yennanliu-investskill/prompts/thesis-tracker.md (MIT) — structure from this source;
     ledger fields, four statuses and their bars, last-confirmed vs check outcome, 3–5 KPIs,
     pre-mortem, next check [port "3–5 statements, each with kpi" "insufficient evidence" "last confirmed status" "dated entry + 12 months"]
-  - upstream/yennanliu-investskill/prompts/thesis-tracker.md (MIT) — a parseable saved-entry format and location, with a fenced-block fallback the user stores [gap the skill never says where an entry is saved, so Check and Review cannot load one in a new session]
+  - upstream/yennanliu-investskill/prompts/thesis-tracker.md (MIT) — a parseable saved-entry format and location, with a fenced-block fallback the user stores [port "~/.investing/theses/<ticker>.md" "paste it back to resume"]
   - upstream/yennanliu-investskill/prompts/10k-digest.md (MIT) — commitment scoring; rerun after a restatement (the stale-data rule is toolkit policy) [port "score the saved promises" "a restatement or auditor change"]
   - upstream/yennanliu-investskill/prompts/result-validator.md (MIT) — provenance block; memory is low confidence [port "memory ⇒ low"]
   - upstream/xbtlin-ai-berkshire/skills/thesis-drift.md (MIT) — fact / price / wording buckets; no baseline, no check [port "is it new, dated, checkable" "a thesis recalled after the fact"]
-  - upstream/xbtlin-ai-berkshire/tools/financial_rigor.py (MIT) — the script that rule 6 says figures come from [gap no script is shipped; only the print-the-formula fallback works]
+  - upstream/xbtlin-ai-berkshire/tools/financial_rigor.py (MIT) — growth, margin and distance-to-threshold computed by script with the formula printed [port "def cmd_calc"]
   - upstream/anthropics-financial-services/plugins/vertical-plugins/equity-research/skills/thesis-tracker/SKILL.md
     (Apache-2.0) — long/short side, catalysts tied to claims, trend column, track disconfirming evidence [port "long or short; holding horizon" "an event that tests no claim" "strongest fact against the thesis"]
   - upstream/tradermonty-claude-trading-skills/skills/trader-memory-core/SKILL.md (MIT) — event-history
     appends; closed vs invalidated (never editing past rows is toolkit policy) [port "rows are added, never edited" "*invalidated*"]
-  - upstream/tradermonty-claude-trading-skills/skills/trader-memory-core/{scripts/thesis_store.py,schemas/thesis.schema.json,scripts/thesis_review.py} (MIT) — schema-validated thesis state, due-date queries, MAE/MFE postmortem and recorded lessons [gap not carried over]
+  - upstream/tradermonty-claude-trading-skills/skills/trader-memory-core/{scripts/thesis_store.py,schemas/thesis.schema.json} (MIT) — validated thesis state and due-date queries; append-only history enforced in code here by a hash chain [port "def verify_text" "def cmd_book" "chained to the row before it"]
+  - upstream/tradermonty-claude-trading-skills/skills/trader-memory-core/scripts/thesis_review.py (MIT) — MAE/MFE postmortem from price history and recorded lessons [gap needs a price feed; not ported]
   - upstream/b-m-capital-research-honeclaw/skills/company-thesis-ratings/SKILL.md (MIT) — fact / inference / unknown tags [port "inferences (marked)"]
   - Gary Klein, "Performing a Project Premortem", HBR 2007, https://hbr.org/2007/09/performing-a-project-premortem
     (public literature) — failure taken as certain; user's causes first (order adapted) [port "the user lists causes first"]
@@ -44,8 +45,28 @@ position stays the user's call.
    never moves a status.
 5. **Only fresh figures confirm.** A claim holds only on a figure dated after the previous check.
    A check without such figures does not re-confirm anything (see the two statuses below).
-6. **Compute, don't estimate.** Growth, margins, deltas and distance to threshold come from a
-   script, or the formula and inputs are printed so the user can redo them.
+6. **Compute, don't estimate.** Growth, margins, deltas and distance to threshold come from
+   `scripts/ledger.py calc growth|margin|distance` (or another script run this session), or the
+   formula and inputs are printed so the user can redo them.
+
+## Where the ledger lives
+
+One file per thesis at `~/.investing/theses/<TICKER>.md` (`$THESIS_DIR` overrides), managed by
+`scripts/ledger.py` (standard-library Python):
+
+- `ledger.py new <TICKER> --side long|short [--expiry <date>]` creates the file with every
+  section below; fill them by editing it. It refuses to overwrite an existing thesis.
+- `ledger.py log <TICKER> --outcome intact|weakened|broken|insufficient --fact "…" --next <date>
+  --reason "…"` appends the check to the Status history and updates the header; `insufficient`
+  leaves last confirmed in place (step 8). Each history row is hash-chained to the row before it.
+- `ledger.py verify <TICKER>` before every check: an edited or deleted history row, or a header
+  that disagrees with the history, fails it, and `log` refuses to append until it is fixed.
+- `ledger.py close <TICKER> --as closed|invalidated --reason "…"`; `ledger.py book` for the
+  review table with overdue checks.
+
+Without file access (a chat session), emit the full entry as one fenced Markdown block in the
+same layout and tell the user to save it and paste it back to resume; never rebuild it from
+memory.
 
 ## The ledger entry
 
@@ -65,7 +86,8 @@ Opening a thesis means filling every field below. Ask for what is missing; do no
 
 ## Checking an open thesis
 
-The saved entry is the yardstick. If there is none, open one dated today and treat this as day
+The saved entry is the yardstick: open `~/.investing/theses/<TICKER>.md` (or the block the user
+pasted) and run `ledger.py verify` first. If there is none, open one dated today and treat this as day
 zero — a thesis recalled after the fact has absorbed what happened since, so it is never used
 as a baseline.
 
@@ -111,11 +133,14 @@ as a baseline.
 Mark the entry *closed* (ran its course or the user chose to exit) or *invalidated* (a kill
 criterion fired or the status was broken), with the user's stated reason. Grade whether the
 thesis was right separately from the P&L: a sound thesis can lose money and a wrong one can profit.
+The ledger holds no prices or position size; ask the user for the realised result if they want it
+set beside the grade.
 
 ## Reviewing the book
 
 One row per thesis: ticker, side, last confirmed status, latest check outcome, last check,
-next check, overdue (yes/no), what data is still missing.
+next check, overdue (yes/no), what data is still missing. `ledger.py book` prints all but the
+last column; add what is missing from each file.
 
 ## Output
 
