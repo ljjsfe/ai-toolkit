@@ -5,16 +5,16 @@ description: >-
   missing requirements, sibling sweeps, weakened-gate checks, git-history context, and independent
   refutation of P0/P1s. For offensive security audits use app-security; for design/plan reviews use
   system-design.
-version: 1.2.5
+version: 1.3.0
 sources:
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/{action-class-rubric.md,subagent-template.md} (MIT) — P0–P3; check callers, guards and framework defaults [port "data loss, security hole" "framework defaults"]
-  - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/* (MIT) — per-lens checklists (correctness sentinel and lifecycle-writer checks, reliability timeouts, retries and error-path leaks), anchored 25/50/75/100 confidence, per-persona do-not-flag lists [gap reduced to a one-line list of lenses]
+  - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/* (MIT) — per-lens checklists (correctness sentinel and lifecycle-writer checks, reliability timeouts, retries and error-path leaks), anchored 25/50/75/100 confidence, per-persona do-not-flag lists [port "Sentinel meaning changes" "Every writer of a lifecycle state" "Deleted-but-referenced files" "Swallowed errors" "Leaks on error paths" "Retry storms" "Anchored confidence" "Do-not-flag list"]
   - upstream/compound-engineering-plugin/skills/ce-simplify-code/references/personas/efficiency-reviewer.md (MIT) — unbounded structures, listener leaks [port "collections that only grow" "listeners never removed"]
   - upstream/gstack/review (MIT) — sideways sweep, weakened-gate inventory, quote-or-cap confidence [port "sweep sideways" "weakened gates are findings" "capped at low confidence"]
-  - upstream/gstack/review/{checklist.md,gate-integrity.md} (MIT) — enum/value completeness trace, RH-1…16 gate-weakening pattern catalog, scope-creep check [gap not carried over]
+  - upstream/gstack/review/{checklist.md,gate-integrity.md} (MIT) — enum/value completeness trace, RH-1…16 gate-weakening pattern catalog, scope-creep check [port "Grep for the sibling values" "Snapshot or golden regenerated alone" "Suppression pragma added" "Assertion loosened" "Scope creep is the other half of the spec axis"]
   - upstream/villetakanen-asdlc-io (MIT) — the repo's own instruction files as a review contract; stale specs as missing work [port "cite the specific rule when broken" "leaves it stale"]
   - upstream/mattpocock-skills/skills/engineering/code-review (MIT) — spec and standards as separate axes, repo conventions override [port "two axes, reported separately" "the repo's own conventions override"]
-  - upstream/mattpocock-skills/skills/engineering/code-review (MIT) — smell vocabulary as fallback [gap the smell list and fixes are not in the skill]
+  - upstream/mattpocock-skills/skills/engineering/code-review (MIT) — smell vocabulary as fallback [port "Smell vocabulary (standards fallback)" "Speculative generality" "Refused bequest"]
   - upstream/claude-plugins-official/plugins/code-review/commands/code-review.md (Apache-2.0) — independent per-finding verification; untouched-line, pre-existing, tool-catchable and explicitly silenced issues are not findings; git history, earlier PR comments and in-code guidance as review lenses [port "serious findings survive an independent refutation" "silenced by an ignore comment" "earlier pull requests touching these files"]
 ---
 
@@ -41,7 +41,9 @@ A review that cries wolf is worse than none. Fewer, defensible findings beat a l
    site or entry point, and grade severity on the worst instance found.
 4. **Weakened gates are findings in their own right.** List every change to tests, snapshots,
    CI config, lint rules or type strictness in the diff and justify each one. A loosened
-   assertion that makes the build pass is the most important line in the review.
+   assertion that makes the build pass is the most important line in the review. Grep the
+   diff against the pattern catalogue in `references/gate-patterns.md` (skips and `.only`,
+   suppression pragmas, regenerated snapshots, relaxed thresholds, swallowed exceptions…).
 5. **Review the change, not the file.** A real problem that this change neither introduced nor
    made reachable goes in the appendix marked `pre-existing`. "Made reachable" means the diff
    adds a caller or an input source, or removes a guard — cite that changed line as the
@@ -64,7 +66,12 @@ A review that cries wolf is worse than none. Fewer, defensible findings beat a l
 The usual correctness, security and performance lenses, plus the one most often skipped —
 **lifecycle**, the bugs that pass tests and fail later: collections that only grow, handles not
 released on every error path, listeners never removed — and authorisation on every new entry
-point. When the change touches auth, tenancy, payments or webhooks, also apply `app-security`.
+point. Read `references/lenses.md` for the lenses the diff touches — it holds the per-lens
+checklists (correctness, reliability, performance, tests), what each never flags, and the
+anchored confidence table. Two checks there are mandatory whenever they apply, because they
+need code outside the diff: **every writer of a lifecycle state** when the diff writes or adds
+a status, and the **enum/value completeness trace** when it adds a value or widens an input.
+When the change touches auth, tenancy, payments or webhooks, also apply `app-security`.
 When it changes frontend UI, mobile web layout, or motion, also apply `impeccable`,
 `mobile-native`, and explicitly invoke `review-animations` (if installed; see
 `toolkit/external.yaml`).
@@ -78,6 +85,13 @@ the change leaves it stale (without an active delta or spec update), report `MIS
 file's `file:line` — the spec or doc should change in the same PR. P2 at most, unless the stale
 spec or doc is a public API contract. If no such doc exists, there is no finding.
 Report as `MISSING: <what> — <why it matters>`, citing the requirement or rule it comes from.
+
+**Scope creep is the other half of the spec axis.** Map each hunk to the requirement it serves;
+list hunks that serve none. Also list every behaviour the diff changes — a default, an exit
+code, a stored value, a route, a side effect — that the PR description or commit messages do
+not mention. Report these as `UNASKED: <change> — <file:line>`; each is a question for the
+author (split it out, or add it to the spec), not automatically a defect. Acceptance text edited in the same diff is a
+weakened gate: see "Spec edited to match" in `references/gate-patterns.md`.
 
 ## Pass 3 — What the history says
 
@@ -103,15 +117,22 @@ Report as `MISSING: <what> — <why it matters>`, citing the requirement or rule
 P0/P1 must include the snippet, the failure walked end to end, and why existing guards (types,
 validation, framework defaults) do not prevent it. Cannot produce all three → demote or drop.
 
+Confidence uses the 0/25/50/75/100 anchors in `references/lenses.md`: 75 and up needs the
+quoted line, 50 goes to the appendix (a P0 at 50 is listed there as `unconfirmed P0` with
+what would confirm it — it never skips the P0/P1 evidence rule above), 25 and below is
+dropped.
+
 The repo's own conventions override any generic style rule; a design smell is a judgement call,
-never a hard violation.
+never a hard violation. Where the repo is silent, use the smell vocabulary and fixes at the end
+of `references/lenses.md`, labelled "possible <smell>".
 
 ## Output
 
 ```
 Spec conformance:      met / partially / not met — and what was not done
-Findings (standards):  P0 → P2, each: file:line · failure · fix
+Findings (standards):  P0 → P2, each: file:line · failure · confidence anchor · fix
 Missing:               MISSING: items with their citation
+Unasked:               UNASKED: changes no requirement or description covers
 Gate changes:          each test / CI / config change and whether it is justified
 Appendix:              low-confidence observations, clearly labelled
 ```

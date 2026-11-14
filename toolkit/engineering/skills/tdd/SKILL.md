@@ -4,13 +4,13 @@ description: >-
   Build test-first in thin vertical slices: agree public seams first, go red-before-green one
   slice at a time, mock only system boundaries, and slice plans or specs into tickets with real
   blocking edges. Un-reproduced bugs: debugging; behavioral contracts: spec; diff review: code-review.
-version: 1.1.1
+version: 1.2.0
 sources:
   - upstream/mattpocock-skills/skills/engineering/tdd (MIT, commit 5beb35b) — tests at agreed seams, implementation-coupled and tautological tests, horizontal slicing as an anti-pattern, mock only at system boundaries, no refactoring mid-cycle [port "agree the seams first" "implementation-coupled" "mock only at system boundaries" "no refactoring mid-cycle"]
   - upstream/mattpocock-skills/skills/engineering/to-tickets (MIT, commit 5beb35b) — tracer-bullet vertical slices, blocking edges and the frontier, expand–contract sequencing for wide refactors, no file paths in tickets [port "form the frontier" "expand, migrate, contract" "describe behaviour, not file paths"]
   - upstream/wondelai-skills/working-with-legacy-code (MIT) — characterization tests at the nearest public seam before changing untested legacy code [port "characterization tests at the nearest public seam"]
   - upstream/trailofbits-skills/plugins/property-based-testing (CC BY-SA 4.0 — ideas only, no wording) — property checks (roundtrip, idempotence, invariants) alongside example tests for parsers, codecs and state machines [port "roundtrip, idempotence, invariant preservation"]
-  - upstream/trailofbits-skills/plugins/property-based-testing (CC BY-SA 4.0 — ideas only, no wording) — property catalogue ordered by strength; vacuous properties through over-filtering; generator design [gap only a one-line pointer in the skill]
+  - upstream/trailofbits-skills/plugins/property-based-testing (CC BY-SA 4.0 — ideas only, no wording) — property catalogue ordered by strength; vacuous properties through over-filtering; generator design [port "Catalogue, weakest to strongest" "Vacuous through over-filtering" "Build valid inputs directly" "Generator design"]
   - authored for this toolkit from a stated need (green suites that test nothing) — a test never seen red is not evidence [port "never seen red"]
 ---
 
@@ -79,7 +79,11 @@ Scale it to the change: a small change is one slice, and its seams are stated, n
 - For untested legacy code, pin current observable behaviour with characterization tests at the
   nearest public seam *before* changing behaviour or extracting structure.
 - For parsers, serializers, normalizers and state machines, pair example cases with property-based
-  checks (roundtrip, idempotence, invariant preservation across generated inputs).
+  checks (roundtrip, idempotence, invariant preservation across generated inputs). Read
+  `references/properties.md` before writing one: assert the strongest property the code
+  supports, generate valid inputs directly rather than filtering them, and confirm the number
+  of examples actually run — a heavily filtered property can pass while checking only a
+  sliver of the input space.
 
 ## 3. Tests to reject
 
@@ -90,6 +94,7 @@ Scale it to the change: a small change is one slice, and its seams are stated, n
 | tautological | expected value computed the way the code computes it, a snapshot derived the same way, a constant asserted equal to itself | a known literal or worked example |
 | horizontal | every test written before any code | one test per cycle |
 | never seen red | written after the code and never observed failing | break the code or revert it, watch the test fail, restore |
+| vacuous property | a generated-input test whose filters discard most or all inputs, or that restates the implementation | generate valid inputs directly; assert a rule from `references/properties.md` |
 
 ## Output
 

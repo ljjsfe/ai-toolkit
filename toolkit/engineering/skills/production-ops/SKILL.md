@@ -4,17 +4,17 @@ description: >-
   Ship safe production changes (expand-migrate-contract schema/data migrations, idempotent retries,
   deploys, rollbacks, burn-rate alerts) and run live incidents (mitigate first, capture evidence,
   confirm signal recovery). For non-urgent bugs use debugging.
-version: 1.1.1
+version: 1.2.0
 sources:
   - upstream/everything-claude-code/skills/{database-migrations,docker-patterns} (MIT) — expand-migrate-contract, CONCURRENTLY, batched backfills [port "expand → migrate → contract" "create index concurrently" "backfills in keyset batches"]
-  - upstream/everything-claude-code/skills/database-migrations (MIT) — forward-only migrations in production; no NOT NULL column without a default on a live table [gap not carried over]
+  - upstream/everything-claude-code/skills/database-migrations (MIT) — forward-only migrations in production; no NOT NULL column without a default on a live table [port "migrations are forward-only in production" "never add a not null column without a default"]
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/data-migration-reviewer.md (MIT) — broken dual-write transitions [port "during a dual-write transition"]
   - upstream/supabase-agent-skills/skills/supabase-postgres-best-practices (MIT) — SET lock_timeout before lock-taking ALTER TABLE on live tables [port "set a short lock_timeout"]
   - upstream/jeffallan-claude-skills/skills/microservices-architect (MIT) — idempotency keys, idempotent saga steps, explicit retry budgets [port "unique constraint plus an atomic insert" "every saga step is idempotent" "a retry budget"]
   - upstream/gstack/{land-and-deploy,canary} (MIT) — risk-scaled verification, baseline deviation, merge-shape-aware revert [port "scale verification to the change" "compare against baseline" "know the merge shape before reverting"]
-  - upstream/gstack/{land-and-deploy,canary} (MIT) — baseline captured before the deploy, a fixed monitoring window with numeric thresholds, unknown scope is not docs-only, bounded deploy waits, a revert PR when branch protection blocks a push [gap not carried over]
+  - upstream/gstack/{land-and-deploy,canary} (MIT) — baseline captured before the deploy, a fixed monitoring window with numeric thresholds, unknown scope is not docs-only, bounded deploy waits, a revert PR when branch protection blocks a push [port "capture the baseline before the deploy" "a fixed monitoring window" "unknown scope is not docs-only" "bound every deploy wait" "open a revert pr instead"]
   - upstream/jeffallan-claude-skills/skills/{sre-engineer,monitoring-expert} (MIT) — multi-window burn-rate alerts, trend-based capacity alerts [port "burn rate over multiple windows" "predict_linear"]
-  - upstream/jeffallan-claude-skills/skills/sre-engineer/references/error-budget-policy.md (MIT) — what happens when the error budget runs out [gap not carried over]
+  - upstream/jeffallan-claude-skills/skills/sre-engineer/references/error-budget-policy.md (MIT) — what happens when the error budget runs out [port "when the error budget runs out" "only security patches and fixes that restore reliability"]
   - upstream/addyosmani-agent-skills/skills/observability-and-instrumentation (MIT) — entry-point log field [port "an entry-point field"]
   - upstream/everything-claude-code/skills/{latency-critical-systems,springboot-patterns} (MIT) — split latency signals; forwarded-header spoofing [port "data freshness" "trust x-forwarded-for only behind"]
   - upstream/jeffallan-claude-skills/skills/devops-engineer/references/incident-response.md (MIT) — evidence before state-destroying actions, routing by incident type and regulatory clock, re-check after remediation [port "capture evidence in parallel with mitigation" "route by incident type" "resolved means the original signal recovered"]
@@ -39,6 +39,13 @@ mistake that looks reasonable at the time.
 
 ### Schema and data
 
+- **Migrations are forward-only in production.** Once a migration has run there, undo it with a
+  new forward migration, never by editing the applied file or running its down script against
+  live data; down scripts are for local and test databases.
+- **Never add a NOT NULL column without a default to a live table.** Add it with a default
+  (instant on Postgres 11+ for a constant default), or add it nullable, backfill in batches, then
+  add the constraint (on Postgres 12+ via a `CHECK … NOT VALID` constraint validated separately, so
+  the final `SET NOT NULL` does not scan under an exclusive lock).
 - **Set a short `lock_timeout` (e.g. `SET lock_timeout = '2s'`) before any lock-taking `ALTER
   TABLE` on a live table.** Without it, a migration waiting behind one slow query queues an
   `ACCESS EXCLUSIVE` lock that blocks every subsequent read and write on that table; fail fast and
@@ -66,15 +73,44 @@ mistake that looks reasonable at the time.
   numbers, and require two consecutive bad checks before raising the alarm. Rolling back is then
   an incident mitigation: propose it and wait for the go-ahead (see "When something breaks") unless an
   automated rollback was agreed before the deploy.
+- **Capture the baseline before the deploy,** not after: error rate, p95 latency, the key pages
+  or endpoints with their status codes, load time and console errors. A snapshot taken after the
+  deploy is a starting point, not proof the old version was healthy; say which one you have.
+- **Watch a fixed monitoring window with numeric thresholds** set before shipping — for example
+  check every 60 s for 10 minutes; alert on a page or endpoint that fails to load, on a backend
+  error rate above the baseline rate, on page console errors whose message was not in the
+  baseline (for console errors compare by message, not count), on latency or load time above 2×
+  the baseline, and on new 404s. The two-consecutive-checks rule above applies to each.
+- **Unknown scope is not docs-only.** Skip deploy verification only when every changed file is
+  documentation; if the diff could not be read or classified, verify as for backend.
+- **Bound every deploy wait.** Poll the pipeline with progress updates and stop at a fixed
+  deadline (about 20 minutes), then ask: wait one more bounded period, or report the deploy as
+  unverified. A failed status query is unknown, never success; a later green health check does
+  not erase a failed deploy run.
 - **Know the merge shape before reverting.** A true merge commit reverts with `git revert -m 1`;
   a squash is one commit; a rebase-merge is a range — reverting only its last commit leaves the
-  rest deployed. If the shape is unclear, stop and identify the full range.
+  rest deployed. If the shape is unclear, stop and identify the full range. If branch protection
+  rejects pushing the revert, do not bypass it: push the revert to a new branch, open a revert PR
+  instead, report the rollback as pending, and merge only on separate approval. The rollback is
+  done only when the revert is deployed and the monitoring window above passes.
 
 ### Observability and alerting
 
 - **Alert on error-budget burn rate over multiple windows** (for example fast: 1h at ~14× burn;
   slow: 6h at ~6×; ticket: 3 days at ~1×), each paired with a short window (about 5 min, 30 min,
   6 h) so the alert clears once the burn stops — not on a single raw error-rate threshold.
+- **Agree what happens when the error budget runs out,** in writing, before it does
+  (budget = 1 − SLO over the window; 99.9% over 30 days is about 43 minutes):
+
+  | budget left | policy |
+  |---|---|
+  | above ~50% | normal releases |
+  | 25–50% | extra review and a named approver for risky deploys; watch every deploy |
+  | under 25% | pause non-critical feature work; ship reliability fixes and critical bug fixes only |
+  | exhausted | feature freeze: only security patches and fixes that restore reliability ship, every incident gets a review, until the budget recovers over the window |
+
+  Exceptions (a security patch, a contractual deadline) need a named approver and are recorded.
+  A budget nobody acts on is only a dashboard.
 - **Capacity alerts on projected exhaustion** (e.g. Prometheus `predict_linear` over a week),
   not a static "80% full".
 - Track p50/p95/p99, queue depth, cache-hit rate and **data freshness** separately; a fast

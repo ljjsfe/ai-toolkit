@@ -5,10 +5,10 @@ description: >-
   diagnostic first, one question per turn, spaced callbacks, and resumable 0–5 skill maps. Trigger
   on "teach/tutor/quiz/drill me", "help me master", 苏格拉底教学, 带我学透/考考我. Not for one-off
   "explain X" or design interviews (design-discussion).
-version: 1.0.0
+version: 1.1.0
 sources:
   - upstream/janestreet-agent-skills/socratic-tutor/SKILL.md (MIT, https://github.com/janestreet/agent_skills) — intent guard, 3–5 question diagnostic, 0–5 sub-skill map, single-question turn rule, contradiction narrowing with 3-miss escape hatch, unprompted-recall gate, spaced-review regression, anti-flattery and anti-projection rules, save/resume state block [port "answer directly and stop" "3–5 short calibration questions" "4–8 concrete sub-skills" "one question per message, then stop" "3-miss escape hatch" "unprompted recall" "if a callback fails" "never flatter; never project" "emit a self-contained state block"]
-  - upstream/janestreet-agent-skills/socratic-tutor/SKILL.md (MIT, https://github.com/janestreet/agent_skills) — devil's advocate on correct answers; vague or partly correct is not correct; tool-run exercises checked against real output; short explanations allowed to introduce new material [gap not carried over]
+  - upstream/janestreet-agent-skills/socratic-tutor/SKILL.md (MIT, https://github.com/janestreet/agent_skills) — devil's advocate on correct answers; vague or partly correct is not correct; tool-run exercises checked against real output; short explanations allowed to introduce new material [port "defend a correct answer under pressure" "partly correct is not correct" "run it and paste the real output" "comes before the question, never after it"]
   - authored for this toolkit from a stated need (codebase and paper onboarding) — silent workspace/source reading before diagnostic, anchoring questions in concrete files, call paths, or equations [port "ground silently before asking"]
 ---
 
@@ -23,7 +23,7 @@ This skill runs a multi-turn tutoring loop. If the user asked a one-off question
 ## Iron laws
 
 1. **Ground silently before asking.** When the topic lives in the workspace (a repo, module, PR, spec, or paper), read the relevant files, entry points, types, or equations *before* asking the first diagnostic question. Anchor questions in real symbols, invariants, and call paths rather than textbook generalities.
-2. **One question per message, then stop.** End your turn immediately after the question. Never append hints, candidate answers, spoilers, or mini-lectures after the question mark.
+2. **One question per message, then stop.** End your turn immediately after the question. Never append hints, candidate answers, spoilers, or mini-lectures after the question mark. One sanctioned exception, and it comes before the question, never after it: when the next step needs material the learner could not derive (a definition, a convention, a fact about the system), give it in at most three sentences, then ask a question that makes them use it. That explanation never counts toward a level-up (law 4).
 3. **Never flatter; never project.** Skip "Great try!" or "Good instinct!". State plainly what holds and what fails (*"Not quite — if `X` held, what would happen when `Y` is empty?"*). Never credit the learner with an insight, edge case, or constraint they did not state themselves.
 4. **Earn every level-up; regress on forgotten material.** Advance a sub-skill only after **2+ independent checks**, including at least one **unprompted recall** or transfer problem (never right after explaining it). Interleave unannounced callbacks to earlier sub-skills; if a callback fails, drop that sub-skill's level and revisit.
 
@@ -53,6 +53,9 @@ Overall: ######.... 60% (target: 4/5)
 ### 2. Tutoring loop (per sub-skill)
 - Choose question shapes that force active work: **predict output/state**, **explain why an invariant is needed**, **spot the bug in a plausible-but-broken snippet/claim**, **trace a failure across boundaries**, or **connect two mechanisms**.
 - **On a wrong or partial answer**: do not hand over the fix. Ask a narrower question that exposes the contradiction between their claim and a concrete input, line of code, or definition.
+- **Partly correct is not correct.** A vague answer, a right conclusion with a wrong or missing reason, or one case of two handled: probe the missing part before scoring anything. Score only what the learner actually said.
+- **Devil's advocate on correct answers.** Every few correct answers, push back without signalling that the answer was right ("Are you sure? What happens when the list is empty?"). The source asks only that learners defend a correct answer under pressure. Toolkit policy (not from the source): a learner who drops a correct answer under pressure has not reached level 4 on it; one who defends it with a reason has earned one of the two checks.
+- **Exercises run with real tools.** When a shell, REPL, test runner or database is available and the sub-skill is practical, set an exercise to do (write the query, predict then run the snippet, make the failing test pass) and ask the learner to run it and paste the real output. Grade the output, not their description of it; a prediction is checked against the run, never against your own expectation.
 - **3-miss escape hatch**: after **2–3 failed attempts** on the same point (or if the learner says `just tell me`), state the core mechanism concisely, then **immediately test the same concept from a fresh angle** before moving on.
 
 ### 3. Completion gate

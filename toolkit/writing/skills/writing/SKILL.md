@@ -5,12 +5,12 @@ description: >-
   with zero invented facts ([NEED: ...] placeholders, competing openings, platform rules, de-AI
   editing pass, fresh-reader check). Trigger on 写文章, 发帖, 公众号, 推文, 写稿. Not for resumes
   (career-navigator) or AGENTS.md/CLAUDE.md (agent-instructions).
-version: 1.1.0
+version: 1.2.0
 sources:
   - upstream/khazix-skills/khazix-writer (MIT) — first-hand observation is what a model cannot supply; ask the writer for it [port "first-hand detail comes from the writer"]
   - upstream/marketingskills/skills/copywriting/references/ai-tells.md (MIT) — placeholder for missing proof instead of an invented fact; the swap test [port "never fill it with something" "apply the swap test"]
   - upstream/ahao-writing-dna-distiller (MIT) — voice as ranges and verbatim samples by function, not averages; prescriptive rules over descriptions [port "ranges, not averages" "verbatim samples grouped by job" "rules written as instructions"]
-  - upstream/ahao-writing-dna-distiller (MIT) — the measuring pipeline (distill_metrics.py for sentence-length spread, short/long ratio, punctuation, nominalisation and risky-word density), beat sheets and structure archetypes, the form-vs-content forbidden map, the AI-flavour firewall self-check [gap the voice profile has no way to measure its ranges]
+  - upstream/ahao-writing-dna-distiller (MIT) — the measuring pipeline (distill_metrics.py for sentence-length spread, short/long ratio, punctuation, nominalisation and risky-word density), beat sheets and structure archetypes, the form-vs-content forbidden map, the AI-flavour firewall self-check [port "sentence-length spread" "def doc_metrics" "that sequence is a structure archetype" "content goes in a forbidden map" "ai-flavour self-check (run after the de-ai pass)"]
   - upstream/everything-claude-code/skills/brand-voice (MIT) — a banned move must be observed in the writer's own corpus; report splits instead of averaging [port "only bans that the corpus shows" "splits, not blends"]
   - upstream/mattpocock-skills/skills/in-progress/writing-shape (MIT) — 2–3 openings, each implying a different thesis; ground a concept before leaning on it [port "draft 2–3 openings, each implying a different thesis" "must be introduced before a sentence leans on it"]
   - upstream/getsentry-skills/skills/blog-writing-guide (Apache-2.0) — open on the problem or the conclusion; voice throughout, not only at the ends; informative headings; name what was not chosen [port "opens on the problem or the conclusion" "not only the first and last paragraph" "say what was not chosen and why"]
@@ -64,6 +64,8 @@ it is allowed to claim**. This skill fixes those two things and runs a de-AI lin
      verbs and concrete facts;
    - Preserve every fact, number, quote, condition, epistemic hedge (`may`, `reported`, `可能`,
      `据称`), the `PERSONAL.md` voice rules, and every `[NEED: ...]` marker verbatim.
+   With a profile in place, also run `scripts/voice_metrics.py <corpus> --draft <draft>` and
+   the self-check list in the profile; fix or justify each flag.
 7. **Fresh-reader test** — give a subagent only the draft and 3–5 questions the piece must
    answer (what is the claim, why believe it, what should I do). Wrong or hesitant answers mark
    the passages to fix. Without subagents (e.g. some Codex setups), paste the draft alone into a
@@ -92,6 +94,13 @@ Built from 3–10 pieces the writer actually published, stored in `toolkit/writi
 - **Only bans that the corpus shows** — something the writer never does, with the evidence.
 - **Splits, not blends** — where Chinese and English pieces, or posts and long-form, differ, keep
   both and say which applies where.
+- **Measured, then instructed** — `scripts/voice_metrics.py <corpus folder>` gives per-language
+  min / median / max for sentence-length spread, short/long share, punctuation, stock-phrase,
+  contrast and nominalisation density; each range becomes an instruction in the profile, and
+  `--draft draft.md` flags where a draft leaves the range. Beat sheets and structure
+  archetypes, the forbidden map of the writer's own cases and lines, and a writer-specific
+  AI-flavour self-check are in `references/voice-distilling.md` (read when building or
+  refreshing the profile, or when a draft reads as AI and the profile cannot say why).
 
 ## Output
 

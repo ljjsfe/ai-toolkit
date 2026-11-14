@@ -4,10 +4,10 @@ description: >-
   Threat-model and harden an agent with tools, MCP servers, file/network access, credentials, or
   money: untrusted text and self-notes as data, code-level authority, deny-by-default, human-gated
   destructive calls, and supply-chain checks. For surrounding web/API security use app-security.
-version: 1.0.1
+version: 1.1.0
 sources:
   - upstream/everything-claude-code/skills/{agent-security-hardening,mcp-dependency-review,prompt-caching-strategy,llm-trading-agent-security} (MIT) — deny-wins policy, path containment, sentinel-secret test, MCP pinning tiers, cache keys are not access checks, trading limits [port "deny wins, and the unclassifiable is denied" "is_relative_to" "sentinel secret" "pin the server version" "authorise before the lookup" "per-action and rolling"]
-  - upstream/everything-claude-code/skills/{agent-security-hardening,llm-trading-agent-security} (MIT) — trust-boundary map (source, parser, validator, side effect); identifier allowlists and argv separation; env-value validation; private temp files; tool-output bounding with truncation markers and control-character stripping; a tests-cover-it completion gate per hardening step; transaction deadlines and MEV protection [gap not carried over]
+  - upstream/everything-claude-code/skills/{agent-security-hardening,llm-trading-agent-security} (MIT) — trust-boundary map (source, parser, validator, side effect); identifier allowlists and argv separation; env-value validation; private temp files; tool-output bounding with truncation markers and control-character stripping; a tests-cover-it completion gate per hardening step; transaction deadlines and MEV protection [port "Trust-boundary map" "source → parser → validator → side effect" "allowlist pattern with a hard length cap" "separate argv elements after" "Reject missing or whitespace-only environment values" "created atomically with mode" "append a truncation marker with the original size" "strip control characters and terminal escape sequences" "a tests-cover-it completion gate per step" "short transaction deadline" "private mempool or protected RPC for MEV protection" "Final verification gate"]
   - upstream/vila-lab/README.md, docs/architecture.md (CC BY-NC-SA 4.0 — ideas only, no wording) — agent system threat surfaces [idea]
   - upstream/everything-claude-code/the-security-guide.md (MIT) — Simon Willison's "lethal trifecta" (private data, untrusted content, an outbound channel), behind "The dangerous combination" [port "a channel that can send data out"]
   - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-managed-context,harness-engineering,self-improvement-loops} (MIT) — self-written notes as untrusted input; graders locked from the agent [port "instruction-shaped text into its own notes" "edit its own grader will"]
@@ -48,6 +48,30 @@ Stop and redesign when one agent has all three: **access to private data**, **ex
 untrusted content**, and **a channel that can send data out** (HTTP, email, commits, issue
 comments, rendered links or images). Any injected instruction can then exfiltrate. Remove one
 leg — split the agent, drop the outbound channel, or require approval on outbound actions.
+
+## Hardening workflow
+
+Work the boundaries in order; each step is done only when its tests pass through the real
+entry point (a tests-cover-it completion gate per step, not a checklist tick).
+
+1. **Trust-boundary map** — one row per path, source → parser → validator → side effect, with
+   the identity that authorises the effect. Every write, command, network mutation and
+   credential use has a named validator immediately before it.
+2. **Identifiers and argv** — identifiers that become filenames, keys or command arguments
+   pass an allowlist pattern with a hard length cap, and reach commands as separate argv
+   elements after `--` where the program reads `--` that way (not git: there it starts a
+   pathspec), never inside a shell string. Reject missing or whitespace-only
+   environment values before building any client.
+3. **Filesystem containment** — the rules below.
+4. **Private temp files** — sensitive files created atomically with mode `0o600` (directories
+   `0o700`) in a user-private directory, removed in `finally`.
+5. **Bound tool output** — read at most N bytes, strip control characters and terminal escape
+   sequences, append a truncation marker with the original size, and turn malformed output
+   into a typed error, never an empty success.
+
+Read `references/hardening.md` when doing this work: the map template, code for each step,
+the per-step test gates, the final verification gate and transaction protections for trading
+agents.
 
 ## Checklist
 
@@ -111,10 +135,10 @@ today" is not a review.
 
 **Agents that move money or place orders**
 - Per-action and rolling (e.g. 24h) spend limits enforced outside the model.
-- Simulate or preview every transaction before execution; require explicit bounds (max price,
-  min received).
 - Circuit breaker: halt on consecutive losses or a drawdown threshold; resume only by a human.
 - Separate, minimally funded credentials for the agent; never the main account's keys.
+- Per-transaction protections — simulation, minimum received from an independent price,
+  slippage caps, deadlines, MEV routing — are in `references/hardening.md` (trading section).
 
 **Evaluation and self-improvement loops**
 - Rubrics, test suites and evaluator code are locked from the agent (see `agent-evals`); an

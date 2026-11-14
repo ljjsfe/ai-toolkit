@@ -4,11 +4,11 @@ description: >-
   Coordinate subagents or parallel workers: compaction-safe ledger, Oracle-and-blast-radius
   model tiering, disjoint file ownership, single-writer git/config ops, and independent
   artifact-verified completion. Not for designing agent products (use agent-architecture).
-version: 1.3.0
+version: 1.4.0
 sources:
   - upstream/superpowers/skills/{subagent-driven-development,dispatching-parallel-agents,executing-plans} (MIT) — explicit model per worker, fix rounds, a ledger that survives compaction [port "progress lives in a ledger file" "explicit tier / model" "fix loop — bounded escalation"]
-  - upstream/superpowers/skills/subagent-driven-development (MIT) — two-stage review after every task (spec compliance, then code quality) plus a final whole-branch review; the DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED worker status protocol; implementer and reviewer prompt templates and brief scripts [gap not carried over]
-  - upstream/oh-my-claudecode/skills/team (MIT) — staged plan, prd, exec, verify, fix pipeline with entry and exit gates; risk-based reviewer escalation; stuck-worker watchdog and reassignment; shutdown and resume protocol [gap previously credited by name only; none of it is in the skill]
+  - upstream/superpowers/skills/subagent-driven-development (MIT) — two-stage review after every task (spec compliance, then code quality) plus a final whole-branch review; the DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED worker status protocol; implementer and reviewer prompt templates and brief scripts [port "first spec compliance" "then code quality" "final whole-branch review on the Frontier tier" "DONE_WITH_CONCERNS" "NEEDS_CONTEXT" "never the same brief again" "Implementer brief" "Task reviewer brief (spec compliance, then code quality)" "Scoped re-review brief"]
+  - upstream/oh-my-claudecode/skills/team (MIT) — staged plan, prd, exec, verify, fix pipeline with entry and exit gates; risk-based reviewer escalation; stuck-worker watchdog and reassignment; shutdown and resume protocol [port "an entry and exit gate per stage" "capped verify→fix loop" "Risk-based reviewer escalation" "Stuck-worker watchdog and reassignment" "check once, then reassign" "A worker fails two tasks" "Resume after a crash or compaction" "Stage handoff file" "Send each live worker a shutdown request"]
   - upstream/compound-engineering-plugin/skills/ce-work/references/execution-strategy.md (MIT) — exclusive file ownership, orchestrator-only git, bounded batch concurrency [port "no file appears in two clusters" "single-writer operations" "keep concurrency small"]
   - upstream/anthropics-skills/skills/claude-api/shared/managed-agents-multiagent.md — when delegation fits [port "inline or delegate"]
   - upstream/seanellyjames-deep-research-skill/SKILL.md (MIT) — concurrency cap and no nested spawning [port "workers do not spawn their own subagents"]
@@ -43,7 +43,8 @@ verdict. This skill is about running the team, not about designing an agent prod
    still collide on shared test databases and ports), and fix shared interfaces before fanning out.
 5. **"Done" from a worker is a claim, not a fact.** Accept it only with an artifact you can
    check — a test run, a diff, a file at a path — or a verdict from a fresh, read-only reviewer
-   context that did not do the work. For high-blast-radius changes, prefer a different model
+   context that did not do the work. Code-writing tasks under a plan need both review verdicts
+   (below); other work is accepted on its artifact alone. For high-blast-radius changes, prefer a different model
    family when available, else a Frontier-tier fresh context, else a same-tier fresh context.
 
 ## Inline or delegate?
@@ -87,7 +88,41 @@ floods their own context, returning only the artifact path and a short summary. 
 small: 3–5 workers if you read each result in full, up to about 7 if workers return only paths
 and short summaries. Batch many small same-shape edits into one worker instead of one worker each.
 
+## Worker status and review after every task
+
+Every implementer replies with one status, and you act on it:
+
+| status | meaning | your move |
+|---|---|---|
+| `DONE` | finished, tests run | package the diff (`BASE..HEAD`) and dispatch the task reviewer |
+| `DONE_WITH_CONCERNS` | finished, with doubts | read the concerns first; correctness or scope doubts are resolved before review, observations are noted |
+| `NEEDS_CONTEXT` | missing information | supply it and re-dispatch; do not let it guess |
+| `BLOCKED` | cannot finish | change something: more context, a higher tier, a smaller task, or a ruling that corrects the plan — never the same brief again |
+
+Each code-writing task under a plan then gets a two-stage review by a fresh read-only
+reviewer: **first spec compliance** (missing, extra, misunderstood against the brief), **then
+code quality** (errors, edge cases, tests that check behaviour). Such a task is complete only
+with both verdicts; implementer self-review never replaces it. Other delegated work (research,
+extraction, running an existing check) is accepted under iron law 5 on its checkable artifact. Minor findings go to the ledger; Critical/Important ones enter
+the fix loop, each round ending with a scoped re-review of the fix diff. When all tasks are
+done, run one final whole-branch review on the Frontier tier, send all its findings to one
+fixer, and re-review once.
+
+Read `references/briefs.md` when writing an implementer, reviewer, re-review or final-review
+brief — the templates and the diff-package recipe.
+
+## Multi-stage team runs
+
+For a run with several stages, use plan → spec → exec → verify → fix with an entry and exit
+gate per stage, a capped verify→fix loop, reviewers added by risk, a stuck-worker watchdog
+(check once, then reassign), and an orderly shutdown and resume. Read
+`references/team-pipeline.md` when running such a team.
+
 ## Fix loop — bounded escalation
+
+This table is the single fix-round cap for every loop in this skill. `references/team-pipeline.md`
+(verify→fix) and `references/briefs.md` (final review) point here and add only their
+stage-specific rule for what happens at the cap.
 
 When a worker's result fails verification:
 

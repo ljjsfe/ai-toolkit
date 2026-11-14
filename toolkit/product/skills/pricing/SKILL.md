@@ -4,11 +4,11 @@ description: >-
   Set, test, and change pricing from willingness-to-pay evidence: pick value metric before tiers,
   segment distributions (never average WTP), sort leader/filler/killer features, and stage price
   increases to new cohorts first. Trigger on 定价, 涨价, 收费方案. Competitor prices: market-scan.
-version: 1.0.1
+version: 1.1.0
 sources:
   - upstream/wondelai-skills/monetizing-innovation/SKILL.md (MIT) — value metric before level, segment by willingness to pay, zero pushback as the under-pricing signature [port "value metric, then packaging, then the number" "never average willingness to pay" "zero pushback means too cheap"]
   - upstream/wondelai-skills/monetizing-innovation/references/wtp-conversations.md (MIT) — top-box scoring, haircut stated numbers, curve not average, red flags in answers [port "count only 5s" "haircut them" "quoting the market back"]
-  - upstream/wondelai-skills/monetizing-innovation/references/wtp-conversations.md (MIT) — the exact WTP question scripts, a simplified conjoint procedure, B2C sample sizes [gap not carried over]
+  - upstream/wondelai-skills/monetizing-innovation/references/wtp-conversations.md (MIT) — the exact WTP question scripts, a simplified conjoint procedure, B2C sample sizes [port "three-point price probe" "at what price is it out of the question" "write 8–12 choice tasks" "150–300 survey respondents"]
   - upstream/wondelai-skills/monetizing-innovation/references/packaging-tiers.md (MIT) — leader/filler/killer thresholds, killers never inside a tier price [port "top-5 in purchase ranking" "never inside a tier price"]
   - upstream/aidevgtm-gtm-cofounder/skills/12-pricing/SKILL.md (MIT) — deflected payment requests as the strongest signal, value-metric decision tree, the free/paid line (give away individual value), metric then packaging then number, value-multiple heuristic [port "requests received or turned away" "wrong-metric test" "give away individual value" "roughly 10x the price"]
   - upstream/marketingskills/skills/pricing/SKILL.md (MIT) — new-customers-first rollout, small existing cohort, grandfathering as a transition, the ultra-low-price trap [port "new sign-ups only" "small existing cohort" "price the grandfathering" "ultra-low entry price"]
@@ -52,7 +52,11 @@ Distrust the data when answers cluster on your current or a competitor's price (
 quoting the market back), when very different customers give identical answers (the concept
 description is leading them), or when every feature is "very valuable" (switch to forced
 trade-offs: ranking or allocating 100 points). Sample-size heuristic from the source: 15–25
-B2B conversations per segment; under 10, treat results as directional.
+B2B conversations per segment (under 10, directional); B2C needs 150–300 survey respondents
+per segment, about 200 for a conjoint. The question scripts in order, the simplified conjoint
+and the full sizing table are in `references/wtp-scripts.md` (read when preparing a WTP
+conversation or survey); `scripts/conjoint_count.py` counts win rates per level from the
+choice tasks.
 
 ## Step 2 — Value metric
 

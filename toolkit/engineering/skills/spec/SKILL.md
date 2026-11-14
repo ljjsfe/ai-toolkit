@@ -5,12 +5,13 @@ description: >-
   WHEN/THEN scenarios with stable IDs), conditional design, and vertical tasks; surface human-gated
   decisions; merge deltas into timeless living specs after verification. Not for open framing
   (design-discussion) or sizing (system-design).
-version: 1.1.0
+version: 1.2.0
 sources:
   - 'upstream/fission-ai-openspec v2.0.0 schemas/spec-driven/{schema.yaml,templates/*} (MIT, https://github.com/Fission-AI/OpenSpec) — proposal/specs/design/tasks artifact DAG, capability-named layout, normative SHALL/MUST requirements with WHEN/THEN scenarios, conditional design, zero-delta escape hatch [port "draft artifacts in dependency order" "names a cohesive capability" "at least one when/then scenario per requirement" "write only when cross-cutting" "no spec delta: observable behaviour unchanged"]'
   - 'upstream/fission-ai-openspec v2.0.0 src/core/specs-apply.ts and skills/openspec-{propose,apply-change,sync-specs,update-change,archive-change} (MIT, https://github.com/Fission-AI/OpenSpec) — full-block MODIFIED anti-loss rule, RENAMED/REMOVED/MODIFIED/ADDED merge order, capability retirement guard, bi-directional change reconciliation [port "modified copies the entire requirement block" "apply operations in strict order" "confirm retirement intent" "reconcile in whichever direction"]'
   - 'upstream/fission-ai-openspec v2.0.0 src/core/{validation/validator.ts,specs-apply.ts,archive.ts} (MIT, https://github.com/Fission-AI/OpenSpec; rewritten as a stdlib script) — delta-format validation, merge preconditions that abort on a missing target, near-miss header or rename collision, scenario-name diff before a MODIFIED merge, plan-all-then-write atomicity, explicit capability retirement [port "def validate_change" "def plan_capability" "drops scenario(s) the living spec has" "differing only in case or spacing" "rerun with --retire" "nothing is written"]'
-  - 'upstream/fission-ai-openspec v2.0.0 src/core/validation/{task-checkboxes,task-numbering,purpose-placeholder}.ts and .openspec.yaml metadata (MIT, https://github.com/Fission-AI/OpenSpec) — task checkbox and numbering checks, placeholder-Purpose detection, change metadata [gap not ported]'
+  - 'upstream/fission-ai-openspec v2.0.0 src/core/validation/{task-checkboxes,task-numbering,purpose-placeholder}.ts (MIT, https://github.com/Fission-AI/OpenSpec; rewritten as a stdlib script) — task checkbox and numbering checks, placeholder-Purpose detection [port "def check_tasks" "no task is a checkbox" "sits under group" "def purpose_is_placeholder" "opens with TBD or TODO is an error"]'
+  - 'upstream/fission-ai-openspec v2.0.0 .openspec.yaml change metadata (MIT, https://github.com/Fission-AI/OpenSpec) — per-change schema and metadata file [gap not ported; no CLI here reads it, so a metadata file would be unchecked ceremony]'
   - 'authored for this toolkit from a stated need (CLI-free spec-driven engineering) — stable requirement IDs for item-by-item verification, explicit human-sign-off decision block, timeless living specs with zero inline changelog [port "stable id + uppercase" "decisions needing sign-off" "zero changelog"]'
 ---
 
@@ -146,7 +147,12 @@ or a cleaner mechanism, **pause before letting code drift from the artifacts**:
 - `spec_check.py validate changes/<slug>` — after drafting and after every edit to the change.
   Checks the proposal sections, delta file locations, SHALL/MUST, `#### Scenario:` blocks with
   WHEN and THEN, requirements stranded outside delta sections, duplicates, conflicting sections,
-  RENAMED pairing and stable IDs. Fix every error before showing the change for sign-off.
+  RENAMED pairing and stable IDs. It also checks `tasks.md`: a file of plain bullets counts as
+  zero tasks, so nothing reads as unfinished at archive time; every task must be a checkbox, and a
+  numbered ID (`2.1`) must sit under its own `## 2.` group and appear once. A `## Purpose` that
+  opens with TBD or TODO is an error, so a placeholder never reaches a living spec. The tasks
+  and Purpose checks are errors by **toolkit policy**; OpenSpec itself only warns on them. Fix
+  every error before showing the change for sign-off.
 - `spec_check.py merge changes/<slug> --specs <specs-root>` — the archive dry run (below).
 - `spec_check.py audit <specs-root>` — the living-spec audit (below).
 

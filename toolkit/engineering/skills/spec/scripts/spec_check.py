@@ -12,6 +12,11 @@ unless all of them apply cleanly. Operation order is RENAMED, REMOVED, MODIFIED,
 aborts when a target is missing, a rename target exists, a header matches only after ignoring case
 or spacing, a MODIFIED block lacks a scenario the living spec has, or a REMOVED would retire a
 capability not named with --retire.
+
+`validate` also checks tasks.md (every task a checkbox; a numbered task ID sits in its own
+`## N.` group and appears once) and fails a `## Purpose` that opens with TBD or TODO; `audit`
+applies the same Purpose rule to living specs. These are errors by toolkit policy (OpenSpec
+reports them as warnings).
 """
 from __future__ import annotations
 
@@ -33,6 +38,15 @@ NORMATIVE_RE = re.compile(r"\b(SHALL|MUST)\b")
 CHANGELOG_RE = re.compile(r"\b(added|changed|removed|updated|introduced|deprecated) (in|on|by) (v?\d|pr\b|#|change\b)"
                           r"|\bsince v\d|\bPR #\d+", re.I)
 MIN_WHY, MAX_WHY, MAX_REQ_CHARS, MAX_DELTAS = 50, 1000, 500, 10
+# A task is a list item carrying a checkbox: `- [ ]`, `* [x]`, `1. [ ]`, `+ [~]`.
+TASK_RE = re.compile(r"^\s*(?:[-*+]|\d{1,9}[.)])\s*\[\s*[^\]\s]?\s*\]\s*(.*)$")
+LIST_ITEM_RE = re.compile(r"^\s{0,3}(?:[-*+]|\d{1,9}[.)])\s+\S")
+GROUP_HEADING_RE = re.compile(r"^ {0,3}##(?!#)\s*(?:(\d+)\.(?:\s|$))?")
+TASK_ID_RE = re.compile(r"^(\d+(?:\.\d+)+[A-Za-z]*)(?=\s|$)")
+# A Purpose nobody wrote: TBD/TODO opening it. In capitals it is the marker whatever follows;
+# in any other case only when punctuation or the line end follows, so Spanish "Todo el..." passes.
+PLACEHOLDER_SHOUTED_RE = re.compile(r"^(?:TBD|TODO)(?![^\W_]|_)")
+PLACEHOLDER_PUNCT_RE = re.compile(r"^(?:tbd|todo)(?![^\W_]|_)(?=[ \t]*(?:$|[:\-–—.,;()\[\]{}]))", re.I)
 
 
 def norm(name: str) -> str:
@@ -202,6 +216,58 @@ def find_deltas(change: Path, errors: list[str]) -> list[tuple[str, Path]]:
     return out
 
 
+def purpose_is_placeholder(purpose: list[str]) -> bool:
+    """True when a `## Purpose` opens with a TBD/TODO marker rather than written prose."""
+    prose = "\n".join(strip_fences(purpose)).strip()
+    return bool(PLACEHOLDER_SHOUTED_RE.match(prose) or PLACEHOLDER_PUNCT_RE.match(prose))
+
+
+def check_tasks(path: Path) -> list[str]:
+    """tasks.md must hold checkboxes, and numbered task IDs must sit in their own `## N.` group once."""
+    errors: list[str] = []
+    raw = path.read_text(encoding="utf-8").splitlines()
+    lines = strip_fences(raw)
+    in_comment = False
+    visible: list[tuple[int, str]] = []
+    for i, ln in enumerate(lines, 1):
+        if in_comment:
+            in_comment = "-->" not in ln
+            continue
+        if ln.lstrip().startswith("<!--"):
+            in_comment = "-->" not in ln[ln.index("<!--") + 4:]
+            continue
+        visible.append((i, ln))
+    tasks = [(i, m.group(1)) for i, ln in visible if (m := TASK_RE.match(ln))]
+    if not tasks:
+        first = next((i for i, ln in visible if LIST_ITEM_RE.match(ln)), None)
+        where = f"tasks.md:{first}" if first else "tasks.md"
+        errors.append(f"{where}: no task is a checkbox, so progress counts 0 tasks and nothing reads as "
+                      'unfinished; write each task as "- [ ] 1.1 <behaviour delivered>"')
+        return errors
+    group: str | None = None
+    seen: dict[str, int] = {}
+    task_lines = dict(tasks)
+    for i, ln in visible:
+        if (g := GROUP_HEADING_RE.match(ln)) and ln.lstrip().startswith("##"):
+            group = g.group(1)
+            continue
+        if group is None or i not in task_lines:
+            continue
+        m = TASK_ID_RE.match(task_lines[i])
+        if not m:
+            continue
+        tid = m.group(1)
+        lead = tid.split(".")[0].lstrip("0") or "0"
+        if lead != (group.lstrip("0") or "0"):
+            errors.append(f'tasks.md:{i}: task "{tid}" sits under group {group} but its number points to '
+                          f"group {tid.split('.')[0]}; move or renumber it")
+        if tid in seen:
+            errors.append(f'tasks.md:{i}: task ID "{tid}" is duplicated (first on line {seen[tid]})')
+        else:
+            seen[tid] = i
+    return errors
+
+
 def check_requirement(b: Block, label: str, rel: str, errors: list[str], warnings: list[str],
                       need_id: bool) -> None:
     where = f"{rel}:{b.line_no}"
@@ -254,6 +320,8 @@ def validate_change(change: Path) -> tuple[list[str], list[str]]:
             errors.append("proposal.md declares no spec delta, but delta files exist under specs/")
     if not (change / "tasks.md").exists():
         errors.append("tasks.md is missing")
+    else:
+        errors.extend(check_tasks(change / "tasks.md"))
     if not deltas and not no_delta_ok:
         errors.append("no delta specs under specs/ and proposal.md does not say "
                       "'No spec delta: observable behaviour unchanged'")
@@ -289,6 +357,9 @@ def validate_change(change: Path) -> tuple[list[str], list[str]]:
                 errors.append(f'{rel}: RENAMED TO "{t}" collides with an ADDED requirement')
         if d.purpose is not None and (d.modified or d.removed or d.renamed):
             warnings.append(f"{rel}: ## Purpose belongs only in a delta that creates a new capability")
+        if d.purpose is not None and purpose_is_placeholder(d.purpose):
+            errors.append(f"{rel}: ## Purpose is a TBD/TODO placeholder; say what the capability is for "
+                          "before it is merged into a living spec")
     if total > MAX_DELTAS:
         warnings.append(f"{total} requirement deltas in one change; consider splitting it (over {MAX_DELTAS})")
     return errors, warnings
@@ -426,6 +497,10 @@ def audit_living(path: Path) -> list[str]:
             errors.append(f"{path}:{n}: leftover delta header ## {h}")
         elif h.lower() not in ("purpose", "requirements"):
             errors.append(f"{path}:{n}: unexpected section ## {h} in a living spec")
+    purpose = doc.section("Purpose")
+    if purpose is not None and purpose_is_placeholder(purpose):
+        n = next(n for h, _, n in doc.sections if h.lower() == "purpose")
+        errors.append(f"{path}:{n}: ## Purpose is still a TBD/TODO placeholder; write what the capability is for")
     body = doc.section("Requirements") or []
     line_no = next((n for h, _, n in doc.sections if h.lower() == "requirements"), 0)
     blocks, _ = parse_blocks(body, line_no)

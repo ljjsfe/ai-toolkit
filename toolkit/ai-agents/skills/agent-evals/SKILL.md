@@ -5,12 +5,12 @@ description: >-
   deterministic checks, artifact-based live grading, and piloted spend caps. Use for LLM/agent
   benchmarks and regression suites; not for product A/B experiments (use experiment-readout) or
   one-change completion checks (use verification).
-version: 1.1.1
+version: 1.2.0
 sources:
   - upstream/everything-claude-code/skills/{eval-harness,agent-eval,gan-style-harness} (MIT) — pass@k and pass^k, worktree per run, cost per run [port "pass^k — all k tries succeed" "a git worktree per run" "record tokens and cost per run"]
-  - upstream/everything-claude-code/{skills/agent-eval,skills/gan-style-harness,scripts/eval-harness.js} (MIT) — YAML task and judge schema, a runner, a results layout, weighted rubric with an iterate-to-threshold loop [gap the skill ships no task format, runner or results file]
+  - upstream/everything-claude-code/{skills/agent-eval,skills/gan-style-harness,scripts/eval-harness.js} (MIT) — YAML task and judge schema, a runner, a results layout, weighted rubric with an iterate-to-threshold loop [port "Use the runner instead of ad-hoc scripts" "Results layout" "Judge contract" "Iterate to a threshold, not forever" "Iterate-to-threshold loop" "Σ(weight × score) / Σ(weight)" "pass_hat_k (chance all k pass)"]
   - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-improvement-loops,harness-engineering,evaluation,advanced-evaluation} (MIT) — hidden graders, raw traces to the optimiser, judge position bias [port "never sees how it is judged" "feed the optimiser raw traces" "position bias"]
-  - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/advanced-evaluation (MIT) — length, verbosity and self-enhancement judge biases; scale calibration; justification before score [gap only position bias is covered]
+  - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/advanced-evaluation (MIT) — length, verbosity and self-enhancement judge biases; scale calibration; justification before score [port "design out length and verbosity bias" "self-enhancement bias" "Scale calibration" "justification before the score" "Justification before score" "Length is not quality"]
   - upstream/anthropics-skills/skills/skill-creator, skills/mcp-builder/reference/evaluation.md (Apache-2.0) — trigger tuning split, tool-server question rules [port "split them 60/40" "answerable with read-only operations"]
   - upstream/gstack/eval-plan (MIT) — eval planning [idea]
   - upstream/compound-engineering-plugin/.agents/skills/ce-skill-work/references/evaluate.md (MIT) — skill evaluation [idea]
@@ -29,9 +29,11 @@ run anything.
 1. **Define the eval before building the change, and freeze it before the first paid run.**
    Changing a criterion, case or threshold after seeing results makes it a new eval; say so.
 2. **In an optimisation or self-improvement loop, the optimiser never sees how it is judged.**
-   It gets scores and traces, never the rubric or evaluator source, and cannot write to them.
+   It gets scores and traces, never the rubric or evaluator source, and may not write to them.
    (An ordinary coding agent may read the tests it is fixing; it may not edit them.) A visible
-   scorer gets gamed — edited, special-cased or disabled.
+   scorer gets gamed — edited, special-cased or disabled. The runner enforces this only as far
+   as it can — it voids a run whose grader files changed — but it cannot stop reads or
+   tampering inside the workspace; real isolation needs a sandbox or a separate OS user.
 3. **Every eval has at least one deterministic check** — tests pass, exact match, schema
    validates, file exists, command exits 0. LLM judges add to it; they never replace it.
 4. **Generator and evaluator are separate contexts.** An agent grading its own work is
@@ -75,7 +77,17 @@ gate, a refusal), stop each run at that step instead of running the whole workfl
   an isolated workspace (a git worktree per run is enough).
 - **Blind the grader:** label runs `run-1…run-n`, keep the mapping private, reveal after scoring.
 - **Check an LLM judge before trusting it:** compare it with 20–30 human-labelled cases, and in
-  pairwise judging run both orders to cancel position bias.
+  pairwise judging run both orders to cancel position bias. Also design out length and
+  verbosity bias (an explicit conciseness criterion; length is not quality) and
+  self-enhancement bias (judge with a different model family than the generator). Match the
+  scale to the rubric — 1–5 by default, 1–10 only with a written description per level — and
+  make the judge write its justification before the score. Read
+  `references/judge-calibration.md` when writing or auditing a judge prompt.
+- **Use the runner instead of ad-hoc scripts.** `scripts/eval_run.py run` reads a JSON task
+  file (arms, deterministic checks, optional weighted-rubric judge), runs each arm N times in a
+  fresh worktree or temp copy, interleaves the arms in one batch, and writes `results.json`
+  with pass@k, pass^k and min/median/max of time, tokens and judge score. Read
+  `references/eval-task-format.md` when writing a task file or reading results.
 - **Control for spend.** Record tokens and cost per run. A change that wins only because it used
   more tokens has not been shown to be better; compare at an equal budget when possible.
 
@@ -95,6 +107,10 @@ gate, a refusal), stop each run at that step instead of running the whole workfl
   the held-out split, and the held-in split gets no worse than that tolerance. A gain on one split paid for by a loss on the other is a reject.
 - **Feed the optimiser raw traces, not summaries.** Summarised traces lose the signal the
   next iteration needs.
+- **Iterate to a threshold, not forever.** A generator–judge loop (`eval_run.py iterate`)
+  stops at the frozen weighted threshold, on a plateau (no better score for a set number of
+  rounds — hand it to a human), or at a round cap. The loop's own scores are not evidence;
+  evaluate the final version against the baseline on held-out cases.
 
 ## Tuning when a skill or tool triggers
 

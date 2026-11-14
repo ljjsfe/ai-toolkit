@@ -5,15 +5,16 @@ description: >-
   test authorisation with a second identity/tenant, and report only findings with a concrete
   attack path. Use before shipping auth, tenancy, payments, or webhooks (diff review: code-review;
   LLM/tool agents: agent-security).
-version: 1.1.0
+version: 1.2.0
 sources:
   - upstream/gstack/cso (MIT) — boundary and invariant census first, sibling propagation, exploitability gating, three separate judgements, independent re-derivation, webhook review order, two-user and two-tenant negative controls [port "map before you hunt" "tested with a second identity" "look for its siblings" "are separate judgements" "re-derive the result" "trace the whole middleware and handler chain"]
-  - upstream/gstack/cso/{SKILL.md,sections/audit-phases.md} (MIT) — OWASP Top 10 and ASVS coverage map, STRIDE, secrets in git history, dependency supply chain, CI pull_request_target, reproduction contract, complete / partial / not-assessed report header [gap not carried over]
+  - upstream/gstack/cso/{SKILL.md,sections/audit-phases.md} (MIT) — OWASP Top 10 coverage map, secrets in git history, dependency supply chain, CI pull_request_target, reproduction contract, complete / partial / not-assessed report header [port "Copy this table into the report" "Secrets in code and git history" "Dependency supply chain" "pull_request_target or workflow_run" "Reproduction contract" "the same request is refused" "complete, partial or not assessed"]
+  - upstream/gstack/cso/sections/audit-phases.md (MIT) — ASVS 5.0 requirement mapping, STRIDE pass, data classification, infrastructure and skill supply-chain phases [gap not carried over; the coverage table covers OWASP Top 10 classes only]
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/security-reviewer.md (MIT) — confidence tied to attack-path traceability with a critical-impact override; feature-gate leaks [port "only if impact is critical" "gated, internal or unreleased feature"]
   - upstream/trailofbits-skills/plugins/{fp-check,differential-review} (CC BY-SA 4.0 — ideas only, no wording) — restate the claim before verifying, trace the validation chain, risk not size, git blame on removed security code, counted blast radius, exploit chains across rejected findings [port "each suspected bug as four fields" "order the files by what they can break" "count the callers" "two or more of the findings you dropped"]
-  - upstream/trailofbits-skills/plugins/fp-check (CC BY-SA 4.0 — ideas only, no wording) — catalogue of false-positive patterns and exploitability/PoC passes [gap not carried over]
+  - upstream/trailofbits-skills/plugins/fp-check (CC BY-SA 4.0 — ideas only, no wording) — catalogue of false-positive patterns and exploitability/PoC passes [port "False-positive patterns" "A guard earlier on the path" "No concurrency, no race"]
   - upstream/getsentry-skills/skills/security-review (Apache-2.0) — attacker-controlled vs server-controlled input [port "values set by operators"]
-  - upstream/getsentry-skills/skills/security-review/references (Apache-2.0) — per-class references (injection, XSS, SSRF, deserialization, path traversal, session and JWT, crypto) and the full do-not-flag list [gap the skill covers authorisation only]
+  - upstream/getsentry-skills/skills/security-review/references (Apache-2.0) — per-class references (injection, XSS, SSRF, deserialization, path traversal, session and JWT, crypto) and the full do-not-flag list [port "Path traversal" "JWT and bearer tokens" "Deserialisation" "Do-not-flag list" "Server-controlled sources"]
   - upstream/stripe-ai/skills/stripe-best-practices (MIT) — verify settled payment status before fulfillment on async payment webhooks [port "settled payment status"]
 ---
 
@@ -45,6 +46,15 @@ pattern. Find the boundaries first, then attack them.
    unconfirmed exploitability is still reported as critical, labelled unconfirmed; a confirmed
    trivial issue stays trivial.
 
+## Coverage beyond authorisation
+
+After the map, walk the vulnerability-class table in `references/vuln-classes.md` —
+injection, XSS, SSRF, deserialisation, path traversal, session and JWT, cryptography, secrets
+in git history, dependency supply chain, CI `pull_request_target` and the rest of the OWASP Top
+10 (2025) — and mark every row assessed, not assessed (with the reason) or n/a in the report.
+Read the same file's false-positive patterns and do-not-flag list before any candidate goes in
+the findings.
+
 ## Where to look first
 
 | area | check |
@@ -71,11 +81,34 @@ have it re-derive the result from the callers, middleware and config. If no seco
 available, do a labelled challenge pass against your own finding. After triage, ask whether two
 or more of the findings you dropped would together give an attacker a path none gives alone.
 
+## Reproduction contract
+
+Run reproductions only in a local or disposable environment you are allowed to use — never
+against production or someone else's system. A finding is **verified** when steps 1, 2 and 4
+hold: the exploit is reproduced. The third step is a further check, run once a fix exists, and is
+reported separately as **fix confirmed**; a verified finding does not wait for it.
+
+1. **Unmodified app, legitimate control passes.** The app starts unchanged, and the honest
+   version of the request (user A reading A's own order) succeeds. A boot failure or generic
+   error is inconclusive, not proof.
+2. **The attack trips a specific security assertion.** The hostile request (user B reading A's
+   order) succeeds when it should not, and the test checks *that* outcome — B received A's
+   data — not merely a non-zero exit or an error printed somewhere.
+3. **After the fix, the same request is refused and the legitimate control still passes**,
+   with the identical assertion, and the existing test suite stays green.
+4. **Nothing under the harness was changed to get there:** no mocks replacing the very check
+   under test, no loosened assertions, no edits to fixtures or test runner config. Mocks may
+   stand in for third parties, never for the boundary being tested.
+
+Partial evidence (a static trace, or a run where step 1, 2 or 4 does not hold) is reported as
+**traced** or **plausible**, not verified. Write the reproduction as the four-field claim plus
+concrete values — no placeholders.
+
 ## Confidence
 
 | level | meaning | report? |
 |---|---|---|
-| verified | reproduced: a request, exploit or test shows it happening | yes |
+| verified | reproduced: steps 1, 2 and 4 of the reproduction contract hold (step 3, once a fix exists, adds **fix confirmed**) | yes |
 | traced | the full attack path is traceable | yes |
 | plausible | pattern present, exploitability unconfirmed | only if impact is critical — label it |
 | speculative | — | no |
@@ -83,11 +116,19 @@ or more of the findings you dropped would together give an attacker a path none 
 ## Output
 
 ```
+Status:                   complete / partial / not assessed — then scope and material gaps
 Scope and boundary map:   actors · assets · entry points · tenant boundaries · invariants
+Coverage:                 the class table, each row assessed / not assessed (why) / n/a
 Findings:                 severity · confidence · evidence · attack path · siblings checked · fix
 Unconfirmed (critical):   labelled hypotheses, with what would confirm them
 Not reviewed:             areas out of scope or not reachable in this review
 ```
+
+The report opens with complete, partial or not assessed. Completeness does not depend on the
+number of findings: a run that hit its budget or could not reach part of the code is partial
+even with zero findings. With no supported findings, write "No supported findings in the
+assessed scope." — never "secure" or "no vulnerabilities". A failed tool or empty scanner output
+is a coverage gap, not a clean result.
 
 For an automated scan alongside this review in Claude Code, the optional `claude-security`
 plugin (see `toolkit/external.yaml`) runs one; treat its output as candidates for the gate

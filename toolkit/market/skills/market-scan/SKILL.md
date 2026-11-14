@@ -4,11 +4,11 @@ description: >-
   Scan a market for competitors and unmet demand: separate observed (dated source) / inferred /
   implication, treat "not seen" != "absent", rank behavioural signals (workarounds, rejected PRs)
   over upvotes, and name existing tools before killing an idea. Interviews: customer-discovery.
-version: 1.1.0
+version: 1.2.0
 sources:
   - upstream/marketingskills/skills/{competitor-profiling,competitors} (MIT) — observed / inferred / implication, not observed is not absent, dated snapshots, switching evidence both ways [port "three labelled layers for every competitor fact" "not observed is not absent" "switching evidence both ways"]
   - upstream/geekjourneyx-github-demand-radar/references/{rice-jtbd-rubric.md,pr-scan-guide.md,negative-filters.md} (MIT) — job inference, workaround and rejected-PR signals, not-noise table, standalone-tool ease [port "the request is not the need" "a pull request the maintainer rejected" "do not discard silent" "only when the decision is a tool or wrapper"]
-  - upstream/geekjourneyx-github-demand-radar/{SKILL.md,references/negative-filters.md} (MIT) — concrete gh api search queries for closed-unmerged and stale PRs sorted by reactions; the noise filters (label and title patterns, bikeshedding, no-context wishes) [gap collection is one line and only the keep-half of the filters is carried]
+  - upstream/geekjourneyx-github-demand-radar/{SKILL.md,references/negative-filters.md} (MIT) — concrete gh api search queries for closed-unmerged and stale PRs sorted by reactions; the noise filters (label and title patterns, bikeshedding, no-context wishes) [port "is:pr+is:closed+is:unmerged" "updated:<$stale_before" "wish with no context" "could anyone do a piece of work" "def drop_reason"]
   - upstream/mvanhorn-last30days-skill (MIT) — recency-windowed signals and the nothing-solid floor (installed tool; see toolkit/external.yaml) [port "never pad the list" "via `last30days` if installed"]
   - upstream/wanshuiyin-auto-claude-code-research-in-sleep/skills/novelty-check (MIT) — name the prior work before killing an idea [port "killing an idea requires naming what already does it"]
   - upstream/ferdinandobons-startup-skill/startup-competitors/references/honesty-protocol.md (MIT) — sentiment weighted by volume [port "weighted by volume"]
@@ -56,7 +56,9 @@ Two jobs, one discipline: **who is already here** (competitors) and **what is st
 
 ## Demand
 
-1. Collect signals: GitHub issues and closed-unmerged PRs (`gh search`), Reddit, HN, arXiv,
+1. Collect signals: GitHub issues and closed-unmerged PRs (the five `gh api search/issues`
+   queries and the noise filters are in `references/github-demand.md`, read when GitHub is in
+   scope; `scripts/demand_filter.py` applies the mechanical drops and prints each reason), Reddit, HN, arXiv,
    Techmeme and Polymarket via `last30days` if installed (else dated web search), reviews and
    domain forums. Keep `signal · URL · quote · date · platform · type`. Do not discard silent
    reactions (reach), "won't fix" replies (confirmed gap) or issues open for years (chronic pain).

@@ -189,6 +189,69 @@ The system SHALL do it.
         self.assertTrue(any("old name" in e for e in errors), errors)
 
 
+class TaskTests(unittest.TestCase):
+    def check(self, text: str) -> list[str]:
+        with tempfile.TemporaryDirectory() as tmp:
+            p = Path(tmp) / "tasks.md"
+            p.write_text(text, encoding="utf-8")
+            return spec_check.check_tasks(p)
+
+    def test_plain_bullets_count_as_zero_tasks(self) -> None:
+        errors = self.check("# Tasks\n\n## 1. Revoke\n- 1.1 revoke sessions\n- 1.2 add test\n")
+        self.assertEqual(len(errors), 1)
+        self.assertIn("tasks.md:4: no task is a checkbox", errors[0])
+
+    def test_bullets_inside_fences_and_comments_are_ignored(self) -> None:
+        errors = self.check("<!-- - draft\n- note -->\n```\n- sample output\n```\n")
+        self.assertEqual(errors, ["tasks.md: no task is a checkbox, so progress counts 0 tasks and nothing "
+                                  'reads as unfinished; write each task as "- [ ] 1.1 <behaviour delivered>"'])
+
+    def test_checkbox_variants_count(self) -> None:
+        self.assertEqual(self.check("1. [ ] a\n+ [x] b\n* [~] c\n"), [])
+
+    def test_task_in_wrong_group_and_duplicate_id(self) -> None:
+        text = ("## 1. Sessions\n- [ ] 1.1 revoke\n- [ ] 2.1 misplaced\n\n"
+                "## 2. Audit\n- [x] 2.1 log revocations\n- [ ] 2.1 again\n\n## Notes\n- [ ] 9.9 unnumbered group\n")
+        joined = "\n".join(self.check(text))
+        self.assertIn('tasks.md:3: task "2.1" sits under group 1', joined)
+        self.assertIn('tasks.md:7: task ID "2.1" is duplicated (first on line 3)', joined)
+        self.assertNotIn("9.9", joined)
+
+    def test_validate_reports_task_errors(self) -> None:
+        with Fixture() as f:
+            (f.change / "tasks.md").write_text("- revoke sessions\n", encoding="utf-8")
+            errors, _ = spec_check.validate_change(f.change)
+        self.assertTrue(any("no task is a checkbox" in e for e in errors), errors)
+
+
+class PurposeTests(unittest.TestCase):
+    def test_placeholder_rules(self) -> None:
+        cases = {
+            "TBD - created by archiving change x. Update Purpose after archive.": True,
+            "TODO write this later": True,
+            "todo: fill in": True,
+            "tbd.": True,
+            "Todo el flujo de sesiones de usuario.": False,
+            "The retry budget is TBD pending benchmarks.": False,
+            "TODOs are tracked elsewhere; this manages sessions.": False,
+            "```\nTBD - example\n```\nManages sessions across devices.": False,
+        }
+        for text, expected in cases.items():
+            with self.subTest(text=text):
+                self.assertIs(spec_check.purpose_is_placeholder(text.splitlines()), expected)
+
+    def test_audit_and_validate_reject_placeholder_purpose(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            p = Path(tmp) / "spec.md"
+            p.write_text(LIVING.replace("Manages interactive", "TBD. Manages interactive"), encoding="utf-8")
+            self.assertTrue(any("placeholder" in e for e in spec_check.audit_living(p)))
+        delta = DELTA.format(modified=FULL_MODIFIED).split("## MODIFIED Requirements")[0].replace(
+            "## ADDED", "## Purpose\nTODO\n\n## ADDED")
+        with Fixture(delta=delta, living=None) as f:
+            errors, _ = spec_check.validate_change(f.change)
+        self.assertTrue(any("placeholder" in e for e in errors), errors)
+
+
 class MergeTests(unittest.TestCase):
     def test_merge_applies_all_four_operations(self) -> None:
         with Fixture() as f:

@@ -4,20 +4,20 @@ description: >-
   Audit a stock valuation (never buy/sell advice): require dated quote + diluted share count, read
   price-implied expectations first, cross-check >=2 method families, audit terminal value vs ROIC/r/g,
   and split return into fundamentals vs rerating. Trigger on 估值, 贵不贵, 合理价值, "is X cheap?".
-version: 1.2.3
+version: 1.3.0
 sources:
   - upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — structure of §1 (snapshot rows, red flags); method-by-business pairings (reorganised); 3%, 5%, 25%, ±30% thresholds; same-family rule; joint-upgrade and double-count checks; DCF shown only when its inputs can be written out; return split incl. EV path; no-rerating case [port "over 3% apart" "apart by more than about 5%" "more than about 25% apart" "roughly ±30% off the anchor" "only a different family counts" "it is being paid for twice" "counts as a value only when its ledger is complete" "no-rerating case" "split in currency through the bridge"]
-  - upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — a named data route for quote, consensus and share count; currency conversion for ADRs and foreign issuers; a unit-magnitude check; scenarios that change operating inputs, not only the multiple; A/B/C grades for forward-revenue evidence; the mid-cycle EPS formula and contract-coverage adjustment for cyclicals [gap not carried over]
+  - upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — a named data route for quote, consensus and share count; currency conversion for ADRs and foreign issuers; a unit-magnitude check; scenarios that change operating inputs, not only the multiple; A/B/C grades for forward-revenue evidence; the mid-cycle EPS formula and contract-coverage adjustment for cyclicals [port "name the route before the numbers" "convert EPS and every denominator into the price currency" "check the magnitude before writing" "changes only the multiple is a multiple sensitivity" "grade each block of forward revenue" "median net margin over a full cycle" "contract-locked part"]
   - Mauboussin and Rappaport, "Expectations Investing" (2001; rev. 2021), https://www.expectationsinvesting.com/ — §2, price-implied drivers and forecast period [port "read the price first" "years of above-cost-of-capital growth"]
   - Damodaran, valuation teaching material, https://pages.stern.nyu.edu/~adamodar/ — FCFF vs equity models for financials; g near risk-free; reinvestment = g/ROIC; ROIC fade; ROIC = WACC makes growth worthless [port "free cash flow to the firm" "long-run g stays near" "reinvestment rate = g ÷ roic" "let terminal roic fade" "at roic = wacc = 8%"]
   - upstream/xbtlin-ai-berkshire/codex-skills/investment-research/SKILL.md (MIT) — terminal multiple from economics not peers; 5-point r−g heuristic; same-basis r and g; discrete-risk scenario [port "from the business's own economics" "narrow spread (toolkit heuristic, after xbtlin" "same currency and inflation basis" "discrete risks"]
   - upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/dcf-model/SKILL.md (Apache-2.0) — PV(TV) share below 40% check; grid centre equals base [port "terminal assumptions are not unreasonably harsh" "its centre cell must equal"]
-  - upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/dcf-model/{SKILL.md,scripts/validate_dcf.py} (Apache-2.0) — the WACC build (CAPM, beta, equity risk premium, after-tax cost of debt, weights) and a DCF validation script [gap only the risk-free rate is sourced; no script]
+  - upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/dcf-model/{SKILL.md,scripts/validate_dcf.py} (Apache-2.0) — the WACC build (CAPM, beta, equity risk premium, after-tax cost of debt, weights) and a DCF validation script [port "after-tax cost of debt" "ke = rf + β × erp" "the recomputed per-share value differs" "def check_model"]
   - upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/comps-analysis/SKILL.md (Apache-2.0) — median, drop doubtful peers, quartiles, 10% source gap [port "drop a doubtful peer" "on an input by more than 10%"]
   - upstream/yennanliu-investskill/prompts/dcf-valuation.md (MIT) — g below r; TV above 80% flag [port "the perpetuity formula has no meaning there" "the answer rests on the perpetuity"]
   - upstream/yennanliu-investskill/prompts/stock-valuation.md (MIT) — SBC-adjusted FCF; no EV bridge for P/E price [port "fcf is shown net of it" "is not bridged again"]
   - upstream/tradermonty-claude-trading-skills/skills/kanchi-dividend-sop/references/valuation-and-one-off-checks.md (MIT) — REIT row; one-off profit checks [port "p/ffo or p/affo" "strip disposal gains"]
-  - upstream/tradermonty-claude-trading-skills/skills/kanchi-dividend-sop/references/valuation-and-one-off-checks.md (MIT) — margin expansion without matching revenue quality; a dividend funded by debt [gap two of the one-off checks are missing]
+  - upstream/tradermonty-claude-trading-skills/skills/kanchi-dividend-sop/references/valuation-and-one-off-checks.md (MIT) — margin expansion without matching revenue quality; a dividend funded by debt [port "margin expansion that revenue quality does not explain" "a dividend paid from new debt or asset sales" "two or more of these one-off flags"]
 ---
 
 # Valuation Audit
@@ -28,7 +28,12 @@ recommendation.
 ## Hard stops
 
 - **No quote, no price talk.** A timestamped price and a dated diluted share count gate every
-  price-dependent number: cap, multiples, range, the cheap/expensive verdict. Missing either,
+  price-dependent number: cap, multiples, range, the cheap/expensive verdict. Name the route before the numbers: quote from an
+  exchange or broker feed with its timestamp and session; shares from the latest 10-Q/10-K
+  cover and diluted-EPS note (20-F/6-K for foreign filers); consensus as a snapshot with
+  provider, date, fiscal year, number of estimates and accounting basis; guidance from the
+  latest release or call transcript. Without a consensus snapshot, the gap to consensus is
+  "unknown" and your own forecast is never called consensus. Missing quote or shares,
   say which calculations are blocked, then give what still stands on its own (statement
   figures you confirmed, the business-type read).
 - **No advice in any form:** no buy, sell, add or exit levels, no position size, no target
@@ -51,6 +56,8 @@ is removed. Then build this table, each row with source and date:
 | denominators | revenue, EBIT(DA), EPS, FCF: each with period (TTM / FY1 / FY2), GAAP or adjusted, and status (reported, guided, consensus, own assumption) |
 | guidance vs consensus | apart by more than about 5%: say which you use and why |
 | fiscal calendar | if the year does not end in December, name the calendar months FY1 covers |
+| currency | price currency vs reporting currency. ADRs and foreign issuers: convert EPS and every denominator into the price currency at a dated rate written in this table, and per ADR multiply by the ADR ratio (ordinary shares per ADS). A dollar price over euro EPS is not a P/E |
+| units | one unit style for the whole piece (m or bn, never both, never 亿 mixed with $bn); check the magnitude before writing a figure: 8.1bn written as 81bn or 16.7bn as 1.67bn is the common slip. Recompute every per-share result from the formula in the same sentence |
 
 Clean the denominators before any multiple touches them:
 
@@ -58,10 +65,33 @@ Clean the denominators before any multiple touches them:
 - One quarter × 4 is not TTM.
 - Backlog, bookings, RPO or ARR are not revenue.
 - One-offs: strip disposal gains, legal settlements and tax one-offs from earnings; charges
-  called "non-recurring" in most years are recurring.
+  called "non-recurring" in most years are recurring. Also flag margin expansion that revenue
+  quality does not explain (price, mix and volume flat or worse while margin jumps: cost
+  capitalised, reserves released, a cut that will not repeat) and a dividend paid from new debt
+  or asset sales (dividends above FCF while net debt rises). Count over these five checks:
+  disposal gains, legal or tax one-offs, recurring "non-recurring" charges, unexplained margin
+  expansion, debt-funded dividend. Two or more of these one-off flags (any two of the five):
+  the earnings base is not clean enough for a base case; use the cleaned figure or withhold.
 - Stock compensation: FCF is shown net of it.
 - Cyclicals: show price ÷ peak earnings and price ÷ mid-cycle earnings side by side; a normal
-  multiple on peak earnings is the classic trap.
+  multiple on peak earnings is the classic trap. Mid-cycle EPS = median net margin over a full
+  cycle (5–10 years of annual figures) × current revenue ÷ diluted shares; say where today's
+  margin sits in that range (peak, trough, middle). Current revenue can itself be at a price
+  peak (commodity or memory pricing): then mid-cycle margin × current revenue still overstates
+  normal earnings; also show it on mid-cycle revenue (or volume × mid-cycle price) and say
+  which one the range uses. Before normalising, look for contract
+  coverage (long-term agreements, take-or-pay, capacity reserved by customers) in filings and
+  transcripts: value the contract-locked part at contract price and term, and normalise only
+  the spot-exposed part. Coverage not found: say the estimate treats the business as fully
+  spot and is conservative if coverage is high.
+- Forward revenue beyond FY1: grade each block of forward revenue (project, product batch,
+  repeat customer group). A: operating and checkable, or contracted with delivery, customer
+  qualification, funding and permits in place; enters the base case on its delivery curve.
+  B: demand evidenced and the remaining conditions have a checkable path (list them with
+  timing); enters the base case only in part, with the condition named. C: roadmap, TAM,
+  framework agreement not exercised, permits or funding unresolved; only the high case.
+  Guidance and consensus are source types, not grades. Per block write gross size, size that
+  can execute this period, size in the base case and why the rest is out.
 - Two data sources disagreeing on an input by more than 10%: resolve or flag before use.
 
 ## 2. Read the price first
@@ -151,6 +181,19 @@ flows: WACC for firm cash flows, cost of equity for equity cash flows.
   more than near ones.
 - Show a grid of r against g. Its centre cell must equal the base-case value; if it does not,
   the model is wrong somewhere.
+- r is built, not asserted: CAPM cost of equity, after-tax cost of debt, market-value weights.
+  The build table, its traps and the validation run are in `references/wacc-and-dcf.md` (read
+  when a DCF enters the answer); `scripts/dcf_check.py wacc` prints the build and
+  `scripts/dcf_check.py check model.json` fails a model whose value does not follow from its
+  inputs, whose PV(TV) share is over 80%, or whose grid centre is not the base.
+
+## 4b. Scenarios change the business, not the multiple
+
+Low, base and high each write out the operating input that drives them (volume, price, share,
+capacity, coverage), the denominator it produces, how long the assumption is meant to hold,
+and the multiple with its anchor, each labelled actual, guided, consensus or own assumption. A
+set of cases that changes only the multiple is a multiple sensitivity, not scenarios; label it
+so. The range endpoints are these three computed values and nothing else.
 
 ## 5. Adjustment ledger
 
@@ -196,7 +239,7 @@ Price implies: <growth, margin, reinvestment, multiple, years> vs <actuals, guid
 Methods: <view 1: formula = value> | <view 2: formula = value> | gap <x%, input that closes it>
 Terminal: g < r <yes / STOP> | spread <x pts, tested swing> | reinvestment <g/ROIC> | PV(TV)/DCF value <x%, finding if > 80%> | grid centre = base <yes/no>
 Ledger: <anchor → value, size, evidence, shared with>; double counts: <none / list>
-Value range: low <formula = value> | base <formula = value> | high <formula = value>
+Value range: low <operating input → denominator × multiple = value> | base <…> | high <…>
 Price vs range: <where it sits>; no-rerating case <value>; return split e / m / e×m or currency bridge
 Findings: <check — evidence — effect on value> | Gaps: <missing input — what it blocks>
 Not advice: no entry, exit, target or sizing is given. Thesis tracking → thesis-ledger
