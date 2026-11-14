@@ -28,15 +28,13 @@
     },
     "anthropics-skills": {
       "repo": "anthropics/skills",
-      "reviewed_sha": null,
-      "reviewed_on": null,
-      "note": "not re-read against HEAD in the 2026-11-14 audit"
+      "reviewed_sha": "1780c5e5a552fd4d1c9d6a7b0cab26b0c2bef064",
+      "reviewed_on": "2026-11-14"
     },
     "axiomhq-skills": {
       "repo": "axiomhq/skills",
-      "reviewed_sha": null,
-      "reviewed_on": null,
-      "note": "not re-read against HEAD in the 2026-11-14 audit"
+      "reviewed_sha": "5e39ffd77bcff0277d83ff6dbb8e186ed9263fb3",
+      "reviewed_on": "2026-11-14"
     },
     "b-m-capital-research-honeclaw": {
       "repo": "B-M-Capital-Research/honeclaw",
@@ -45,9 +43,9 @@
     },
     "blader-humanizer": {
       "repo": "blader/humanizer",
-      "reviewed_sha": null,
-      "reviewed_on": null,
-      "note": "not re-read against HEAD in the 2026-11-14 audit"
+      "reviewed_sha": "b48c832f0f809c1b5658edbb838c2521b72f2413",
+      "reviewed_on": "2026-11-14",
+      "note": "external, tracks latest; v4.0.0 release notes read 2026-11-14 and guarded by writing/scripts/new_specifics.py"
     },
     "claude-plugins-official": {
       "repo": "anthropics/claude-plugins-official",
@@ -72,9 +70,8 @@
     },
     "ferdinandobons-startup-skill": {
       "repo": "ferdinandobons/startup-skill",
-      "reviewed_sha": null,
-      "reviewed_on": null,
-      "note": "not re-read against HEAD in the 2026-11-14 audit"
+      "reviewed_sha": "a5f97c317b93caedbb49d28f20e9ec283b2ec087",
+      "reviewed_on": "2026-11-14"
     },
     "fission-ai-openspec": {
       "repo": "Fission-AI/OpenSpec",
@@ -90,6 +87,12 @@
       "repo": "getsentry/skills",
       "reviewed_sha": "a582c51ee29d0f35e6ac321340796f77d43da733",
       "reviewed_on": "2026-11-14"
+    },
+    "googlechrome-modern-web-guidance": {
+      "repo": "GoogleChrome/modern-web-guidance",
+      "reviewed_sha": "4dd968349e54ca45a05dd5c818fb035c9054b022",
+      "reviewed_on": "2026-11-14",
+      "note": "v1.0.0; guides are CC-BY-4.0 and adapted with attribution. Its Baseline snapshot is checked against web-features before porting."
     },
     "gstack": {
       "repo": "garrytan/gstack",
@@ -146,9 +149,9 @@
     },
     "mvanhorn-last30days-skill": {
       "repo": "mvanhorn/last30days-skill",
-      "reviewed_sha": null,
-      "reviewed_on": null,
-      "note": "not re-read against HEAD in the 2026-11-14 audit"
+      "reviewed_sha": "f0876504bdfcada40fcf5a4a3ada014c9408b9ed",
+      "reviewed_on": "2026-11-14",
+      "note": "external, tracks latest; used as a signal source, not ported text"
     },
     "oh-my-claudecode": {
       "repo": "Yeachan-Heo/oh-my-claudecode",
@@ -157,15 +160,14 @@
     },
     "op7418-humanizer-zh": {
       "repo": "op7418/Humanizer-zh",
-      "reviewed_sha": null,
-      "reviewed_on": null,
-      "note": "not re-read against HEAD in the 2026-11-14 audit"
+      "reviewed_sha": "f4518a8eab97b8bfebc66a89d34320a89bef6930",
+      "reviewed_on": "2026-11-14",
+      "note": "external, tracks latest; last change 2026-09-23 (preserve meaning and author voice) read 2026-11-14"
     },
     "optimnow-cloud-finops-skills": {
       "repo": "OptimNow/cloud-finops-skills",
-      "reviewed_sha": null,
-      "reviewed_on": null,
-      "note": "not re-read against HEAD in the 2026-11-14 audit"
+      "reviewed_sha": "bed45623131dea61fcfcf9247847c590eba91621",
+      "reviewed_on": "2026-11-14"
     },
     "phuryn-pm-skills": {
       "repo": "phuryn/pm-skills",
@@ -190,9 +192,8 @@
     },
     "stripe-ai": {
       "repo": "stripe/ai",
-      "reviewed_sha": null,
-      "reviewed_on": null,
-      "note": "not re-read against HEAD in the 2026-11-14 audit"
+      "reviewed_sha": "74f7f39b1d7f3b56e49218a43b0dc87a268c03c7",
+      "reviewed_on": "2026-11-14"
     },
     "supabase-agent-skills": {
       "repo": "supabase/agent-skills",
@@ -232,9 +233,8 @@
     },
     "villetakanen-asdlc-io": {
       "repo": "villetakanen/asdlc-io",
-      "reviewed_sha": null,
-      "reviewed_on": null,
-      "note": "not re-read against HEAD in the 2026-11-14 audit"
+      "reviewed_sha": "79e840f5e271fb43e4127123389007332f0d029a",
+      "reviewed_on": "2026-11-14"
     },
     "wanshuiyin-auto-claude-code-research-in-sleep": {
       "repo": "wanshuiyin/Auto-claude-code-research-in-sleep",

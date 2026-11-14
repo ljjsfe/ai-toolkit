@@ -25,6 +25,14 @@ class ParseTests(unittest.TestCase):
         self.assertEqual(got["gstack"], {"review", "cso"})
         self.assertEqual(got["blader-humanizer"], {""})
         self.assertEqual(got["vila-lab"], {"docs/architecture.md"})
+        more = ud.credited_paths([
+            "upstream/x/docs/{a/one.md, b/two.md} (MIT) — y [idea]",
+            "upstream/y/skills/review/references/personas/* (MIT) — z [idea]",
+            "upstream/z/plugins/p/skills/*/SKILL.md (MIT) — w [idea]",
+        ])
+        self.assertEqual(more["x"], {"docs/a/one.md", "docs/b/two.md"})
+        self.assertEqual(more["y"], {"skills/review/references/personas"})
+        self.assertEqual(more["z"], {"plugins/p/skills"})
 
 
 def fake_api(existing: set[str], commits: dict[str, list[dict]]):
@@ -63,6 +71,23 @@ class DriftTests(unittest.TestCase):
         self.assertEqual(ud.drift("x", {"repo": None, "note": "n"}, {""})["status"], "unlocatable")
         r = ud.drift("y", {"repo": "o/r", "reviewed_on": None}, {""}, fake_api(set(), {}))
         self.assertEqual(r["status"], "unreviewed baseline")
+
+
+class ExternalTests(unittest.TestCase):
+    def test_externals_report_release_and_commits(self) -> None:
+        def api(args: list[str]) -> tuple[int, str]:
+            q = args[0]
+            if q.endswith("/releases/latest"):
+                return 0, json.dumps({"tag_name": "v4.0.0", "published_at": "2026-11-10T00:00:00Z",
+                                      "body": "No longer forbids adding facts"})
+            return 0, json.dumps([commit("b", "Release 4.0.0")])
+        rows = ud.external_changes("2026-11-01", api)
+        names = {r["name"] for r in rows}
+        self.assertIn("humanizer", names)
+        self.assertNotIn("taste-skill", names)  # optional entries are not installed
+        h = next(r for r in rows if r["name"] == "humanizer")
+        self.assertEqual(h["release"]["tag"], "v4.0.0")
+        self.assertEqual(h["commits"][0]["subject"], "Release 4.0.0")
 
 
 if __name__ == "__main__":

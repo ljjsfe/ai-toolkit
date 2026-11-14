@@ -5,7 +5,7 @@ description: >-
   WHEN/THEN scenarios with stable IDs), conditional design, and vertical tasks; surface human-gated
   decisions; merge deltas into timeless living specs after verification. Not for open framing
   (design-discussion) or sizing (system-design).
-version: 1.2.0
+version: 1.2.1
 sources:
   - 'upstream/fission-ai-openspec v2.0.0 schemas/spec-driven/{schema.yaml,templates/*} (MIT, https://github.com/Fission-AI/OpenSpec) — proposal/specs/design/tasks artifact DAG, capability-named layout, normative SHALL/MUST requirements with WHEN/THEN scenarios, conditional design, zero-delta escape hatch [port "draft artifacts in dependency order" "names a cohesive capability" "at least one when/then scenario per requirement" "write only when cross-cutting" "no spec delta: observable behaviour unchanged"]'
   - 'upstream/fission-ai-openspec v2.0.0 src/core/specs-apply.ts and skills/openspec-{propose,apply-change,sync-specs,update-change,archive-change} (MIT, https://github.com/Fission-AI/OpenSpec) — full-block MODIFIED anti-loss rule, RENAMED/REMOVED/MODIFIED/ADDED merge order, capability retirement guard, bi-directional change reconciliation [port "modified copies the entire requirement block" "apply operations in strict order" "confirm retirement intent" "reconcile in whichever direction"]'
@@ -88,43 +88,8 @@ brand-new capability; omit `## Purpose` on deltas for existing capabilities. Inc
 delta sections needed, and never place the same requirement in two conflicting sections (`ADDED` +
 `MODIFIED`, or `MODIFIED` + `REMOVED`):
 
-```markdown
-# Auth Session (Delta)
-
-## Purpose
-Manages interactive user session lifecycle, rotation, and revocation across devices.
-
-## ADDED Requirements
-
-### Requirement: [REQ-AUTH-001] Session revocation on password change
-The system SHALL revoke every active session of a user other than the initiating session when that user changes their password.
-
-#### Scenario: Concurrent device session is rejected after password change
-- **WHEN** an authenticated user changes their password from session A while session B is active
-- **THEN** the next request authenticated with session B fails with HTTP 401
-- **AND** session A remains authenticated
-
-## MODIFIED Requirements
-
-### Requirement: [REQ-AUTH-002] Idle session expiration
-The system SHALL expire an interactive session after 24 hours of inactivity.
-<!-- Full block required: include ALL surviving scenarios alongside any edited or new ones -->
-
-#### Scenario: Request within idle window extends activity timestamp
-- **WHEN** an authenticated request arrives 23 hours after the prior request
-- **THEN** the request succeeds and the idle window resets to 24 hours
-
-## REMOVED Requirements
-
-### Requirement: [REQ-AUTH-003] Legacy query-string session token
-**Reason**: Query-string tokens leak through referrer headers and access logs.
-**Migration**: Clients send bearer tokens in the `Authorization` header or `HttpOnly` cookies.
-
-## RENAMED Requirements
-
-- FROM: `### Requirement: [REQ-AUTH-004] Login rate throttle`
-- TO: `### Requirement: [REQ-AUTH-004] Credential-stuffing rate limit`
-```
+Section shapes (ADDED, MODIFIED full block, REMOVED with Reason and Migration, RENAMED FROM/TO):
+read `references/delta-example.md` when drafting.
 
 If a requirement is both renamed and behaviourally changed in the same change, list the rename in
 `## RENAMED Requirements` and use the **new (`TO`)** header in `## MODIFIED Requirements`.
@@ -156,7 +121,8 @@ or a cleaner mechanism, **pause before letting code drift from the artifacts**:
 - `spec_check.py merge changes/<slug> --specs <specs-root>` — the archive dry run (below).
 - `spec_check.py audit <specs-root>` — the living-spec audit (below).
 
-If Python cannot run, do each check by hand from §4 and say the script was not run.
+If Python cannot run, do each check by hand (`references/archive.md` for the merge) and say the
+script was not run.
 
 ## 4. Archive — merge deltas into living specs
 
@@ -165,28 +131,12 @@ any descoped item has been removed from the delta or split into a follow-up chan
 `spec_check.py merge changes/<slug> --specs <specs-root>` first: it plans every capability in
 memory, prints what it would create, update or retire, and stops on the first precondition that
 fails; nothing is written. Fix the delta, rerun, then add `--write`. A capability the deltas
-would empty is retired only with `--retire <capability>` after the user confirms. The steps it
-performs are:
+would empty is retired only with `--retire <capability>` after the user confirms.
 
-1. For each delta `changes/<slug>/specs/<capability-path>/spec.md`, open or create the living
-   `specs/<capability-path>/spec.md` (`# <Capability>`, `## Purpose`, `## Requirements`). When
-   creating a new capability spec, only `## Purpose` + `## ADDED Requirements` are valid.
-2. Apply operations in strict order so renames and edits compose without collision:
-   - **`RENAMED`** — replace matching `### Requirement:` headers in place. Abort if the source
-     is missing or the target already exists.
-   - **`REMOVED`** — delete matching requirement blocks. If removing the last requirement retires
-     the capability, confirm retirement intent and delete the capability's `spec.md` rather than
-     leaving an empty `## Requirements` section.
-   - **`MODIFIED`** — replace the entire matching requirement block with the delta's full block.
-     Abort if the living block has a scenario the delta block lacks (law 4).
-   - **`ADDED`** — append new requirement blocks after checking no duplicate ID or header exists.
-   - A header that matches only after ignoring case or spacing is an error, never a match. Plan
-     every capability before writing any: one failure means nothing is written.
-3. Audit each touched living spec (`spec_check.py audit`): single `## Purpose` and `## Requirements`, zero leftover delta
-   headers (`ADDED`/`MODIFIED`/`REMOVED`/`RENAMED`), zero changelog or date annotations, unique
-   requirement IDs/headers, and ≥1 `#### Scenario:` (`WHEN`/`THEN`) under every requirement.
-4. Move `changes/<slug>/` to `changes/archive/YYYY-MM-DD-<slug>/` (do not double-prefix if `<slug>`
-   already starts with `YYYY-MM-DD-`).
+The steps it performs (strict operation order RENAMED → REMOVED → MODIFIED → ADDED, abort
+conditions, the post-merge audit, the archive folder name) are in `references/archive.md`; read
+it when doing the merge by hand. Finish by moving `changes/<slug>/` to
+`changes/archive/YYYY-MM-DD-<slug>/`.
 
 ## Hand-offs
 

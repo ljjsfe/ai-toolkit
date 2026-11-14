@@ -5,7 +5,7 @@ description: >-
   test authorisation with a second identity/tenant, and report only findings with a concrete
   attack path. Use before shipping auth, tenancy, payments, or webhooks (diff review: code-review;
   LLM/tool agents: agent-security).
-version: 1.3.0
+version: 1.3.1
 sources:
   - upstream/gstack/cso (MIT) — boundary and invariant census first, sibling propagation, exploitability gating, three separate judgements, independent re-derivation, webhook review order, two-user and two-tenant negative controls [port "map before you hunt" "tested with a second identity" "look for its siblings" "are separate judgements" "re-derive the result" "trace the whole middleware and handler chain"]
   - upstream/gstack/cso/{SKILL.md,sections/audit-phases.md} (MIT) — OWASP Top 10 coverage map, secrets in git history, dependency supply chain, CI pull_request_target, reproduction contract, complete / partial / not-assessed report header [port "Copy this table into the report" "Secrets in code and git history" "Dependency supply chain" "pull_request_target or workflow_run" "Reproduction contract" "the same request is refused" "complete, partial or not assessed"]
@@ -22,9 +22,6 @@ sources:
 
 # App Security
 
-Most serious application bugs are authorisation and boundary bugs that match no textbook
-pattern. Find the boundaries first, then attack them.
-
 ## Iron laws
 
 1. **Map before you hunt.** List actors (anonymous, user, admin, other tenant, service, webhook
@@ -34,94 +31,64 @@ pattern. Find the boundaries first, then attack them.
 2. **Authorisation is tested with a second identity.** For every object, function and property
    access that matters, construct the negative control: user B (or tenant B) tries user A's
    resource. An unguessable ID is not authorisation.
-3. **One gap means look for its siblings** (as in `code-review`): search the same pattern at
-   every other route, handler, job and command in scope; severity follows the worst sibling.
+3. **One gap means look for its siblings:** search the same pattern at every other route,
+   handler, job and command in scope; severity follows the worst sibling.
 4. **A finding needs an attack path from attacker-controlled input.** Before verifying, write
    each suspected bug as four fields — claim, trigger, impact, and what the attacker can
-   already do; a large share of false alarms cannot be written that way and end there. Then
-   follow the input from where it enters to where it is used, through every check between. Values set by
-   operators (settings, environment, config, constants) are not attacker-controlled; a pattern
-   the framework already neutralises is not a finding; a missing header or rate limit needs a
-   concrete scenario. A suspicious-looking pattern proves nothing by itself — models
-   over-report and over-rate severity. Unknown reachability stays "unknown", never "unreachable".
+   already do; most false alarms cannot be written that way. Then follow the input from entry
+   to use through every check between. Values set by operators (settings, environment, config,
+   constants) are not attacker-controlled; a pattern the framework already neutralises is not a
+   finding; a missing header or rate limit needs a concrete scenario. Models over-report and
+   over-rate severity, so a suspicious pattern alone proves nothing. Unknown reachability stays
+   "unknown", never "unreachable".
 5. **Severity, confidence and evidence are separate judgements.** A critical-impact issue with
    unconfirmed exploitability is still reported as critical, labelled unconfirmed; a confirmed
    trivial issue stays trivial.
 
 ## Coverage beyond authorisation
 
-After the map, walk the vulnerability-class table in `references/vuln-classes.md` —
-injection, XSS, SSRF, deserialisation, path traversal, session and JWT, cryptography, secrets
-in git history, dependency supply chain, CI `pull_request_target` and the rest of the OWASP Top
-10 (2025) — and mark every row assessed, not assessed (with the reason) or n/a in the report.
-Read the same file's false-positive patterns and do-not-flag list before any candidate goes in
-the findings.
+After the map, walk the OWASP Top 10 class table in `references/vuln-classes.md` and mark
+every row assessed, not assessed (with the reason) or n/a in the report. Read its
+false-positive patterns and do-not-flag list before any candidate goes in the findings.
 
 ## Where to look first
 
 | area | check |
 |---|---|
-| object access | every read, update and delete scopes by owner or tenant in the query itself, not only in the UI or route guard |
-| mass assignment | request bodies bound to models cannot set role, owner, tenant, price or status fields |
-| tenant isolation | background jobs, exports, search indexes, caches and admin tools respect the tenant boundary too |
-| webhooks and integrations | trace the whole middleware and handler chain before calling a signature missing; verify the signature over the **raw** body with a constant-time comparison, enforce a timestamp or replay window, make handling idempotent, bind the event to the right tenant, verify **settled payment status** before fulfillment (a checkout/session-completed event is not cleared funds on async payment methods such as bank debits; handle async failure events too), and ask what a forged event could change (money, ownership, access) |
+| object access | every read, update and delete scopes by owner or tenant in the query, not only the route guard |
+| mass assignment | request bodies cannot set role, owner, tenant, price or status fields |
+| tenant isolation | jobs, exports, search indexes, caches and admin tools respect it too |
+| webhooks and integrations | trace the whole middleware and handler chain before calling a signature missing; signature over the **raw** body, constant-time compare, replay window, idempotent handling, event bound to the right tenant; verify **settled payment status** before fulfillment (checkout-completed is not cleared funds on async methods) |
 | feature gates | a diff that makes a gated, internal or unreleased feature reachable without its gate (flipped default, guard dropped on one path, route registered outside the gated block) |
 
 ## Reviewing a change
 
-Order the files by what they can break, not by how much changed: authentication, tenant
-scoping, payments, cryptography and calls to other systems come first — a two-line change can
-be the critical one. For removed or loosened security code, read the
-history (`git blame`, the commit that added it) to learn why it existed. Count the callers of
-changed security-relevant functions instead of guessing the blast radius, and treat untested
-changes to them as higher risk.
+Order the files by what they can break, not by how much changed (auth, tenant scoping,
+payments, crypto, outbound calls first). For removed or loosened security code, read why it
+existed (`git blame`). Count the callers of changed security-relevant functions instead of
+guessing the blast radius.
 
 ## Confirm before reporting
 
 Give a second reviewer the location, the invariant and the rubric — not your conclusion — and
-have it re-derive the result from the callers, middleware and config. If no second reviewer is
-available, do a labelled challenge pass against your own finding. After triage, ask whether two
+have it re-derive the result; with none available, run a labelled challenge pass. After triage, ask whether two
 or more of the findings you dropped would together give an attacker a path none gives alone.
 
 ## Reproduction contract
 
-Run reproductions only in a local or disposable environment you are allowed to use — never
-against production or someone else's system. A finding is **verified** when steps 1, 2 and 4
-hold: the exploit is reproduced. The third step is a further check, run once a fix exists, and is
-reported separately as **fix confirmed**; a verified finding does not wait for it.
-
-1. **Unmodified app, legitimate control passes.** The app starts unchanged, and the honest
-   version of the request (user A reading A's own order) succeeds. A boot failure or generic
-   error is inconclusive, not proof.
-2. **The attack trips a specific security assertion.** The hostile request (user B reading A's
-   order) succeeds when it should not, and the test checks *that* outcome — B received A's
-   data — not merely a non-zero exit or an error printed somewhere.
-3. **After the fix, the same request is refused and the legitimate control still passes**,
-   with the identical assertion, and the existing test suite stays green. Run it on both
-   revisions: the exploit must succeed on the vulnerable base and fail on the patch — a check
-   that never succeeded anywhere proves nothing. Also try other routes to the same root cause
-   (another endpoint, encoding or caller reaching the same flawed check) and the behaviour the fix
-   must keep. Report the evidence level reached — source reading, build, or runtime; only a
-   runtime result earns **fix confirmed**.
-4. **Nothing under the harness was changed to get there:** no mocks replacing the very check
-   under test, no loosened assertions, no edits to fixtures or test runner config. Mocks may
-   stand in for third parties, never for the boundary being tested.
-
-Partial evidence (a static trace, or a run where step 1, 2 or 4 does not hold) is reported as
-**traced** or **plausible**, not verified. Write the reproduction as the four-field claim plus
-concrete values — no placeholders.
+Only in a local or disposable environment you are allowed to use, never production. **Verified**
+needs all three: the unmodified app passes the legitimate control (user A reads A's order); the
+attack trips a specific security assertion (B received A's data), not just a non-zero exit;
+nothing under the harness was changed to get there. Once a fix exists, **fix confirmed** means
+the same request is refused and the legitimate control still passes, run on the vulnerable base
+and on the patch, with the evidence level reached stated. Anything less is **traced** or
+**plausible**. Steps and rules: `references/reproduction.md` — read before running one.
 
 ## Optional output — SECURITY_MODEL.md
 
-When the user wants the map kept, write the boundary map (law 1) as a `SECURITY_MODEL.md` at the repo
-root (or beside a component with its own boundary) — never in `SECURITY.md`, which GitHub treats
-as the disclosure policy. It holds exposure, trust boundaries, invariants with stable IDs
-(`INV-1`…) and the code that enforces each, reportable finding classes with severity context,
-and narrow exclusions (a class plus a location, accepted risks with a review-by date). Later
-reviews read it from the base branch, cite invariant IDs in findings, and treat edits to it in a
-diff as a gate change. Anything that suppresses or downgrades findings is a decision only the
-owner can confirm; leave it marked unresolved otherwise. Suspected gaps go to the user, never into
-the file, or later reviews learn to skip them.
+When the user wants the map kept, or the repo has a `SECURITY_MODEL.md`, read
+`references/security-model.md`: later reviews read it from the base branch, and anything in it
+that suppresses findings is a decision only the owner can confirm.
 
 ## Confidence
 
@@ -137,19 +104,16 @@ the file, or later reviews learn to skip them.
 ```
 Status:                   complete / partial / not assessed — then scope and material gaps
 Scope and boundary map:   actors · assets · entry points · tenant boundaries · invariants
-                          (optionally written to SECURITY_MODEL.md, above)
 Coverage:                 the class table, each row assessed / not assessed (why) / n/a
 Findings:                 severity · confidence · evidence · attack path · siblings checked · fix
 Unconfirmed (critical):   labelled hypotheses, with what would confirm them
 Not reviewed:             areas out of scope or not reachable in this review
 ```
 
-The report opens with complete, partial or not assessed. Completeness does not depend on the
-number of findings: a run that hit its budget or could not reach part of the code is partial
-even with zero findings. With no supported findings, write "No supported findings in the
+The report opens with complete, partial or not assessed; a run that hit its budget or missed
+part of the code is partial even with zero findings. With no supported findings, write "No supported findings in the
 assessed scope." — never "secure" or "no vulnerabilities". A failed tool or empty scanner output
 is a coverage gap, not a clean result.
 
-For an automated scan alongside this review in Claude Code, the optional `claude-security`
-plugin (see `toolkit/external.yaml`) runs one; treat its output as candidates for the gate
-above, not as findings.
+Output from the optional `claude-security` scanner plugin (`toolkit/external.yaml`) is candidates
+for the gate above, not findings.

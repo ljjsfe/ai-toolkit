@@ -5,7 +5,7 @@ description: >-
   with zero invented facts ([NEED: ...] placeholders, competing openings, platform rules, de-AI
   editing pass, fresh-reader check). Trigger on 写文章, 发帖, 公众号, 推文, 写稿. Not for resumes
   (career-navigator) or AGENTS.md/CLAUDE.md (agent-instructions).
-version: 1.3.0
+version: 1.4.0
 sources:
   - upstream/khazix-skills/khazix-writer (MIT) — first-hand observation is what a model cannot supply; ask the writer for it [port "first-hand detail comes from the writer"]
   - upstream/marketingskills/skills/copywriting/references/ai-tells.md (MIT) — placeholder for missing proof instead of an invented fact; the swap test [port "never fill it with something" "apply the swap test"]
@@ -55,8 +55,12 @@ it is allowed to claim**. This skill fixes those two things and runs a de-AI lin
 5. **Cut** — apply the swap test: a sentence that would read the same on a competitor's or a
    stranger's page says nothing about this writer or this subject; make it specific or delete it.
 6. **De-AI** — if `humanizer` (English) or `humanizer-zh` (Chinese) is installed, run it on the
-   cut draft with `PERSONAL.md` as the voice sample. If neither external skill is available in
-   this session, run this structural pass directly:
+   cut draft with `PERSONAL.md` as the voice sample, then run
+   `scripts/new_specifics.py <cut draft> <humanized> --sources <notes…>`: humanizer 4+ adds "a
+   specific detail it knows to be true" where text is generic, which law 1 forbids. Every number,
+   date, name or quote it lists is traced to the writer or a source, or reverted, or becomes
+   `[NEED: …]`. If neither external skill is available in this session, run this structural pass
+   directly:
    - Cut false contrasts (`not X, but Y` / `不是 X，而是 Y` where nobody claimed X) and one-line
      dramatic closers that only restate the paragraph above;
    - Break mechanical rule-of-three padding, habitual em-dash chains, bold-label bullet

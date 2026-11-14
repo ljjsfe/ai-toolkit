@@ -5,7 +5,7 @@ description: >-
   missing requirements, sibling sweeps, weakened-gate checks, git-history context, and independent
   refutation of P0/P1s. For offensive security audits use app-security; for design/plan reviews use
   system-design.
-version: 1.4.0
+version: 1.4.1
 sources:
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/{action-class-rubric.md,subagent-template.md} (MIT) — P0–P3; check callers, guards and framework defaults [port "data loss, security hole" "framework defaults"]
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/* (MIT) — per-lens checklists (correctness sentinel and lifecycle-writer checks, reliability timeouts, retries and error-path leaks), anchored 25/50/75/100 confidence, per-persona do-not-flag lists [port "Sentinel meaning changes" "Every writer of a lifecycle state" "Deleted-but-referenced files" "Swallowed errors" "Leaks on error paths" "Retry storms" "Anchored confidence" "Do-not-flag list"]
@@ -28,10 +28,9 @@ A review that cries wolf is worse than none. Fewer, defensible findings beat a l
 
 1. **Two axes, reported separately.** *Spec*: does it do what was asked, and what did it
    silently not do? *Standards*: is it correct, safe and consistent with this codebase —
-   including the code rules in the repo's `AGENTS.md` / `CLAUDE.md` / `GEMINI.md`, `.claude/rules/`
-   or `.agents/rules/`, and decision records? Load these from the **base branch**, cite the specific rule when broken, and treat
-   any change to them inside the diff as a gate change (law 4) — a PR does not get to set the
-   rules it is judged by. Find the spec first (active change package or living capability specs in
+   including the repo's instruction files (`AGENTS.md`, `CLAUDE.md`, rules directories) and
+   decision records? Load these from the **base branch**, cite the specific rule when broken, and
+   treat any change to them inside the diff as a gate change (law 4). Find the spec first (active change package or living capability specs in
    `specs/` or `openspec/` — see `spec` — linked issue, plan, PR description). If there is none,
    report "no spec available" and review standards only.
 2. **Every finding passes the gate:** exact `file:line`; a concrete failure (input → state →
@@ -42,10 +41,8 @@ A review that cries wolf is worse than none. Fewer, defensible findings beat a l
 3. **Sweep sideways.** For each real finding, search for the same pattern at every other call
    site or entry point, and grade severity on the worst instance found.
 4. **Weakened gates are findings in their own right.** List every change to tests, snapshots,
-   CI config, lint rules or type strictness in the diff and justify each one. A loosened
-   assertion that makes the build pass is the most important line in the review. Grep the
-   diff against the pattern catalogue in `references/gate-patterns.md` (skips and `.only`,
-   suppression pragmas, regenerated snapshots, relaxed thresholds, swallowed exceptions…).
+   CI config, lint rules or type strictness in the diff and justify each one. Grep the diff
+   against the pattern catalogue in `references/gate-patterns.md`.
 5. **Review the change, not the file.** A real problem that this change neither introduced nor
    made reachable goes in the appendix marked `pre-existing`. "Made reachable" means the diff
    adds a caller or an input source, or removes a guard — cite that changed line as the
@@ -56,28 +53,23 @@ A review that cries wolf is worse than none. Fewer, defensible findings beat a l
    gate change (law 4).
 6. **Serious findings survive an independent refutation.** Give every P0/P1 — and every finding
    that rests on a repo rule — to a fresh subagent that did not produce it (preferring another
-   model family when available): the finding, the cited
-   rule from the base branch, and the repository at the change's head (so it can read callers,
-   guards and history), but not the reviewer's reasoning; tell it to disprove the finding. It
+   model family when available): the finding, the cited rule from the base branch and the repo
+   at the change's head, but not the reviewer's reasoning; tell it to disprove the finding. It
    must confirm a rule-based finding against the rule's actual wording. Drop what it refutes;
    move what it cannot confirm to the appendix at low confidence. Where no subagent is
    available, re-check in a separate pass and label those findings `self-checked`.
 
 ## Pass 1 — What is present
 
-The usual correctness, security and performance lenses, plus the one most often skipped —
-**lifecycle**, the bugs that pass tests and fail later: collections that only grow, handles not
-released on every error path, listeners never removed — and authorisation on every new entry
-point. Read `references/lenses.md` for the lenses the diff touches — it holds the per-lens
-checklists (correctness, reliability, performance, tests), what each never flags, and the
-anchored confidence table. Two checks there are mandatory whenever they apply, because they
+Correctness, security and performance, plus **lifecycle** (collections that only grow, handles
+not released on error paths, listeners never removed) and authorisation on every new entry
+point. Read `references/lenses.md` for the lenses the diff touches (checklists, do-not-flag
+lists, confidence anchors). Two checks there are mandatory whenever they apply, because they
 need code outside the diff: **every writer of a lifecycle state** when the diff writes or adds
 a status, and the **enum/value completeness trace** when it adds a value or widens an input.
 When the change touches auth, tenancy, payments or webhooks, also apply `app-security`.
-When it changes frontend UI, mobile web layout, or motion, also apply `impeccable`,
-`mobile-native`, and explicitly invoke `review-animations` (if installed; see
-`toolkit/external.yaml`); for browser-support, platform-API or Core Web Vitals questions, also
-`modern-web-guidance` when installed.
+Frontend UI, mobile web or motion: also `impeccable`, `mobile-native` and, if installed,
+`review-animations`; browser support, platform APIs or Core Web Vitals: `web-platform`.
 
 ## Pass 2 — What is missing
 
@@ -89,31 +81,16 @@ file's `file:line` — the spec or doc should change in the same PR. P2 at most,
 spec or doc is a public API contract. If no such doc exists, there is no finding.
 Report as `MISSING: <what> — <why it matters>`, citing the requirement or rule it comes from.
 
-**Scope creep is the other half of the spec axis.** Map each hunk to the requirement it serves;
-list hunks that serve none. Also list every behaviour the diff changes — a default, an exit
-code, a stored value, a route, a side effect — that the PR description or commit messages do
-not mention. Report these as `UNASKED: <change> — <file:line>`; each is a question for the
-author (split it out, or add it to the spec), not automatically a defect. Two kinds count even
-when small: public surface the stated intent rules out or plainly narrows away (an export,
-endpoint, flag, config key or parameter) — a terse description that just does not mention it is
-not evidence — and a new dependency doing what the standard library, the platform or an existing
-repo helper already does (name the replacement). Acceptance text edited in the same diff is a
-weakened gate: see "Spec edited to match" in `references/gate-patterns.md`.
+Scope creep is the other half of the spec axis: report each hunk no requirement serves, and each
+unmentioned behaviour change, as `UNASKED: <change> — <file:line>` — a question for the author,
+not automatically a defect. Read `references/scope-and-history.md` for the two kinds that count
+even when small.
 
 ## Pass 3 — What the history says
 
-Toolkit policy (no current upstream runs this as a separate sweep); keep it to the changed lines.
-
-
-- **Blame and log of the changed lines:** was this code written this way to fix something? A
-  change that undoes an earlier fix, or reintroduces a reverted pattern, is a finding.
-- **Earlier pull requests touching these files** — find them with
-  `git log --format='%h %s' -- <path>`; when hosted on GitHub and `gh` is authenticated, also
-  read `gh pr view <n> --comments` and the inline review comments
-  (`gh api repos/<owner>/<repo>/pulls/<n>/comments`, else rely on local `git log`): objections
-  raised there often apply again.
-- **Comments in the modified files** that state an invariant ("must be called before…", "not
-  thread-safe"): check the change still honours them.
+Read blame and log of the changed lines, earlier pull requests touching these files, and
+invariant comments in the modified files; a change that undoes an earlier fix is a finding.
+Commands: `references/scope-and-history.md`.
 
 ## Severity and confidence
 

@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+"""Tests for new_specifics.py: additions are caught, rewording of existing facts is not."""
+from __future__ import annotations
+
+import sys
+import unittest
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import new_specifics as ns  # noqa: E402
+
+BEFORE = "We cut build time from 14 minutes to 6 after moving tests into parallel shards.\n"
+
+
+class NewSpecificsTests(unittest.TestCase):
+    def kinds(self, after: str, sources: list[str] | None = None) -> list[tuple[str, str]]:
+        return [(k, s) for k, s, _ in ns.new_specifics(BEFORE, after, sources or [])]
+
+    def test_rewording_keeps_facts_and_passes(self) -> None:
+        self.assertEqual(self.kinds("Moving tests into parallel shards took builds from 14 minutes down to 6.\n"), [])
+
+    def test_added_number_name_and_quote_are_flagged(self) -> None:
+        after = ("Builds fell from 14 minutes to 6, a 57% drop, after we followed advice from "
+                 "the Google Testing Blog: \"parallelise everything you can\".\n")
+        got = self.kinds(after)
+        self.assertIn(("number", "57%"), got)
+        self.assertIn(("name", "Google Testing Blog"), got)
+        self.assertIn(("quote", "parallelise everything you can"), got)
+
+    def test_sources_count_as_known(self) -> None:
+        after = "Builds fell from 14 minutes to 6, a 57% drop.\n"
+        self.assertEqual(self.kinds(after, ["Notes: drop was 57% per the CI dashboard."]), [])
+
+    def test_dates_and_cjk_numbers(self) -> None:
+        got = self.kinds("2026年3月，构建时间从14分钟降到6分钟，节省了约3万元。\n")
+        self.assertIn(("date", "2026年3月"), got)
+        self.assertTrue(any(k == "number" and "3万" in s for k, s in got), got)
+
+    def test_number_formatting_is_normalised(self) -> None:
+        before = "Revenue reached 1,200,000 dollars."
+        self.assertEqual(ns.new_specifics(before, "Revenue reached 1200000 dollars.", []), [])
+
+    def test_cli_exit_codes(self) -> None:
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            b, a = Path(tmp, "b.md"), Path(tmp, "a.md")
+            b.write_text(BEFORE, encoding="utf-8")
+            a.write_text(BEFORE, encoding="utf-8")
+            self.assertEqual(ns.main([str(b), str(a)]), 0)
+            a.write_text(BEFORE + "It saved 3 engineers a week.\n", encoding="utf-8")
+            self.assertEqual(ns.main([str(b), str(a)]), 1)
+
+
+if __name__ == "__main__":
+    unittest.main()

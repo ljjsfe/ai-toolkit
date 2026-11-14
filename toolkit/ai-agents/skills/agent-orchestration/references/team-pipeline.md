@@ -87,3 +87,10 @@ never "wait indefinitely" and never a tight polling loop.
 3. If the state is unreadable or corrupt, stop, report it and keep the original bytes; never
    reinitialise over it.
 4. Only a run with no active state starts from the plan stage.
+
+## Host limits
+
+Workers do not spawn their own subagents as toolkit policy, not a runtime limit. Claude Code
+sets nesting depth with `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` (its default changed between
+2.1.217 and 2.1.219) and caps parallel subagents with `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`;
+check the host's settings before planning nested delegation or a wide fan-out.

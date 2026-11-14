@@ -4,7 +4,7 @@ description: >-
   Ship safe production changes (expand-migrate-contract schema/data migrations, idempotent retries,
   deploys, rollbacks, burn-rate alerts) and run live incidents (mitigate first, capture evidence,
   confirm signal recovery). For non-urgent bugs use debugging.
-version: 1.2.0
+version: 1.2.1
 sources:
   - upstream/everything-claude-code/skills/{database-migrations,docker-patterns} (MIT) — expand-migrate-contract, CONCURRENTLY, batched backfills [port "expand → migrate → contract" "create index concurrently" "backfills in keyset batches"]
   - upstream/everything-claude-code/skills/database-migrations (MIT) — forward-only migrations in production; no NOT NULL column without a default on a live table [port "migrations are forward-only in production" "never add a not null column without a default"]
@@ -18,13 +18,10 @@ sources:
   - upstream/addyosmani-agent-skills/skills/observability-and-instrumentation (MIT) — entry-point log field [port "an entry-point field"]
   - upstream/everything-claude-code/skills/{latency-critical-systems,springboot-patterns} (MIT) — split latency signals; forwarded-header spoofing [port "data freshness" "trust x-forwarded-for only behind"]
   - upstream/jeffallan-claude-skills/skills/devops-engineer/references/incident-response.md (MIT) — evidence before state-destroying actions, routing by incident type and regulatory clock, re-check after remediation [port "capture evidence in parallel with mitigation" "route by incident type" "resolved means the original signal recovered"]
-  - upstream/axiomhq-skills/skills/sre (MIT) — discover the data's real fields before querying [port "look at the data's real shape"]
+  - upstream/axiomhq-skills/skills/axiom-sre (MIT; renamed from skills/sre on 2026-11-09) — discover the data's real fields before querying [port "look at the data's real shape"]
 ---
 
 # Production Ops
-
-Two parts: changing production safely, and handling it when something breaks. Each item is a
-mistake that looks reasonable at the time.
 
 ## Changing production — iron laws
 
@@ -42,23 +39,16 @@ mistake that looks reasonable at the time.
 - **Migrations are forward-only in production.** Once a migration has run there, undo it with a
   new forward migration, never by editing the applied file or running its down script against
   live data; down scripts are for local and test databases.
-- **Never add a NOT NULL column without a default to a live table.** Add it with a default
-  (instant on Postgres 11+ for a constant default), or add it nullable, backfill in batches, then
-  add the constraint (on Postgres 12+ via a `CHECK … NOT VALID` constraint validated separately, so
-  the final `SET NOT NULL` does not scan under an exclusive lock).
+- **Never add a NOT NULL column without a default to a live table.** Add it with a default, or
+  nullable → backfill in batches → `CHECK … NOT VALID`, validated separately, then `SET NOT NULL`.
 - **Set a short `lock_timeout` (e.g. `SET lock_timeout = '2s'`) before any lock-taking `ALTER
-  TABLE` on a live table.** Without it, a migration waiting behind one slow query queues an
-  `ACCESS EXCLUSIVE` lock that blocks every subsequent read and write on that table; fail fast and
-  retry instead.
+  TABLE` on a live table;** a queued `ACCESS EXCLUSIVE` lock blocks every later read and write.
 - **During a dual-write transition both the old and new columns must be populated.** If a
   release stops writing the old one early, a rollback to the previous code reads NULLs.
-- Indexes on live tables: `CREATE INDEX CONCURRENTLY`, which cannot run inside a transaction
-  block — and most migration runners wrap each migration in one, so use the tool's opt-out. A
-  failed concurrent build leaves an `INVALID` index; drop it before retrying.
-- Backfills in keyset batches — select the next ids with `WHERE id > $last ORDER BY id LIMIT n`
-  and update those (Postgres `UPDATE` has no `LIMIT`), committing per batch;
-  never one `UPDATE` over the whole table. `SKIP LOCKED` would silently skip rows that live
-  traffic holds.
+- Indexes on live tables: `CREATE INDEX CONCURRENTLY`, outside a transaction (use the runner's
+  opt-out); drop an `INVALID` index from a failed build before retrying.
+- Backfills in keyset batches (`WHERE id > $last ORDER BY id LIMIT n`), committing per batch;
+  never one `UPDATE` over the whole table, and not `SKIP LOCKED`, which skips live rows.
 
 ### Retries and workflows
 
@@ -67,60 +57,28 @@ mistake that looks reasonable at the time.
 
 ### Deploys and rollbacks
 
+Read `references/deploys-and-alerting.md` before a deploy or a revert. The gates:
+
 - **Scale verification to the change:** docs only → smoke check; config → health and status
-  codes; backend → error rate, latency and logs against the pre-deploy baseline; frontend or
-  mixed → also console errors and a visual check. Compare against baseline, not absolute
-  numbers, and require two consecutive bad checks before raising the alarm. Rolling back is then
-  an incident mitigation: propose it and wait for the go-ahead (see "When something breaks") unless an
-  automated rollback was agreed before the deploy.
-- **Capture the baseline before the deploy,** not after: error rate, p95 latency, the key pages
-  or endpoints with their status codes, load time and console errors. A snapshot taken after the
-  deploy is a starting point, not proof the old version was healthy; say which one you have.
-- **Watch a fixed monitoring window with numeric thresholds** set before shipping — for example
-  check every 60 s for 10 minutes; alert on a page or endpoint that fails to load, on a backend
-  error rate above the baseline rate, on page console errors whose message was not in the
-  baseline (for console errors compare by message, not count), on latency or load time above 2×
-  the baseline, and on new 404s. The two-consecutive-checks rule above applies to each.
-- **Unknown scope is not docs-only.** Skip deploy verification only when every changed file is
-  documentation; if the diff could not be read or classified, verify as for backend.
-- **Bound every deploy wait.** Poll the pipeline with progress updates and stop at a fixed
-  deadline (about 20 minutes), then ask: wait one more bounded period, or report the deploy as
-  unverified. A failed status query is unknown, never success; a later green health check does
-  not erase a failed deploy run.
-- **Know the merge shape before reverting.** A true merge commit reverts with `git revert -m 1`;
-  a squash is one commit; a rebase-merge is a range — reverting only its last commit leaves the
-  rest deployed. If the shape is unclear, stop and identify the full range. If branch protection
-  rejects pushing the revert, do not bypass it: push the revert to a new branch, open a revert PR
-  instead, report the rollback as pending, and merge only on separate approval. The rollback is
-  done only when the revert is deployed and the monitoring window above passes.
+  codes; backend → error rate, latency and logs; frontend or mixed → also console errors and a
+  visual check. Unknown scope is not docs-only: verify as for backend.
+- **Capture the baseline before the deploy** and compare against baseline, not absolute
+  numbers; watch a fixed monitoring window with numeric thresholds (default every 60 s for 10
+  minutes, latency above 2× baseline); two consecutive bad checks raise the alarm.
+- **Bound every deploy wait** (about 20 minutes), then ask; a failed status query is unknown,
+  never success.
+- **Know the merge shape before reverting.** If branch protection blocks the push, open a revert
+  PR instead and report the rollback as pending. Rolling back is an incident mitigation:
+  propose it and wait for the go-ahead unless an automated rollback was agreed beforehand.
 
 ### Observability and alerting
 
-- **Alert on error-budget burn rate over multiple windows** (for example fast: 1h at ~14× burn;
-  slow: 6h at ~6×; ticket: 3 days at ~1×), each paired with a short window (about 5 min, 30 min,
-  6 h) so the alert clears once the burn stops — not on a single raw error-rate threshold.
-- **Agree what happens when the error budget runs out,** in writing, before it does
-  (budget = 1 − SLO over the window; 99.9% over 30 days is about 43 minutes):
-
-  | budget left | policy |
-  |---|---|
-  | above ~50% | normal releases |
-  | 25–50% | extra review and a named approver for risky deploys; watch every deploy |
-  | under 25% | pause non-critical feature work; ship reliability fixes and critical bug fixes only |
-  | exhausted | feature freeze: only security patches and fixes that restore reliability ship, every incident gets a review, until the budget recovers over the window |
-
-  Exceptions (a security patch, a contractual deadline) need a named approver and are recorded.
-  A budget nobody acts on is only a dashboard.
-- **Capacity alerts on projected exhaustion** (e.g. Prometheus `predict_linear` over a week),
-  not a static "80% full".
-- Track p50/p95/p99, queue depth, cache-hit rate and **data freshness** separately; a fast
-  cache must not hide stale data.
-- Logs carry a correlation ID **and an entry-point field** (scheduler, API route, replay, CLI)
-  set at the start of the run and propagated across boundaries.
-- Rate limiting or auditing by client IP: trust `X-Forwarded-For` only behind a configured,
-  trusted proxy chain, and take the right-most address that is not one of your trusted proxies (with N trusted
-  proxies, skip N−1 entries from the right); otherwise use
-  the socket address.
+Alert on error-budget burn rate over multiple windows, not a raw error-rate threshold; agree in
+writing what happens when the error budget runs out (exhausted: only security patches and fixes
+that restore reliability ship); capacity alerts on projected exhaustion (`predict_linear`);
+track data freshness apart from latency; logs carry a correlation ID and an entry-point field;
+trust `X-Forwarded-For` only behind a configured trusted proxy chain. Windows, the budget table
+and proxy arithmetic: `references/deploys-and-alerting.md`.
 
 ## When something breaks — iron laws
 
@@ -129,13 +87,11 @@ mistake that looks reasonable at the time.
    the integration. Propose the mitigation and wait for the operator's go-ahead before running
    it, unless the user has pre-authorised that action. Root cause comes after users are safe
    (then `debugging`).
-2. **Capture evidence in parallel with mitigation; never delay mitigation for it.** Restarts,
-   rollbacks and redeploys erase evidence, so alongside the action save timestamped logs,
-   process and container state, current database sessions and locks, and recent deploys and
-   config changes into one incident folder with a timeline.
+2. **Capture evidence in parallel with mitigation; never delay mitigation for it.** Save
+   timestamped logs, process state, database sessions and locks, and recent deploys and config
+   changes into one incident folder with a timeline before restarts erase them.
 3. **Look at the data's real shape before querying it.** List the actual fields, labels and
-   services in the logs or metrics first; a query built from remembered field names returns
-   nothing and wastes the first minutes. Then try to disprove the leading theory.
+   services first. Then try to disprove the leading theory.
 4. **Resolved means the original signal recovered.** Wait a fixed interval and re-check the same
    metric or reproduction. Issuing a rollback is not recovery; if it has not recovered,
    escalate rather than repeating the action.
@@ -147,7 +103,7 @@ mistake that looks reasonable at the time.
 |---|---|---|
 | outage or degradation | engineering on call | status updates at a fixed cadence |
 | data loss or corruption | database owner + engineering lead | stop writes that spread the damage before repairing |
-| security breach | security + engineering + legal | revoke or rotate exposed credentials; isolate rather than wipe. GDPR: a controller notifies the supervisory authority without undue delay and where feasible within 72 hours of becoming aware (unless unlikely to risk people's rights), and tells affected people when the risk is high; a processor — typical for B2B SaaS — notifies its controller (the customer) without undue delay. Add sector, securities and contract clocks that apply (e.g. US public companies: SEC 8-K within 4 business days of determining materiality; US state breach laws) |
+| security breach | security + engineering + legal | revoke or rotate exposed credentials; isolate rather than wipe; start the legal clocks (GDPR 72 h for a controller — see `references/incident-clocks.md`) |
 | compliance | compliance + legal + leadership | per the regulation or contract |
 | third-party failure | engineering + product + vendor | vendor status and contractual SLA |
 | runaway or compromised AI agent | engineering + owner of spend and data | kill it in code — see `agent-security` |

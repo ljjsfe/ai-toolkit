@@ -183,10 +183,16 @@ class RunTests(Base):
         repo.mkdir()
         subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
         out = self.tmp / "res"
-        before = set(Path(tempfile.gettempdir()).glob("eval-demo-*"))
-        task = self.task(runs=1, workspace={"repo": str(repo), "commit": "no-such-ref"})
-        self.assertEqual(self.quiet(["run", str(task), "--out", str(out)]), 1)
-        self.assertEqual(set(Path(tempfile.gettempdir()).glob("eval-demo-*")), before)
+        # a private temp root, so parallel runs of this suite cannot add or remove eval-demo-* dirs
+        private = self.tmp / "tmproot"
+        private.mkdir()
+        saved, tempfile.tempdir = tempfile.tempdir, str(private)
+        try:
+            task = self.task(runs=1, workspace={"repo": str(repo), "commit": "no-such-ref"})
+            self.assertEqual(self.quiet(["run", str(task), "--out", str(out)]), 1)
+            self.assertEqual(list(private.glob("eval-demo-*")), [])
+        finally:
+            tempfile.tempdir = saved
         self.assertFalse(json.loads((out / "results.json").read_text())["complete"])
 
     def test_timeout_kills_child_processes(self) -> None:
