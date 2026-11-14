@@ -13,15 +13,23 @@ import re
 import subprocess
 import sys
 from collections import OrderedDict
+from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 TOOLKIT = ROOT / "toolkit"
 CREDITS = ROOT / "CREDITS.md"
 VALID_TOOLS = {"claude", "codex", "agy"}
+VALID_EXTERNAL_STATUS = {"adopted", "optional", "trial"}
 MAX_DESC_CHARS = 360
 SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+$")
+ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 REL_REF_RE = re.compile(r"`((?:references|resources|scripts)/[A-Za-z0-9_./-]+)`")
+TRIAL_PROSE_RE = re.compile(
+    r"\b(?:trial\s+decided|decided\s+to\s+trial|on\s+trial|status:\s*trial)\b|决定试用|试用期|试用中",
+    re.I,
+)
+TRIAL_UNSTARTED_RE = re.compile(r"\bnot\s+yet\s+started\b|尚未开始|未开始", re.I)
 
 
 def strip_quotes(val: str) -> str:
@@ -135,7 +143,71 @@ def parse_rule_sources(path: Path, errors: list[str]) -> OrderedDict[str, list[s
     return out
 
 
-def parse_external_yaml(path: Path, errors: list[str]) -> list[dict]:
+def _parse_iso_date(raw: str) -> date | None:
+    if not ISO_DATE_RE.match(raw):
+        return None
+    try:
+        return date.fromisoformat(raw)
+    except ValueError:
+        return None
+
+
+def validate_external_trials(
+    entries: list[dict],
+    errors: list[str],
+    today: date | None = None,
+    label: str = "toolkit/external.yaml",
+) -> None:
+    ref_date = today or date.today()
+    for e in entries:
+        name = e["name"] or "<unnamed>"
+        status = str(e.get("status", "")).strip().lower()
+        if status and status not in VALID_EXTERNAL_STATUS:
+            errors.append(
+                f"{label}: {name} has invalid status {e['status']!r} "
+                f"(expected one of {sorted(VALID_EXTERNAL_STATUS)})"
+            )
+        prose_blob = " ".join(e.get("prose", []))
+        raw_start = str(e.get("trial_start", "")).strip()
+        raw_review = str(e.get("trial_review_by", "")).strip()
+        is_trial = (
+            status == "trial"
+            or bool(raw_start or raw_review)
+            or bool(TRIAL_PROSE_RE.search(prose_blob))
+        )
+        if not is_trial:
+            continue
+
+        if TRIAL_UNSTARTED_RE.search(prose_blob):
+            errors.append(
+                f"{label}: {name} is marked for trial but unstarted; "
+                "set concrete trial_start and trial_review_by dates once started, or remove the trial entry"
+            )
+        if not raw_start:
+            errors.append(f"{label}: {name} is marked for trial and must declare trial_start: YYYY-MM-DD")
+        if not raw_review:
+            errors.append(f"{label}: {name} is marked for trial and must declare trial_review_by: YYYY-MM-DD")
+
+        start_dt = _parse_iso_date(raw_start) if raw_start else None
+        review_dt = _parse_iso_date(raw_review) if raw_review else None
+        if raw_start and start_dt is None:
+            errors.append(f"{label}: {name} has invalid trial_start {raw_start!r} (expected YYYY-MM-DD)")
+        if raw_review and review_dt is None:
+            errors.append(f"{label}: {name} has invalid trial_review_by {raw_review!r} (expected YYYY-MM-DD)")
+        if start_dt and review_dt:
+            if review_dt < start_dt:
+                errors.append(
+                    f"{label}: {name} has trial_review_by ({raw_review}) earlier than trial_start ({raw_start})"
+                )
+            elif ref_date > review_dt:
+                errors.append(
+                    f"{label}: {name} trial expired on {raw_review} "
+                    f"(started {raw_start}, today {ref_date.isoformat()}) — adopt, absorb into a skill, or remove"
+                )
+
+
+def parse_external_yaml(path: Path, errors: list[str], today: date | None = None) -> list[dict]:
+    label = str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else str(path)
     entries: list[dict] = []
     cur: dict | None = None
     in_install = False
@@ -150,6 +222,10 @@ def parse_external_yaml(path: Path, errors: list[str]) -> list[dict]:
                 "tools": [],
                 "install": [],
                 "optional": False,
+                "status": "",
+                "trial_start": "",
+                "trial_review_by": "",
+                "prose": [],
             }
             entries.append(cur)
             in_install = False
@@ -159,7 +235,7 @@ def parse_external_yaml(path: Path, errors: list[str]) -> list[dict]:
         elif in_install and re.match(r"^ {2,4}- ", line):
             cur["install"].append(re.sub(r"^ {2,4}- ", "", line).strip())
         elif in_folded and line.startswith("    "):
-            continue
+            cur["prose"].append(line.strip())
         elif line.startswith("  ") and not line.startswith("   "):
             in_install = False
             in_folded = False
@@ -173,16 +249,19 @@ def parse_external_yaml(path: Path, errors: list[str]) -> list[dict]:
                 cur["tools"] = [t.strip() for t in val.split(",") if t.strip()]
             elif key == "optional":
                 cur["optional"] = val.lower() == "true"
-            elif key in ("category", "repo", "license"):
+            elif key in ("category", "repo", "license", "status", "trial_start", "trial_review_by"):
                 cur[key] = strip_quotes(val)
+            elif key in ("covers", "notes", "why_not_rewritten") and val:
+                cur["prose"].append(strip_quotes(val))
     for e in entries:
         for req in ("name", "category", "repo", "license"):
             if not e[req]:
-                errors.append(f"toolkit/external.yaml: {e['name'] or '<unnamed>'} missing {req}:")
+                errors.append(f"{label}: {e['name'] or '<unnamed>'} missing {req}:")
         if not e["install"]:
-            errors.append(f"toolkit/external.yaml: {e['name']} missing install commands")
+            errors.append(f"{label}: {e['name']} missing install commands")
         if not e["tools"] or (set(e["tools"]) - VALID_TOOLS):
-            errors.append(f"toolkit/external.yaml: {e['name']} has invalid tools: {e['tools']}")
+            errors.append(f"{label}: {e['name']} has invalid tools: {e['tools']}")
+    validate_external_trials(entries, errors, today=today, label=label)
     return entries
 
 
@@ -317,11 +396,14 @@ def main() -> int:
     if actual_credits != expected_credits:
         errors.append("CREDITS.md is out of sync with skill/rule/external sources (run: python3 scripts/check.py --sync-credits)")
 
-    # Run claim-check unit tests
-    test_script = TOOLKIT / "hooks" / "claim-check" / "test_claim_check.py"
-    res = subprocess.run([sys.executable, str(test_script)], capture_output=True, text=True)
-    if res.returncode != 0:
-        errors.append(f"claim-check tests failed:\n{res.stdout}\n{res.stderr}")
+    # Run validator and claim-check unit tests
+    for label, test_script in (
+        ("check.py", ROOT / "scripts" / "test_check.py"),
+        ("claim-check", TOOLKIT / "hooks" / "claim-check" / "test_claim_check.py"),
+    ):
+        res = subprocess.run([sys.executable, str(test_script)], capture_output=True, text=True)
+        if res.returncode != 0:
+            errors.append(f"{label} tests failed:\n{res.stdout}\n{res.stderr}")
 
     if errors:
         print(f"FAILED ({len(errors)} issue(s)):", file=sys.stderr)
@@ -332,7 +414,7 @@ def main() -> int:
     avg_desc = total_desc_chars // max(len(skill_mds), 1)
     print(
         f"OK: {len(skill_mds)} skills ({total_desc_chars} total description chars, avg {avg_desc}), "
-        f"{len(rule_files)} rules, {len(externals)} externals, CREDITS.md in sync, hook tests green."
+        f"{len(rule_files)} rules, {len(externals)} externals, CREDITS.md in sync, unit tests green."
     )
     return 0
 

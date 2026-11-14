@@ -12,7 +12,7 @@ see [CREDITS.md](CREDITS.md).
 
 | area | skills |
 |---|---|
-| engineering | `design-discussion` (think a design through, one question at a time) · `system-design` (numbers before boxes; design reviews) · `debugging` · `tdd` (vertical slices, test-first) · `verification` · `code-review` · `app-security` · `production-ops` (safe changes and incidents) · `architecture-diagram` |
+| engineering | `design-discussion` (think a design through, one question at a time) · `system-design` (numbers before boxes; design reviews) · `spec` (CLI-free proposal, SHALL/WHEN-THEN capability deltas, human sign-offs, living specs) · `debugging` · `tdd` (vertical slices, test-first) · `verification` · `code-review` · `app-security` · `production-ops` (safe changes and incidents) · `architecture-diagram` |
 | AI agents | `agent-architecture` · `agent-orchestration` · `agent-evals` · `agent-security` · `agent-instructions` (AGENTS.md / CLAUDE.md / GEMINI.md) |
 | learning | `socratic-tutor` — Socratic mastery of a codebase, paper or technical domain with 0–5 skill maps and spaced recall |
 | research and market | `verified-research` · `market-scan` (competitors and unmet demand) · `macro-regime` |
@@ -29,9 +29,8 @@ Design taste is delegated to [impeccable](https://github.com/pbakaus/impeccable)
 [last30days](https://github.com/mvanhorn/last30days-skill), de-AI prose editing to
 [humanizer](https://github.com/blader/humanizer) and [humanizer-zh](https://github.com/op7418/Humanizer-zh), browser UI verification to
 [webapp-testing](https://github.com/anthropics/skills) (or optional [agent-browser](https://github.com/vercel-labs/agent-browser)), safety hooks to
-[claude-code-hooks](https://github.com/karanb192/claude-code-hooks) (optional), handoff to Codex
-to [codex-plugin-cc](https://github.com/openai/codex-plugin-cc), and spec-driven changes to
-[OpenSpec](https://github.com/Fission-AI/OpenSpec) (optional, on trial) — installed from their own
+[claude-code-hooks](https://github.com/karanb192/claude-code-hooks) (optional), and handoff to Codex
+to [codex-plugin-cc](https://github.com/openai/codex-plugin-cc) — installed from their own
 sources (see `toolkit/external.yaml`).
 
 ## Install
@@ -49,8 +48,9 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
 - `--external` runs each non-optional installer listed in `toolkit/external.yaml` scoped to the
   selected target(s): impeccable, last30days, emilkowalski/skills, humanizer, humanizer-zh,
   webapp-testing, and (for Claude Code) codex-plugin-cc. Entries marked `optional` — currently
-  taste-skill, agent-browser, mcp-builder, mcp-server-dev, claude-security, claude-code-hooks and
-  openspec — are printed, not installed.
+  taste-skill, agent-browser, mcp-builder, mcp-server-dev, claude-security and claude-code-hooks —
+  are printed, not installed. Any entry placed on `status: trial` must declare `trial_start` and
+  `trial_review_by` dates, enforced by `scripts/check.py`.
 - Skills are stored once in `~/.agents/skills/`, which Codex reads directly; Claude Code gets
   symlinks in `~/.claude/skills/` and Antigravity gets symlinks in `~/.gemini/config/skills/`
   plus `~/.gemini/config/skills.json` discovery for external skills (excluding `*-traps`, since
@@ -61,8 +61,8 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
   writing voice profile in `toolkit/writing/`); they are merged into that category's skills as
   `PERSONAL.md` at install time.
 - Validation and tests (zero external dependencies):
-  - Full repo check (frontmatter, resident description budget, references, `CREDITS.md` sync, and hook tests): `python3 scripts/check.py`
-  - Hook tests alone: `python3 toolkit/hooks/claim-check/test_claim_check.py` (also `pytest -q` compatible).
+  - Full repo check (frontmatter, resident description budget, references, `external.yaml` trial review dates, `CREDITS.md` sync, and unit tests): `python3 scripts/check.py`
+  - Validator & hook tests alone: `python3 scripts/test_check.py` and `python3 toolkit/hooks/claim-check/test_claim_check.py` (also `pytest -q` compatible).
 - `claim-check` is a cheap tripwire, not proof of verification: it checks that *some* command or
   browser check ran after the last edit, not which one, and it ignores negated or conditional
   phrases ("not verified", "if tests pass", "还没完成").
