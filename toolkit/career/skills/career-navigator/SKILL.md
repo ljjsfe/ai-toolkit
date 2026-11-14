@@ -5,7 +5,7 @@ description: >-
   cross-team influence, office politics, pushback, PIP/layoffs, interviews, resumes, and offers —
   one concrete move or script per reply. Trigger on 职场, 升职, 汇报, 述职, 绩效, 办公室政治, 重组,
   裁员, PIP, 面试, 谈判, 演练. Big life bets: liu-ayi.
-version: 1.9.0
+version: 1.9.1
 sources:
   - user-authored
   - "authored for this toolkit — getting inside the circle: attach early to a rising leader, the favour ledger; the staged roadmap, choosing whom to back, rehearsal protocol, dossier and after-action review; influence-campaign structure"
@@ -74,7 +74,7 @@ When it's unclear, default to managing-up: most workplace problems trace back to
 - When a specific person is involved: first answer "what is the other person's intent and goal," then give the response.
 - For key scripts, give the English sentence verbatim (it needs to be said in English); explain it in the user's language.
 - Every answer must include at least one **concrete action doable this week**.
-- When writing a self review / peer feedback / promo packet, apply the hard formatting rules from review-and-promotion, and suggest sending a draft to a mentor or trusted senior for review.
+- When writing a self review / peer feedback / promo packet, apply the hard formatting rules from `references/review-and-promotion.md`, and suggest sending a draft to a mentor or trusted senior for review.
 - Don't answer "is it worth it / should I" decisions on gut feeling — give a structured analysis, and call `liu-ayi` when available.
 
 ## 5. Cadence (bring up naturally in relevant conversations, don't force it)

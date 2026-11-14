@@ -21,7 +21,7 @@
   license: Apache-2.0
   tools: claude, codex, agy
   install:
-    - npx -y impeccable@latest install --providers=claude,codex,antigravity --scope=global
+    - npx -y impeccable@latest install --providers=claude,codex,antigravity --scope=global -y --force
   covers: >
     Frontend design taste end to end: surface modes (persuade/operate/read/experience),
     new-work direction process, calibration against saturated AI looks, craft floor
@@ -84,7 +84,10 @@
     feel: viewport units, tap highlight, sticky hover, safe areas, real-device checks) and
     break-ui (plausible worst-case data behind a dev-only toggle; report before fixing).
   notes: >
-    Do not install his `animate` skill alongside impeccable's animate command — they overlap.
+    Do not install his `animate`, `emil-design-eng` or `prototype` skills alongside impeccable —
+    impeccable already owns general UI design, prototyping and motion creation. Note that upstream
+    `review-animations` sets `disable-model-invocation: true`, so invoke it explicitly (e.g. from
+    `code-review`) when reviewing animation diffs.
 
 - name: humanizer
   category: writing
@@ -121,6 +124,9 @@
     Drives a local web app in a real browser with Playwright: starts the server(s), navigates,
     screenshots, reads console logs. The evidence `verification` asks for when the claim is
     "the UI works".
+  notes: >
+    Requires Playwright (`pip install playwright && playwright install chromium` or the project's
+    own Playwright setup) for its browser helper scripts.
 
 - name: agent-browser
   category: engineering
@@ -161,8 +167,7 @@
   watch: plugins/mcp-server-dev
   install:
     - claude plugin marketplace add anthropics/claude-plugins-official
-    - claude plugin install mcp-server-dev@claude-plugins-official
-    - claude plugin update mcp-server-dev@claude-plugins-official
+    - (claude plugin install -y mcp-server-dev@claude-plugins-official || true) && claude plugin update -y mcp-server-dev@claude-plugins-official
   covers: >
     Designing MCP servers for Claude: deployment model, search-then-execute tool pattern, auth
     (DCR / CIMD), MCP apps and bundles. Claude Code only.
@@ -176,8 +181,7 @@
   watch: plugins/claude-security
   install:
     - claude plugin marketplace add anthropics/claude-plugins-official
-    - claude plugin install claude-security@claude-plugins-official
-    - claude plugin update claude-security@claude-plugins-official
+    - (claude plugin install -y claude-security@claude-plugins-official || true) && claude plugin update -y claude-security@claude-plugins-official
   covers: >
     Multi-agent vulnerability scan of your own code whose verifiers reject a finding unless an
     exploitation path is confirmed; SARIF output and a patch flow. The executable complement to
@@ -190,8 +194,7 @@
   tools: claude
   install:
     - claude plugin marketplace add openai/codex-plugin-cc
-    - claude plugin install codex@openai-codex
-    - claude plugin update codex@openai-codex
+    - (claude plugin install -y codex@openai-codex || true) && claude plugin update -y codex@openai-codex
   covers: >
     Hands a task, a second opinion or a stuck investigation from Claude Code to Codex
     (codex:codex-rescue agent and /codex commands). Needs the Codex CLI installed and signed in.
@@ -204,10 +207,10 @@
   optional: true
   install:
     - claude plugin marketplace add karanb192/claude-code-hooks
-    - claude plugin install guard-pack@claude-code-hooks
-    - claude plugin install instructions-audit@claude-code-hooks
-    - claude plugin install cache-tax@claude-code-hooks
-    - claude plugin install subagent-spawn-cap@claude-code-hooks
+    - (claude plugin install -y guard-pack@claude-code-hooks || true) && claude plugin update -y guard-pack@claude-code-hooks
+    - (claude plugin install -y instructions-audit@claude-code-hooks || true) && claude plugin update -y instructions-audit@claude-code-hooks
+    - (claude plugin install -y cache-tax@claude-code-hooks || true) && claude plugin update -y cache-tax@claude-code-hooks
+    - (claude plugin install -y subagent-spawn-cap@claude-code-hooks || true) && claude plugin update -y subagent-spawn-cap@claude-code-hooks
   covers: >
     guard-pack (dangerous commands, secret files, git safety, test tampering, guardrail-config
     tampering — seven guards in one process); instructions-audit (hidden directives in loaded

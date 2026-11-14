@@ -6,8 +6,8 @@
 # Targets: `both` means claude+codex (backwards-compatible); `all` means claude+codex+agy.
 # Skills are stored once in ~/.agents/skills/ (read directly by Codex and used by the `skills`
 # CLI); Claude Code gets symlinks in ~/.claude/skills/ and Antigravity gets symlinks in
-# ~/.gemini/config/skills/ (plus skills.json discovery for external skills). Rules and Stop
-# hooks stay tool-specific.
+# ~/.gemini/config/skills/ (including any external skills installed in ~/.agents/skills/). Rules
+# and Stop hooks stay tool-specific.
 # Without --apply nothing is written: the plan is printed (dry run).
 # --external also installs the externally maintained components in toolkit/external.yaml
 # (skipping entries marked optional), scoped to the selected tool(s).
@@ -63,12 +63,12 @@ KEEP = {"synced"}
 BASE_EXTERNAL_PREFIXES = (
     "impeccable",
     "design-taste-frontend",
-    "openspec-",
     "last30days",
     "review-animations",
     "mobile-native",
     "break-ui",
     "humanizer",
+    "agent-browser",
     "webapp-testing",
     "mcp-builder",
 )
@@ -195,6 +195,11 @@ dynamic_skill_flags = {
     for m in re.findall(r"(?:^|\s)(?:-s|--skill)\s+([A-Za-z0-9_.-]+)", cmd)
 }
 EXTERNAL_PREFIXES = tuple(sorted(set(BASE_EXTERNAL_PREFIXES) | dynamic_skill_flags | {e["name"] for e in externals}))
+
+
+def is_external_name(name: str) -> bool:
+    low = name.lower()
+    return any(low == p.lower() or low.startswith(p.lower()) for p in EXTERNAL_PREFIXES)
 
 
 # ---- collect ---------------------------------------------------------------------------
@@ -329,9 +334,48 @@ def sync_manifest(base, skill_names, rule_rel_paths=None):
 # ---- shared skill store ----------------------------------------------------------------
 store = home / ".agents" / "skills"
 trap_names = [f"{r.stem}-traps" for r in path_rules]
+trap_set = set(trap_names)
+
+
+def shared_external_skills() -> list[str]:
+    """External skills present in ~/.agents/skills that should be exposed to Claude Code and AGY."""
+    if not store.is_dir():
+        return []
+    ours = set(skills)
+    return sorted(
+        d.name
+        for d in store.iterdir()
+        if d.is_dir()
+        and not d.name.startswith(".")
+        and d.name not in ours
+        and d.name not in trap_set
+        and not d.name.endswith("-traps")
+        and (d / "SKILL.md").is_file()
+    )
+
+
+def sync_shared_external_links(skills_dir: Path) -> None:
+    """Prune broken symlinks into .agents/skills and link any shared external skills."""
+    if skills_dir.is_dir():
+        for p in sorted(skills_dir.iterdir()):
+            if p.is_symlink() and not p.exists() and ".agents/skills/" in os.readlink(p):
+                say(f"remove broken external skill link {p}")
+                if apply:
+                    remove(p)
+    for ext_name in shared_external_skills():
+        dst = skills_dir / ext_name
+        if dst.exists() and not dst.is_symlink():
+            continue
+        link(dst, store / ext_name)
 
 
 def install_store():
+    ours = set(skills)
+    if replace and store.exists():
+        for p in sorted(store.glob("*")):
+            if p.name in KEEP or p.name in ours or p.name in trap_set or is_external_name(p.name):
+                continue
+            move_to_backup(p)
     for name, src in skills.items():
         install_skill(name, src, store)
     for r in path_rules:
@@ -351,7 +395,7 @@ def install_claude():
     if replace:
         for sub in ("skills", "rules"):
             for p in sorted((base / sub).glob("*")) if (base / sub).exists() else []:
-                if p.name in KEEP or p.name in ours or p.name == "toolkit" or p.name.startswith(EXTERNAL_PREFIXES):
+                if p.name in KEEP or p.name in ours or p.name == "toolkit" or is_external_name(p.name):
                     continue
                 move_to_backup(p)
         agents = sorted(p.name for p in (base / "agents").glob("*")) if (base / "agents").exists() else []
@@ -359,6 +403,7 @@ def install_claude():
             print(f"note: {len(agents)} agents in {base / 'agents'} were left in place; move them yourself if unwanted")
     for name in skills:
         link(base / "skills" / name, store / name)
+    sync_shared_external_links(base / "skills")
     claude_rule_rels = [f"rules/toolkit/{r.name}" for r in rules]
     sync_manifest(base, skills, claude_rule_rels)
     for r in rules:
@@ -397,7 +442,13 @@ def install_codex():
     else:
         backup_file(agents_md)
         upsert_block(agents_md, core)
-    say("hooks: Codex Stop-hook registration left manual (claim_check.py supports Codex transcripts when enabled)")
+    hook = toolkit / "hooks" / "claim-check" / "claim_check.py"
+    hook_dst = base / "hooks" / "toolkit" / "claim_check.py"
+    say(f"copy {hook.relative_to(root)} -> {hook_dst}")
+    if apply:
+        hook_dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(hook, hook_dst)
+    say("hooks: Codex Stop-hook registration left manual (register ~/.codex/hooks/toolkit/claim_check.py in hooks.json when enabled)")
 
 
 # ---- Antigravity (agy) -----------------------------------------------------------------
@@ -405,18 +456,26 @@ def install_agy():
     base = home / ".gemini" / "config"
     hooks_json = base / "hooks.json"
     skills_json = base / "skills.json"
-    for cfg in (hooks_json, skills_json):
-        if cfg.exists():
-            try:
-                json.loads(cfg.read_text(encoding="utf-8"))
-            except json.JSONDecodeError as e:
-                sys.exit(f"{cfg} is not valid JSON ({e}); fix it before installing")
+    if hooks_json.exists():
+        try:
+            json.loads(hooks_json.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as e:
+            sys.exit(f"{hooks_json} is not valid JSON ({e}); fix it before installing")
+    if skills_json.exists():
+        try:
+            sdata = json.loads(skills_json.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            sdata = None
+        if sdata == {"entries": [{"path": "~/.agents/skills", "exclude": [".*-traps"]}]}:
+            say(f"remove obsolete {skills_json} (external skills are symlinked in {base / 'skills'})")
+            if apply:
+                remove(skills_json)
 
     ours = set(skills)
     agy_rule_names = {f"toolkit-{r.stem}.md" for r in rules}
     if replace:
         for p in sorted((base / "skills").glob("*")) if (base / "skills").exists() else []:
-            if p.name in KEEP or p.name in ours or p.name.startswith(EXTERNAL_PREFIXES):
+            if p.name in KEEP or p.name in ours or is_external_name(p.name):
                 continue
             move_to_backup(p)
         for p in sorted((base / "rules").glob("*")) if (base / "rules").exists() else []:
@@ -426,28 +485,12 @@ def install_agy():
 
     for name in skills:
         link(base / "skills" / name, store / name)
+    sync_shared_external_links(base / "skills")
 
     agy_rule_rels = [f"rules/toolkit-{r.stem}.md" for r in rules]
     sync_manifest(base, skills, agy_rule_rels)
     for r in rules:
         write(base / "rules" / f"toolkit-{r.stem}.md", rule_to_agy(r))
-
-    # Expose ~/.agents/skills (excluding *-traps, since AGY has native glob rules above)
-    # so external skills installed by `npx skills` or `impeccable` are also discovered.
-    sdata = json.loads(skills_json.read_text(encoding="utf-8")) if skills_json.exists() else {}
-    entries_list = sdata.setdefault("entries", [])
-    shared_entry = {"path": "~/.agents/skills", "exclude": [".*-traps"]}
-    has_shared = any(
-        isinstance(it, dict) and it.get("path") in ("~/.agents/skills", str(store))
-        for it in entries_list
-    )
-    if not has_shared:
-        entries_list.append(shared_entry)
-        say(f"register shared ~/.agents/skills discovery in {skills_json}")
-        if apply:
-            backup_file(skills_json)
-            skills_json.parent.mkdir(parents=True, exist_ok=True)
-            skills_json.write_text(json.dumps(sdata, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     hook = toolkit / "hooks" / "claim-check" / "claim_check.py"
     hook_dst = base / "hooks" / "toolkit" / "claim_check.py"
@@ -475,6 +518,9 @@ KNOWN_SKILL_AGENTS = set(SKILLS_AGENT_FOR_TOOL.values())
 def adapt_external_cmd(cmd: str, active_tools: set[str]) -> str:
     """Scope multi-provider external install commands to only the target tool(s) requested."""
     wanted_providers = {PROVIDER_FOR_TOOL[t] for t in active_tools}
+    if "agy" in active_tools:
+        # Keep `codex` so installers like `impeccable` populate ~/.agents/skills/ for AGY symlinks.
+        wanted_providers.add("codex")
     m = re.search(r"--providers=([A-Za-z0-9_,-]+)", cmd)
     if m:
         listed = [p for p in m.group(1).split(",") if p]
@@ -495,12 +541,6 @@ def adapt_external_cmd(cmd: str, active_tools: set[str]) -> str:
 
 
 install_store()
-if "claude" in wanted:
-    install_claude()
-if "codex" in wanted:
-    install_codex()
-if "agy" in wanted:
-    install_agy()
 
 print("\nExternal components (external.yaml):")
 failed = []
@@ -523,9 +563,20 @@ for e in externals:
             with tempfile.TemporaryDirectory() as tmp:
                 if subprocess.run(cmd, shell=True, cwd=tmp).returncode != 0:
                     failed.append(e["name"])
+
+print("")
+if "claude" in wanted:
+    install_claude()
+if "codex" in wanted:
+    install_codex()
+if "agy" in wanted:
+    install_agy()
+
 if failed:
-    print(f"\nExternal installs that failed: {', '.join(failed)} — rerun their commands by hand.")
+    print(f"\nExternal installs that failed: {', '.join(failed)} — rerun their commands by hand.", file=sys.stderr)
 print(f"\n{len(skills)} skills, {len(rules)} rule files." + ("" if apply else "  Re-run with --apply to write."))
 if apply and backup.exists():
     print(f"Backups in {backup}")
+if failed and external and apply:
+    sys.exit(1)
 PY

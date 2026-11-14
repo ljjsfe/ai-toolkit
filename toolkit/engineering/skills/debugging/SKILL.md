@@ -4,7 +4,7 @@ description: >-
   Find a bug's root cause before changing code: build a fast red/green reproduction first, route by
   failure shape (flaky, order-dependent, race, perf), isolate the failing layer (UI, API, backend,
   DB), and stop after three failed fixes. For active production outages use production-ops.
-version: 1.0.0
+version: 1.0.1
 sources:
   - upstream/superpowers/skills/systematic-debugging (MIT) — root cause first, read the full error, one change at the source, three failed fixes means stop
   - upstream/compound-engineering-plugin/skills/ce-debug/references/{investigate,fix}.md (MIT) — observation-cited hypotheses, explicit invalidation
@@ -62,7 +62,7 @@ caching, stale client state or a race.
 
 ## Step 3 — Fix and prove
 
-- The reproduction from Step 1 goes green; the related test suite still passes.
+- The reproduction from law 1 goes green; the related test suite still passes.
 - Keep the reproduction as a regression test only if existing tests would not already catch
   this, and only if it tests a real boundary rather than a seam added just for the test.
 - Report: cause (with `file:line`), evidence, fix, how it was verified.

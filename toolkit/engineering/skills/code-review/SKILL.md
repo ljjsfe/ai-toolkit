@@ -5,7 +5,7 @@ description: >-
   missing requirements, sibling sweeps, weakened-gate checks, git-history context, and independent
   refutation of P0/P1s. For offensive security audits use app-security; for design/plan reviews use
   system-design.
-version: 1.2.4
+version: 1.2.5
 sources:
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/{personas/*,action-class-rubric.md,subagent-template.md} (MIT) — correctness, security, performance and reliability lenses; P0–P3; check callers, guards and framework defaults
   - upstream/compound-engineering-plugin/skills/ce-simplify-code/references/personas/efficiency-reviewer.md (MIT) — unbounded structures, listener leaks
@@ -62,6 +62,9 @@ The usual correctness, security and performance lenses, plus the one most often 
 **lifecycle**, the bugs that pass tests and fail later: collections that only grow, handles not
 released on every error path, listeners never removed — and authorisation on every new entry
 point. When the change touches auth, tenancy, payments or webhooks, also apply `app-security`.
+When it changes frontend UI, mobile web layout, or motion, also apply `impeccable`,
+`mobile-native`, and explicitly invoke `review-animations` (if installed; see
+`toolkit/external.yaml`).
 
 ## Pass 2 — What is missing
 
@@ -78,9 +81,10 @@ Report as `MISSING: <what> — <why it matters>`, citing the requirement or rule
 - **Blame and log of the changed lines:** was this code written this way to fix something? A
   change that undoes an earlier fix, or reintroduces a reverted pattern, is a finding.
 - **Earlier pull requests touching these files** — find them with
-  `git log --format='%h %s' -- <path>`, then read `gh pr view <n> --comments` and the inline
-  review comments (`gh api repos/<owner>/<repo>/pulls/<n>/comments`): objections raised there
-  often apply again.
+  `git log --format='%h %s' -- <path>`; when hosted on GitHub and `gh` is authenticated, also
+  read `gh pr view <n> --comments` and the inline review comments
+  (`gh api repos/<owner>/<repo>/pulls/<n>/comments`, else rely on local `git log`): objections
+  raised there often apply again.
 - **Comments in the modified files** that state an invariant ("must be called before…", "not
   thread-safe"): check the change still honours them.
 

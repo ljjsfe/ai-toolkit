@@ -5,7 +5,7 @@ description: >-
   topology, append-only state, tool surface, context/cache pipeline, stop conditions, and human
   gates. Not for dispatching subagents in this session (use agent-orchestration); pair with
   agent-security once tools or credentials are involved.
-version: 1.0.0
+version: 1.0.1
 sources:
   - upstream/humanlayer-12-factor-agents/content/factor-02, factor-05, factor-07, factor-09 (prose CC BY-SA 4.0 — ideas only, no wording)
   - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{multi-agent-patterns,tool-design,context-optimization,context-compression,self-managed-context,filesystem-context,long-horizon-prompting,harness-engineering,evaluation} (MIT)
@@ -66,7 +66,8 @@ and send only the low-confidence items to the cheapest model that handles them.
   tools. Use narrow tools where you need a safety boundary, not for convenience.
 - Repeated identical tool errors count toward the error ceiling.
 - **Mark every destructive tool** and design it to `agent-security`'s rules (exact
-  identifiers, dry run, human gate).
+  identifiers, dry run, human gate). When packaging tools as an MCP server, see optional
+  `mcp-builder` / `mcp-server-dev` in `toolkit/external.yaml`.
 
 ## Step 4 — Context pipeline
 

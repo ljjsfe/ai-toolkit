@@ -20,7 +20,7 @@ see [CREDITS.md](CREDITS.md).
 | investing | `thesis-ledger` · `valuation-audit` — decision support for individual investors; never buy/sell advice |
 | strategy | `liu-ayi` — a strategic-analysis framework built on order-and-institution checks, base rates and calibrated decisions |
 | career | `career-navigator` |
-| writing | `writing` — posts, articles and social media in the writer's voice, no invented facts; edited with humanizer / humanizer-zh (external) |
+| writing | `writing` — posts, articles and social media in the writer's voice, no invented facts; de-AI pass via humanizer / humanizer-zh (external) with inline fallback |
 | rules | `core.md` (always loaded, ~20 lines) plus language traps that load only for matching files: Python, Java/Spring, C++, TypeScript/React/Next.js, Flutter/Dart, SQL/containers |
 | hooks | `claim-check` — blocks "done / fixed / tests pass" claims made after editing files without running anything (Claude Code, Antigravity, Codex transcript support) |
 
@@ -53,8 +53,8 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
   `trial_review_by` dates, enforced by `scripts/check.py`.
 - Skills are stored once in `~/.agents/skills/`, which Codex reads directly; Claude Code gets
   symlinks in `~/.claude/skills/` and Antigravity gets symlinks in `~/.gemini/config/skills/`
-  plus `~/.gemini/config/skills.json` discovery for external skills (excluding `*-traps`, since
-  both Claude Code and Antigravity receive native path/glob-scoped rules).
+  (including any external skills installed in `~/.agents/skills/`, excluding `*-traps`, since both
+  Claude Code and Antigravity receive native path/glob-scoped rules).
 - `--replace-legacy` never touches claude.ai-synced skills, externally installed ones, your
   agents, or names listed in `~/.toolkit-keep`.
 - Personal parameters: put them in `toolkit/<category>/personal.local.md` (gitignored; e.g. a
