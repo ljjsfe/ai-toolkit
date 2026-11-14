@@ -174,9 +174,8 @@
     },
     "posthog-experiments": {
       "repo": "PostHog/posthog",
-      "reviewed_sha": null,
-      "reviewed_on": null,
-      "note": "not re-read against HEAD in the 2026-11-14 audit"
+      "reviewed_sha": "2a7c8be6e0a359d6e4f2143079a3972a90862383",
+      "reviewed_on": "2026-11-14"
     },
     "seanellyjames-deep-research-skill": {
       "repo": null,
@@ -217,15 +216,13 @@
     },
     "vercel-labs-agent-skills": {
       "repo": "vercel-labs/agent-skills",
-      "reviewed_sha": null,
-      "reviewed_on": null,
-      "note": "not re-read against HEAD in the 2026-11-14 audit"
+      "reviewed_sha": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62",
+      "reviewed_on": "2026-11-14"
     },
     "vercel-next-js": {
       "repo": "vercel/next.js",
-      "reviewed_sha": null,
-      "reviewed_on": null,
-      "note": "not re-read against HEAD in the 2026-11-14 audit"
+      "reviewed_sha": "b530e71a8e7bd420daceeb361fe30c4b9db11578",
+      "reviewed_on": "2026-11-14"
     },
     "vila-lab": {
       "repo": null,
