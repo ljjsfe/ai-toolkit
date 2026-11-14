@@ -5,11 +5,12 @@ description: >-
   WHEN/THEN scenarios with stable IDs), conditional design, and vertical tasks; surface human-gated
   decisions; merge deltas into timeless living specs after verification. Not for open framing
   (design-discussion) or sizing (system-design).
-version: 1.0.0
+version: 1.1.0
 sources:
   - 'upstream/fission-ai-openspec v2.0.0 schemas/spec-driven/{schema.yaml,templates/*} (MIT, https://github.com/Fission-AI/OpenSpec) — proposal/specs/design/tasks artifact DAG, capability-named layout, normative SHALL/MUST requirements with WHEN/THEN scenarios, conditional design, zero-delta escape hatch [port "draft artifacts in dependency order" "names a cohesive capability" "at least one when/then scenario per requirement" "write only when cross-cutting" "no spec delta: observable behaviour unchanged"]'
   - 'upstream/fission-ai-openspec v2.0.0 src/core/specs-apply.ts and skills/openspec-{propose,apply-change,sync-specs,update-change,archive-change} (MIT, https://github.com/Fission-AI/OpenSpec) — full-block MODIFIED anti-loss rule, RENAMED/REMOVED/MODIFIED/ADDED merge order, capability retirement guard, bi-directional change reconciliation [port "modified copies the entire requirement block" "apply operations in strict order" "confirm retirement intent" "reconcile in whichever direction"]'
-  - 'upstream/fission-ai-openspec v2.0.0 src/core/{validation/validator.ts,specs-apply.ts,archive.ts} and skills/openspec-sync-specs (MIT, https://github.com/Fission-AI/OpenSpec) — delta-format validation (about 30 checks), merge preconditions that abort on a missing target or rename collision, scenario-name diff before a MODIFIED merge, plan-all-then-write atomicity, the six-condition capability retirement guard [gap no validator; merge rules are prose with no failure handling]'
+  - 'upstream/fission-ai-openspec v2.0.0 src/core/{validation/validator.ts,specs-apply.ts,archive.ts} (MIT, https://github.com/Fission-AI/OpenSpec; rewritten as a stdlib script) — delta-format validation, merge preconditions that abort on a missing target, near-miss header or rename collision, scenario-name diff before a MODIFIED merge, plan-all-then-write atomicity, explicit capability retirement [port "def validate_change" "def plan_capability" "drops scenario(s) the living spec has" "differing only in case or spacing" "rerun with --retire" "nothing is written"]'
+  - 'upstream/fission-ai-openspec v2.0.0 src/core/validation/{task-checkboxes,task-numbering,purpose-placeholder}.ts and .openspec.yaml metadata (MIT, https://github.com/Fission-AI/OpenSpec) — task checkbox and numbering checks, placeholder-Purpose detection, change metadata [gap not ported]'
   - 'authored for this toolkit from a stated need (CLI-free spec-driven engineering) — stable requirement IDs for item-by-item verification, explicit human-sign-off decision block, timeless living specs with zero inline changelog [port "stable id + uppercase" "decisions needing sign-off" "zero changelog"]'
 ---
 
@@ -138,22 +139,44 @@ or a cleaner mechanism, **pause before letting code drift from the artifacts**:
   that alter observable behaviour, public contracts, or a settled `[DEC-NN]` go back through
   `## Decisions needing sign-off` for user approval before coding past them.
 
+## Checking with the script
+
+`scripts/spec_check.py` (standard-library Python, no installs) does what an OpenSpec CLI would:
+
+- `spec_check.py validate changes/<slug>` — after drafting and after every edit to the change.
+  Checks the proposal sections, delta file locations, SHALL/MUST, `#### Scenario:` blocks with
+  WHEN and THEN, requirements stranded outside delta sections, duplicates, conflicting sections,
+  RENAMED pairing and stable IDs. Fix every error before showing the change for sign-off.
+- `spec_check.py merge changes/<slug> --specs <specs-root>` — the archive dry run (below).
+- `spec_check.py audit <specs-root>` — the living-spec audit (below).
+
+If Python cannot run, do each check by hand from §4 and say the script was not run.
+
 ## 4. Archive — merge deltas into living specs
 
 Run only after `verification` confirms every requirement ID and scenario is **covered** (and
-any descoped item has been removed from the delta or split into a follow-up change):
+any descoped item has been removed from the delta or split into a follow-up change). Run
+`spec_check.py merge changes/<slug> --specs <specs-root>` first: it plans every capability in
+memory, prints what it would create, update or retire, and stops on the first precondition that
+fails; nothing is written. Fix the delta, rerun, then add `--write`. A capability the deltas
+would empty is retired only with `--retire <capability>` after the user confirms. The steps it
+performs are:
 
 1. For each delta `changes/<slug>/specs/<capability-path>/spec.md`, open or create the living
    `specs/<capability-path>/spec.md` (`# <Capability>`, `## Purpose`, `## Requirements`). When
    creating a new capability spec, only `## Purpose` + `## ADDED Requirements` are valid.
 2. Apply operations in strict order so renames and edits compose without collision:
-   - **`RENAMED`** — replace matching `### Requirement:` headers in place.
+   - **`RENAMED`** — replace matching `### Requirement:` headers in place. Abort if the source
+     is missing or the target already exists.
    - **`REMOVED`** — delete matching requirement blocks. If removing the last requirement retires
      the capability, confirm retirement intent and delete the capability's `spec.md` rather than
      leaving an empty `## Requirements` section.
    - **`MODIFIED`** — replace the entire matching requirement block with the delta's full block.
+     Abort if the living block has a scenario the delta block lacks (law 4).
    - **`ADDED`** — append new requirement blocks after checking no duplicate ID or header exists.
-3. Audit each touched living spec: single `## Purpose` and `## Requirements`, zero leftover delta
+   - A header that matches only after ignoring case or spacing is an error, never a match. Plan
+     every capability before writing any: one failure means nothing is written.
+3. Audit each touched living spec (`spec_check.py audit`): single `## Purpose` and `## Requirements`, zero leftover delta
    headers (`ADDED`/`MODIFIED`/`REMOVED`/`RENAMED`), zero changelog or date annotations, unique
    requirement IDs/headers, and ≥1 `#### Scenario:` (`WHEN`/`THEN`) under every requirement.
 4. Move `changes/<slug>/` to `changes/archive/YYYY-MM-DD-<slug>/` (do not double-prefix if `<slug>`
