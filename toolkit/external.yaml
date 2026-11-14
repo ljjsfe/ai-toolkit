@@ -95,11 +95,15 @@
   license: MIT
   tools: claude, codex, agy
   install:
-    - npx -y skills@latest add blader/humanizer -g -a claude-code -a codex -a antigravity -y
+    - npx -y skills@latest add https://github.com/blader/humanizer/tree/v3.1.0 -g -a claude-code -a codex -a antigravity -y
   covers: >
     English de-AI editing pass: 26 patterns of AI prose ranked by how much evidence each needs,
     a writing sample that overrides the rules, and a check that the rewrite added no facts.
     Used by the writing skill as its editing step.
+  notes: >
+    Pinned to v3.1.0 on 2026-11-14. v4.0.0 (2026-11-10) reverses the no-invention rule ("the
+    skill no longer forbids adding facts"), which contradicts the writing skill's iron law 1.
+    Move the pin only to a release that keeps the no-invention rule; read its release notes first.
 
 - name: humanizer-zh
   category: writing
