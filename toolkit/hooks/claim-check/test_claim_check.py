@@ -274,6 +274,17 @@ class ClaimCheckTests(unittest.TestCase):
         self.assertEqual(r.returncode, 0)
         self.assertEqual(r.stdout, "")
 
+    def test_claude_in_chrome_mcp_counts_as_browser_verification(self):
+        entries = [
+            user("check UI"),
+            asst(tool("Edit")),
+            tool_result(),
+            asst(tool("mcp__claude-in-chrome__read_page")),
+            tool_result(),
+            asst(text("Fixed and verified.")),
+        ]
+        self.assertFalse(should_block(entries))
+
 
 if __name__ == "__main__":
     unittest.main()

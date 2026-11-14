@@ -25,7 +25,7 @@ RUN_TOOLS = frozenset({
     "run_command",
     "exec_command", "shell", "shell_command", "unified_exec",
 })
-RUN_TOOL_PREFIXES = ("mcp__playwright__", "mcp__chrome", "browser_")
+RUN_TOOL_PREFIXES = ("mcp__playwright__", "mcp__chrome", "mcp__claude-in-chrome__", "browser_")
 
 FIXED_ADJECTIVE_NOUNS = (
     r"width|height|size|header|footer|nav|navbar|sidebar|position|positioning|"

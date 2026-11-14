@@ -96,5 +96,47 @@ class ExternalTrialGovernanceTests(unittest.TestCase):
         self.assertIn("invalid status", errors[0])
 
 
+class SkillStructureAndPrefixValidationTests(unittest.TestCase):
+    def test_valid_intra_and_cross_skill_section_refs_pass(self) -> None:
+        bodies = {
+            "alpha": (
+                Path("toolkit/eng/skills/alpha/SKILL.md"),
+                "## Iron laws\n\n1. First.\n2. Second.\n\n## Step 1 — Start\n\nSee law 2 and `beta` §2.\n",
+            ),
+            "beta": (
+                Path("toolkit/eng/skills/beta/SKILL.md"),
+                "## 1. Intro\n\n## 2. Harvest\n\nDone.\n",
+            ),
+        }
+        errors: list[str] = []
+        check.validate_skill_section_refs(bodies, errors)
+        self.assertEqual(errors, [])
+
+    def test_dangling_step_law_or_section_ref_fails(self) -> None:
+        bodies = {
+            "alpha": (
+                Path("toolkit/eng/skills/alpha/SKILL.md"),
+                "## Iron laws\n\n1. Only one.\n\n## 1. Body\n\nFollow Step 2, law 4, Pass 1, and `beta` §9.\n",
+            ),
+            "beta": (
+                Path("toolkit/eng/skills/beta/SKILL.md"),
+                "## 1. Only section\n",
+            ),
+        }
+        errors: list[str] = []
+        check.validate_skill_section_refs(bodies, errors)
+        self.assertEqual(len(errors), 4, errors)
+
+    def test_stale_install_external_prefix_fails(self) -> None:
+        errors: list[str] = []
+        with tempfile.TemporaryDirectory() as tmp:
+            sh = Path(tmp) / "install.sh"
+            sh.write_text('BASE_EXTERNAL_PREFIXES = (\n    "impeccable",\n    "openspec-",\n)\n', encoding="utf-8")
+            externals = [{"name": "impeccable", "install": ["npx impeccable install"]}]
+            check.validate_install_external_prefixes(sh, externals, errors)
+        self.assertEqual(len(errors), 1, errors)
+        self.assertIn("openspec-", errors[0])
+
+
 if __name__ == "__main__":
     unittest.main()

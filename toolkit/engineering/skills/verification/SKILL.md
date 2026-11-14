@@ -4,7 +4,7 @@ description: >-
   Back completion claims ("done", "fixed", "passing", "deployed") with fresh session evidence:
   exact command and environment, re-runs after edits, item-by-item spec/requirement coverage before
   archiving, and artifact-only challenge passes. Not for LLM/agent benchmarks (use agent-evals).
-version: 1.2.1
+version: 1.2.2
 sources:
   - upstream/superpowers/skills/verification-before-completion (MIT) — fresh evidence before claims, partial evidence, what each claim needs
   - authored for this toolkit from a stated need (results challenged as unverified) — state how and where; answer challenges with evidence
@@ -40,7 +40,7 @@ produced earlier.
 | builds | build command exit 0 | lint or type-check alone |
 | bug fixed | the original reproduction now passes | "code changed" |
 | deployed | the running version or commit hash read from the target, plus a live check | "the pipeline finished" |
-| UI works | the page driven in a real browser (e.g. `webapp-testing` or `agent-browser`): screenshot/snapshot plus console with no errors | the component compiling, a passing unit test |
+| UI works | the page driven in a real browser (e.g. `webapp-testing` or `agent-browser`): screenshot/snapshot plus console with no errors; for UI edge cases or mobile web, also check realistic worst-case data (`break-ui`) and real-device/viewport behaviour (`mobile-native`) when installed | the component compiling, a passing unit test |
 | requirement met | each requirement checked off against observed behaviour | tests passing |
 | delegated work done | the diff or artifact, inspected | the worker's report |
 

@@ -182,7 +182,7 @@ Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 - upstream/marketingskills/skills/social/references/{platforms.md,x-algorithm.md} (MIT) — specific claim at the top of a post; no engagement bait; verified versus reported platform mechanics — used in: writing
 - upstream/xbtlin-ai-berkshire/codex-skills/wechat-article (MIT) — every formula or number gets a plain-language gloss; when editor and reader disagree, the reader wins — used in: writing
 - upstream/anthropics-skills/skills/doc-coauthoring (licence not stated for this skill; method only) — test the draft on a fresh agent that sees only the draft — used in: writing
-- upstream/{blader-humanizer,op7418-humanizer-zh} (MIT) — the de-AI editing pass, installed as external skills (see toolkit/external.yaml) — used in: writing
+- upstream/{blader-humanizer,op7418-humanizer-zh} (MIT) — the de-AI editing pass (external skills in toolkit/external.yaml) and the inline structural fallback checklist when external skills are absent — used in: writing
 - upstream/everything-claude-code/rules/common/{git-workflow,coding-style}.md (MIT) — commit type list, immutable updates, validation at system boundaries — used in: rule core
 - C++ Core Guidelines (CP.44, CP.51, F.16, F.45, ES.84; MIT) — unnamed lock guards incl. unique_lock member shadowing, lambda and coroutine reference lifetimes, views over temporaries — used in: rule cpp
 - upstream/everything-claude-code/agents/database-reviewer.md (MIT) — structure from this source and the next; cursor pagination instead of OFFSET — used in: rule data-and-containers

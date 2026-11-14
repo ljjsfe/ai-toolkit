@@ -24,7 +24,9 @@ VALID_EXTERNAL_STATUS = {"adopted", "optional", "trial"}
 MAX_DESC_CHARS = 360
 SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+$")
 ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
-REL_REF_RE = re.compile(r"`((?:references|resources|scripts)/[A-Za-z0-9_./-]+)`")
+REL_REF_RE = re.compile(
+    r"(?:`|\]\()((?:references|resources|scripts)/[A-Za-z0-9_./-]+)(?:`|\))"
+)
 TRIAL_PROSE_RE = re.compile(
     r"\b(?:trial\s+decided|decided\s+to\s+trial|on\s+trial|status:\s*trial)\b|决定试用|试用期|试用中",
     re.I,
@@ -265,6 +267,84 @@ def parse_external_yaml(path: Path, errors: list[str], today: date | None = None
     return entries
 
 
+def extract_skill_structure(body: str) -> dict[str, set[int]]:
+    clean = re.sub(r"```.*?```", "", body, flags=re.S)
+    steps = {int(m.group(1)) for m in re.finditer(r"^#{2,3}\s+Step\s+(\d+)\b", clean, re.M)}
+    passes = {int(m.group(1)) for m in re.finditer(r"^#{2,3}\s+Pass\s+(\d+)\b", clean, re.M)}
+    sections = {int(m.group(1)) for m in re.finditer(r"^#{2,3}\s+(\d+)\.\s+", clean, re.M)}
+    laws: set[int] = set()
+    law_sec = re.search(r"^##\s+(?:Iron\s+)?[Ll]aws\b.*?\n(.*?)(?=^##\s+|\Z)", clean, re.M | re.S)
+    if law_sec:
+        laws = {int(m.group(1)) for m in re.finditer(r"^(\d+)\.\s+", law_sec.group(1), re.M)}
+    return {"steps": steps, "passes": passes, "sections": sections, "laws": laws}
+
+
+def validate_skill_section_refs(
+    skill_bodies: dict[str, tuple[Path, str]],
+    errors: list[str],
+) -> None:
+    structures = {name: extract_skill_structure(body) for name, (_, body) in skill_bodies.items()}
+    for name, (rel, body) in skill_bodies.items():
+        clean = re.sub(r"```.*?```", "", body, flags=re.S)
+        own = structures[name]
+
+        for m in re.finditer(r"(?:`([a-z0-9-]+)`\s+)?\bStep\s+(\d+)\b", clean):
+            if clean[max(0, m.start() - 4) : m.start()].lstrip().startswith("#"):
+                continue
+            target_skill, num = m.group(1), int(m.group(2))
+            target = structures.get(target_skill) if target_skill else own
+            if target is None or num not in target["steps"]:
+                errors.append(f"{rel}: Step {num} reference does not match any Step heading in {target_skill or name}")
+
+        for m in re.finditer(r"(?:`([a-z0-9-]+)`\s+)?\bPass\s+(\d+)\b", clean):
+            if clean[max(0, m.start() - 4) : m.start()].lstrip().startswith("#"):
+                continue
+            target_skill, num = m.group(1), int(m.group(2))
+            target = structures.get(target_skill) if target_skill else own
+            if target is None or num not in target["passes"]:
+                errors.append(f"{rel}: Pass {num} reference does not match any Pass heading in {target_skill or name}")
+
+        for m in re.finditer(r"(?:`([a-z0-9-]+)`\s+)?\b(?:Iron\s+)?[Ll]aw\s+(\d+)\b", clean):
+            target_skill, num = m.group(1), int(m.group(2))
+            target = structures.get(target_skill) if target_skill else own
+            if target is None or num not in target["laws"]:
+                errors.append(f"{rel}: law {num} reference does not match any Iron law in {target_skill or name}")
+
+        for m in re.finditer(r"(?:`([a-z0-9-]+)`\s+)?(?:§|section\s+)(\d+)\b", clean, re.I):
+            target_skill, num = m.group(1), int(m.group(2))
+            target = structures.get(target_skill) if target_skill else own
+            if target is None or num not in target["sections"]:
+                errors.append(
+                    f"{rel}: section/§{num} reference does not match any numbered section in {target_skill or name}"
+                )
+
+
+def validate_install_external_prefixes(
+    install_sh: Path,
+    externals: list[dict],
+    errors: list[str],
+) -> None:
+    txt = install_sh.read_text(encoding="utf-8")
+    m = re.search(r"BASE_EXTERNAL_PREFIXES\s*=\s*\((.*?)\)", txt, re.S)
+    if not m:
+        errors.append("install.sh: missing BASE_EXTERNAL_PREFIXES tuple")
+        return
+    prefixes = re.findall(r'"([^"]+)"|\'([^\']+)\'', m.group(1))
+    flat_prefixes = [a or b for a, b in prefixes]
+    active_tokens = {e["name"].lower() for e in externals} | {
+        sm.lower()
+        for e in externals
+        for cmd in e["install"]
+        for sm in re.findall(r"(?:^|\s)(?:-s|--skill)\s+([A-Za-z0-9_.-]+)", cmd)
+    }
+    for pref in flat_prefixes:
+        plow = pref.lower()
+        if not any(tok == plow or tok.startswith(plow) for tok in active_tokens):
+            errors.append(
+                f"install.sh: BASE_EXTERNAL_PREFIXES contains stale prefix {pref!r} not backed by toolkit/external.yaml"
+            )
+
+
 def build_expected_credits(
     skill_sources: list[tuple[str, list[str]]],
     rule_sources: OrderedDict[str, list[str]],
@@ -313,6 +393,7 @@ def main() -> int:
     skill_mds = sorted(TOOLKIT.glob("*/skills/*/SKILL.md"))
     seen_names: dict[str, Path] = {}
     skill_sources: list[tuple[str, list[str]]] = []
+    skill_bodies: dict[str, tuple[Path, str]] = {}
     total_desc_chars = 0
 
     for smd in skill_mds:
@@ -347,12 +428,21 @@ def main() -> int:
             skill_sources.append((smd.parent.name, [str(s) for s in srcs]))
 
         body = str(fm.get("_body", ""))
-        for m in REL_REF_RE.finditer(body):
-            ref_rel = m.group(1)
-            if "*" in ref_rel or "<" in ref_rel:
-                continue
-            if not (smd.parent / ref_rel).exists():
-                errors.append(f"{rel}: referenced file {ref_rel!r} does not exist")
+        skill_bodies[smd.parent.name] = (rel, body)
+        docs_to_scan = [(rel, body)] + [
+            (ref_md.relative_to(ROOT), ref_md.read_text(encoding="utf-8"))
+            for ref_md in sorted((smd.parent / "references").glob("*.md"))
+            if (smd.parent / "references").is_dir()
+        ]
+        for doc_rel, doc_text in docs_to_scan:
+            for m in REL_REF_RE.finditer(doc_text):
+                ref_rel = m.group(1)
+                if "*" in ref_rel or "<" in ref_rel:
+                    continue
+                if not (smd.parent / ref_rel).exists():
+                    errors.append(f"{doc_rel}: referenced file {ref_rel!r} does not exist")
+
+    validate_skill_section_refs(skill_bodies, errors)
 
     # Validate rules & sources.yaml
     rule_files = sorted(r for r in (TOOLKIT / "rules").glob("*.md") if not r.name.endswith(".local.md"))
@@ -387,6 +477,7 @@ def main() -> int:
                 )
 
     externals = parse_external_yaml(TOOLKIT / "external.yaml", errors)
+    validate_install_external_prefixes(ROOT / "install.sh", externals, errors)
     expected_credits = build_expected_credits(skill_sources, rule_sources, externals)
     if args.sync_credits:
         CREDITS.write_text(expected_credits, encoding="utf-8")

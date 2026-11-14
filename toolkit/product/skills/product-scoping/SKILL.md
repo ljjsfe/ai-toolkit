@@ -3,8 +3,8 @@ name: product-scoping
 description: >-
   Scope what to build and write lean PRDs: set explicit ambition mode (expand/selective/hold/reduce),
   frame user opportunities before features, compare >=3 solutions + current alternative, and
-  red-team "fails if" assumptions. Unvalidated demand: customer-discovery; engineering slices: tdd.
-version: 1.0.0
+  red-team "fails if" assumptions. Demand: customer-discovery; contracts: spec; slices: tdd.
+version: 1.0.1
 sources:
   - upstream/gstack/plan-ceo-review (MIT) — four explicit scope modes chosen before review
   - upstream/phuryn-pm-skills/pm-product-discovery/skills/opportunity-solution-tree (MIT) — opportunities not features, three solutions per opportunity, opportunity score
@@ -71,4 +71,5 @@ What holds up:
 ```
 
 Research that does not change a decision stays out of the PRD; put it in notes. Assumptions
-that need evidence from real people go to `customer-discovery`.
+that need evidence from real people go to `customer-discovery`; once v1 scope holds up, capture
+externally observable behaviour and vertical tasks in `spec` before starting `tdd`.

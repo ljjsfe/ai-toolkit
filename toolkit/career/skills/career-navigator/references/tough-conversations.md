@@ -129,9 +129,9 @@ bluff: every one of these works only if what you imply is true and you would act
 |---|---|---|
 | outside option | a live offer, or recruiters you could convert within weeks? | interview first; the card is empty until then |
 | replaceability | how long and how much would replacing you cost them? | own something critical before you push |
-| sponsor | who above your manager would argue for you? | seed one (review-and-promotion) |
+| sponsor | who above your manager would argue for you? | seed one (`references/review-and-promotion.md`) |
 | timing | where are you in the cycle — before calibration, mid-project, after a win? | wait for the window: right after a win, before calibration |
-| record | is your recent delivery visible and undisputed? | fix visibility first (branding) |
+| record | is your recent delivery visible and undisputed? | fix visibility first (`references/branding-and-sponsorship.md`) |
 
 **Card budget.** "I need to think about what that means" and a competing offer are one-shot: after
 you play them, your manager treats you as a flight risk — expect them to either deliver or start
