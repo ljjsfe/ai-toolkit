@@ -271,7 +271,7 @@ Procedure carried over; anchored in the skill text.
 - upstream/xbtlin-ai-berkshire/codex-skills/wechat-article (MIT) — every formula or number gets a plain-language gloss; when editor and reader disagree, the reader wins — used in: writing
 - upstream/anthropics-skills/skills/doc-coauthoring (licence not stated for this skill; method only) — test the draft on a fresh agent that sees only the draft — used in: writing
 - upstream/{blader-humanizer,op7418-humanizer-zh} (MIT) — the de-AI editing pass (external skills in toolkit/external.yaml) and the inline structural fallback checklist when external skills are absent — used in: writing
-- upstream/everything-claude-code/rules/common/{git-workflow,coding-style}.md (MIT) — commit type list, validation at system boundaries — used in: rule core
+- upstream/everything-claude-code/rules/common/{git-workflow,coding-style}.md (MIT) — validation at system boundaries — used in: rule core
 - C++ Core Guidelines (CP.44, CP.51, F.16, F.45, ES.84; MIT) — unnamed lock guards incl. unique_lock member shadowing, lambda and coroutine reference lifetimes, views over temporaries — used in: rule cpp
 - upstream/everything-claude-code/agents/database-reviewer.md (MIT) — structure from this source and the next; cursor pagination instead of OFFSET — used in: rule data-and-containers
 - upstream/everything-claude-code/skills/{postgres-patterns,docker-patterns} (MIT) — RLS auth call wrapped in a subquery; pinned tags, non-root, no secrets in layers, ports bound to 127.0.0.1 — used in: rule data-and-containers

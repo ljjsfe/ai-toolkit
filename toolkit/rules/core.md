@@ -8,8 +8,6 @@ Always loaded. Keep this file short; detail lives in skills.
   data or branches, `docker compose down -v`, dropping tables, publishing, sending messages.
 - **Commit only the files you changed for this task,** listed explicitly. Never `git add -A` or
   a bare `git commit -a` in a tree that may hold the user's unrelated work.
-- **Commit messages:** `<type>: <description>` with type one of feat, fix, refactor, docs, test,
-  chore, perf, ci.
 - **Check the installed version before using a library API** you have not used in this session
   (lockfile, `npm view`, `pip show`, docs). Training data lags releases.
 - **No secrets in code, logs, commits or prompts.** Read them from the environment.
