@@ -127,21 +127,68 @@ READ_ONLY_RE = re.compile(
     r"git\s+(status|diff|log|show|branch|remote|rev-parse|ls-files|blame))\b"
 )
 SEGMENT_SPLIT = re.compile(r"&&|\|\||;|\n|\|")
+REDIRECT_RE = re.compile(r"(?<![0-9&>])>>?\s*(?!&)([^\s|&;<>]+)")
+SCRATCH_TARGET_RE = re.compile(r"^(/dev/|/tmp/|/private/tmp/|/var/folders/|\$TMPDIR|\$\{TMPDIR)")
+CONTENT_WRITERS_RE = re.compile(r"^\s*(echo|printf|cat|tee)\b")
+DOC_SUFFIXES = (".md", ".mdx", ".rst", ".txt", ".adoc")
+
+
+def split_segments(cmd: str) -> list[str]:
+    """Split a shell line on unquoted ;, |, ||, && and newlines (quotes and escapes respected)."""
+    segs, cur, quote, i = [], [], None, 0
+    while i < len(cmd):
+        ch = cmd[i]
+        if quote:
+            cur.append(ch)
+            if ch == quote:
+                quote = None
+            elif ch == "\\" and quote == '"' and i + 1 < len(cmd):
+                cur.append(cmd[i + 1])
+                i += 1
+        elif ch in ("'", '"'):
+            quote = ch
+            cur.append(ch)
+        elif ch == "\\" and i + 1 < len(cmd):
+            cur += [ch, cmd[i + 1]]
+            i += 1
+        elif ch in ";|\n" or cmd.startswith("&&", i):
+            if cmd.startswith(("&&", "||"), i):
+                i += 1
+            segs.append("".join(cur))
+            cur = []
+        else:
+            cur.append(ch)
+        i += 1
+    segs.append("".join(cur))
+    return [s for s in segs if s.strip()]
+
+
+def _segment_writes(seg: str) -> bool:
+    """A segment edits files when it rewrites them in place or puts content into a workspace file.
+    Redirecting a program's output (`pytest > log`) or writing to a scratch path is not an edit."""
+    if re.search(r"\bsed\s+(-[a-zA-Z]*i\b|--in-place)|\bperl\s+-[a-zA-Z]*i|\bgit\s+(apply|am|checkout\s+--|restore)\b|\bpatch\s", seg):
+        return True
+    targets = [t for t in REDIRECT_RE.findall(seg) if not SCRATCH_TARGET_RE.match(t)]
+    tee = re.search(r"\btee\b(?:\s+-a)?\s+([^\s|&;<>]+)", seg)
+    if tee and not SCRATCH_TARGET_RE.match(tee.group(1)):
+        return True
+    return bool(targets) and bool(CONTENT_WRITERS_RE.match(seg))
 
 
 def _shell_effect(cmd: str) -> tuple[bool, bool]:
     """(writes files, runs something non-read-only after its last write) for one shell command."""
     bodies = [m.group(3) for m in HEREDOC_RE.finditer(cmd)]
-    shell = HEREDOC_RE.sub(" ", cmd)
-    segments = [seg for seg in SEGMENT_SPLIT.split(shell) if seg.strip()]
-    write_idx = [i for i, seg in enumerate(segments) if SHELL_WRITE_RE.search(seg)]
+    marked = HEREDOC_RE.sub(" <<HEREDOC ", cmd)
+    segments = split_segments(marked)
+    write_idx = [i for i, seg in enumerate(segments) if _segment_writes(seg.replace("<<HEREDOC", ""))
+                 or ("<<HEREDOC" in seg and REDIRECT_RE.search(seg)
+                     and not all(SCRATCH_TARGET_RE.match(t) for t in REDIRECT_RE.findall(seg)))]
     if any(SCRIPT_WRITE_RE.search(b) for b in bodies):
-        # The heredoc body runs in the segment that opened it; treat the last segment carrying one as a write.
-        carriers = [i for i, seg in enumerate(SEGMENT_SPLIT.split(HEREDOC_RE.sub(" <<HEREDOC ", cmd))) if "<<HEREDOC" in seg]
-        write_idx += carriers or [0]
+        # The heredoc body runs in the segment that opened it.
+        write_idx += [i for i, seg in enumerate(segments) if "<<HEREDOC" in seg] or [0]
     last_write = max(write_idx, default=-1)
     after = segments[last_write + 1:] if last_write >= 0 else segments
-    runs = any(not READ_ONLY_RE.match(seg) for seg in after)
+    runs = any(not READ_ONLY_RE.match(seg) and "<<HEREDOC" not in seg.split()[0:1] for seg in after)
     return last_write >= 0, runs
 
 
@@ -240,7 +287,24 @@ def review_needs_refutation(entries: list[dict], final_text: str | None = None) 
                 text = c.get("text", "")
     text = final_text if final_text is not None else text
     return (claude_turn and not dispatched and bool(REVIEW_REPORT.search(text))
-            and bool(SEVERE_FINDING.search(text)) and "self-checked" not in text.lower())
+            and _severe_findings(text) and "self-checked" not in text.lower())
+
+
+def _edits_only_docs(args: object) -> bool:
+    """True when an edit tool call names only documentation files (.md, .rst, .txt, ...)."""
+    if not isinstance(args, dict):
+        return False
+    paths = [args.get(k) for k in ("file_path", "path", "TargetFile", "notebook_path") if isinstance(args.get(k), str)]
+    return bool(paths) and all(p.lower().endswith(DOC_SUFFIXES) for p in paths)
+
+
+def _severe_findings(text: str) -> bool:
+    """A line that reports a P0/P1 at a file:line, and is not a 'no P0/P1' statement."""
+    for line in text.splitlines():
+        if (SEVERE_FINDING.search(line) and re.search(r"[\w./-]+\.\w+:\d+", line)
+                and not re.search(r"\bno\s+(open\s+)?P[01]\b|\bzero\s+P[01]\b|P[01]\s*:\s*(none|0)\b", line, re.I)):
+            return True
+    return False
 
 
 def should_block(entries: list[dict], final_text: str | None = None) -> bool:
@@ -251,6 +315,8 @@ def should_block(entries: list[dict], final_text: str | None = None) -> bool:
 
     def record(name: str, args: object) -> None:
         nonlocal last_edit, last_run
+        if _is_edit_tool(name, args if isinstance(args, dict) else None) and _edits_only_docs(args):
+            return  # prose edits (README, notes) need no command run before "done"
         if _is_edit_tool(name, args if isinstance(args, dict) else None):
             last_edit = step
         elif _is_run_tool(name):

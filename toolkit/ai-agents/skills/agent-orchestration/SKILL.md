@@ -10,7 +10,7 @@ sources:
   - upstream/superpowers/skills/subagent-driven-development (MIT) — two-stage review after every task (spec compliance, then code quality) plus a final whole-branch review; the DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED worker status protocol; implementer and reviewer prompt templates and brief scripts [port "first spec compliance" "then code quality" "final whole-branch review on the Frontier tier" "DONE_WITH_CONCERNS" "NEEDS_CONTEXT" "never the same brief again" "Implementer brief" "Task reviewer brief (spec compliance, then code quality)" "Scoped re-review brief"]
   - upstream/oh-my-claudecode/skills/team (MIT) — staged plan, prd, exec, verify, fix pipeline with entry and exit gates; risk-based reviewer escalation; stuck-worker watchdog and reassignment; shutdown and resume protocol [port "an entry and exit gate per stage" "capped verify→fix loop" "Risk-based reviewer escalation" "Stuck-worker watchdog and reassignment" "check once, then reassign" "A worker fails two tasks" "Resume after a crash or compaction" "Stage handoff file" "Send each live worker a shutdown request"]
   - upstream/oh-my-claudecode/skills/{team,autopilot}/SKILL.md (MIT) — subagent nesting depth and concurrency are Claude Code settings whose defaults changed across 2.1.217–2.1.219 [port "toolkit policy, not a runtime limit" "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH"]
-  - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/long-horizon-prompting/references/mass-handoff-contracts.md (MIT) — degenerate-value rejection at handoff gates, bounded recall orders, the reviser as bottleneck [port "reject too-good-to-be-true results" "bounded recall order" "the reviser can be the bottleneck"]
+  - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/long-horizon-prompting/references/mass-handoff-contracts.md (MIT) — degenerate-value rejection at handoff gates, bounded recall orders, the reviser as bottleneck [port "reject degenerate results" "bounded recall order" "the reviser can be the bottleneck"]
   - upstream/compound-engineering-plugin/skills/ce-work/references/execution-strategy.md (MIT) — exclusive file ownership, orchestrator-only git, bounded batch concurrency [port "no file appears in two clusters" "single-writer operations" "keep concurrency small"]
   - upstream/anthropics-skills/skills/claude-api/shared/managed-agents-multiagent.md (Apache-2.0) — when delegation fits; in a many-item fan-out, failed items listed as uncovered and a second pass over every item when misses are costly [port "inline or delegate" "reported as not covered" "not only the flagged ones"]
   - upstream/seanellyjames-deep-research-skill/SKILL.md (MIT) — concurrency cap and no nested spawning [port "workers do not spawn their own subagents"]
@@ -121,8 +121,10 @@ at-the-cap rule):
 
 Never retry with the same brief and no new information.
 
-- **Gates reject too-good-to-be-true results:** a perfect score, NaN, an empty diff reported
-  as DONE, metrics that should differ but match.
+- **Gates reject degenerate results:** NaN, an empty diff reported as DONE, metrics that
+  should differ but match. A too-good result (a perfect score, accuracy 1.0, an implausible
+  metric) triggers an inspection of how it was produced before it is accepted, never automatic
+  rejection: a release gate may rightly require pass^3 = 1.0 (agent-evals).
 - **A failed gate becomes a bounded recall order** to one worker: target, failed checks,
   narrowed scope, acceptance criteria, max retries (counted above).
 - **The reviser can be the bottleneck:** give the fixer a tier comparable to the reviewer.

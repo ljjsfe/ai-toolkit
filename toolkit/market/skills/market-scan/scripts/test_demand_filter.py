@@ -42,6 +42,14 @@ class IssueFilterTests(unittest.TestCase):
             self.assertEqual(df.tag(it), "confirmed gap")
         self.assertEqual(df.tag(issue("Native CSV export")), "")
 
+    def test_confirmed_gap_beats_ordinary_drop_rules(self) -> None:
+        for it in (issue("How do I export CSV?", labels=["wontfix"]),
+                   issue("Native CSV export", body="", labels=["not planned"]),
+                   issue("Native CSV export", labels=["question", "won't fix"])):
+            with self.subTest(title=it["title"]):
+                self.assertIsNone(df.drop_reason(it, "issue"))
+                self.assertEqual(df.tag(it), "confirmed gap")
+
     def test_workaround_kept(self) -> None:
         self.assertIsNone(df.drop_reason(issue("Native CSV export", r=40), "issue"))
 

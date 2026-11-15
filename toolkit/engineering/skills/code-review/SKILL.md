@@ -16,7 +16,7 @@ sources:
   - upstream/mattpocock-skills/skills/engineering/code-review (MIT) — spec and standards as separate axes, repo conventions override [port "two axes, reported separately" "the repo's own conventions override"]
   - upstream/mattpocock-skills/skills/engineering/code-review (MIT) — smell vocabulary as fallback [port "Smell vocabulary (standards fallback)" "Speculative generality" "Refused bequest"]
   - upstream/claude-plugins-official/plugins/code-review/commands/code-review.md (Apache-2.0) — independent per-finding verification; untouched-line, pre-existing, tool-catchable and explicitly silenced issues are not findings [port "serious findings survive an independent refutation" "silenced by an ignore comment"]
-  - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/maintainability-reviewer.md (MIT) — unrequested public surface and dependencies the standard library or a repo helper could replace (PR #1852) [port "public surface the stated intent rules out" "a new dependency doing what the standard library"]
+  - 'upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/maintainability-reviewer.md (MIT) — unrequested public surface and dependencies the standard library or a repo helper could replace (PR #1852) [port "public surface the stated intent rules out" "a new dependency doing what the standard library"]'
   - authored for this toolkit (toolkit policy) — Pass 3 history lens (blame, earlier pull requests, invariant comments); the upstream command dropped its history agents in its 2026-10-26 rewrite [port "earlier pull requests touching these files"]
 ---
 

@@ -86,6 +86,8 @@ def drop_reason(item: dict, kind: str) -> str | None:
         if kind != "pr-rejected" and MAINTENANCE_TITLE.search(title) and reactions(item) < 20:
             return "maintenance PR title"
         return None
+    if labs & CONFIRMED_GAP_LABELS:
+        return None  # confirmed gap: checked before every drop rule, so nothing else can drop it
     hit = sorted(labs & DROP_LABELS)
     if hit:
         return f"label {hit[0]}"

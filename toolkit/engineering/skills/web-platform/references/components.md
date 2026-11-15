@@ -65,8 +65,10 @@ Status: Newly available since 2025-12-12 (Chrome 135, Firefox 144, Safari 26.2).
 - `<button commandfor="id" command="…">` with `show-modal`, `close`, `request-close`,
   `toggle-popover`, `show-popover`, `hide-popover`, or a custom `--name` (custom names must start
   with `--`). The browser sets `aria-expanded` for built-in commands.
-- Never put `popovertarget` and `commandfor` on the same button for the same popover: it toggles
-  twice.
+- `popovertarget` and `commandfor` may share a button: per the HTML spec's button activation
+  behavior, when `commandfor` names an element the command runs (or the click does nothing if the
+  command is invalid for that target) and `popovertarget` is skipped, so it only acts in browsers
+  without invokers. It does not toggle twice.
 - The `command` event does not bubble: listen on the target, or on an ancestor with
   `{ capture: true }`. Custom commands carry no semantics; set `aria-pressed` / `aria-expanded`
   yourself.

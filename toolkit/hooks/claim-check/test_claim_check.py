@@ -253,6 +253,37 @@ class ClaimCheckTests(unittest.TestCase):
         # not a Claude Code transcript: unknown how subagents appear, so never block
         self.assertFalse(review_needs_refutation([codex_user("review"), codex_asst(report)]))
 
+    def test_saving_test_output_is_a_run_not_an_edit(self):
+        t = [user("fix"), asst(tool("Edit", {"file_path": "app.py"})), tool_result(),
+             asst(tool("Bash", {"command": "pytest -q > /tmp/tests.log 2>&1; tail -5 /tmp/tests.log"})),
+             tool_result(), asst(text("Fixed; tests passed."))]
+        self.assertFalse(should_block(t))
+        t2 = [user("fix"), asst(tool("Edit", {"file_path": "app.py"})), tool_result(),
+              asst(tool("Bash", {"command": "pytest -q > test-output.log 2>&1"})), tool_result(), asst(text("Fixed."))]
+        self.assertFalse(should_block(t2))
+
+    def test_quoted_separator_is_not_a_second_command(self):
+        t = [user("fix"), asst(tool("Bash", {"command": "sed -i '' 's/old/new;/' app.py"})), tool_result(),
+             asst(text("Fixed."))]
+        self.assertTrue(should_block(t))
+        t = [user("fix"), asst(tool("Bash", {"command": "sed -i 's/a/b/' app.py && echo 'done; really' | cat"})),
+             tool_result(), asst(text("Fixed."))]
+        self.assertTrue(should_block(t))
+
+    def test_docs_only_edit_needs_no_run(self):
+        t = [user("update readme"), asst(tool("Edit", {"file_path": "/repo/README.md"})), tool_result(),
+             asst(tool("Bash", {"command": "git diff"})), tool_result(), asst(text("Done."))]
+        self.assertFalse(should_block(t))
+        mixed = [user("x"), asst(tool("Edit", {"file_path": "README.md"}), tool("Edit", {"file_path": "app.py"})),
+                 tool_result(), asst(text("Done."))]
+        self.assertTrue(should_block(mixed))
+
+    def test_review_gate_ignores_clean_reviews_and_explanations(self):
+        clean = "Spec conformance: met\nFindings (standards): no P0/P1 issues; P2 util.py:3 naming"
+        self.assertFalse(review_needs_refutation([user("review"), asst(text(clean))]))
+        explain = "Spec conformance means meeting the brief. P0 is an outage, P1 a user-facing bug."
+        self.assertFalse(review_needs_refutation([user("what is P0"), asst(text(explain))]))
+
     def test_antigravity_transcript_blocks_and_allows(self):
         blocked = [
             agy_user("fix bug"),

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import io
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -176,6 +177,59 @@ class RunTests(Base):
         self.assertFalse(run["passed"])
         self.assertIn("grader files changed", run["grade"]["void"])
 
+    def test_grader_tampering_voids_every_later_run(self) -> None:
+        # run 1 rewrites the grader; run 2 must not baseline on the corrupted grader and pass
+        out = self.tmp / "res"
+        grader = self.tmp / "grader.py"
+        grader.write_text("import sys; sys.exit(1)\n")
+        cheat = py(f"open({str(grader)!r},'w').write('import sys; sys.exit(0)')")
+        task = self.task(runs=3, arms=[{"name": "cheat", "command": cheat}],
+                         checks=[{"type": "command", "command": [PY, str(grader)]}])
+        self.assertEqual(self.quiet(["run", str(task), "--out", str(out)]), 0)
+        doc = json.loads((out / "results.json").read_text())
+        self.assertFalse(any(run["passed"] for run in doc["runs"]))
+        self.assertEqual(len(doc["runs"]), 1)  # batch aborted after the void run
+        self.assertIn("grader files changed", doc["runs"][0]["grade"]["void"])
+        self.assertFalse(doc["complete"])
+        self.assertIn("not executed", doc["aborted"])
+
+    def test_relative_out_dir_reaches_the_arm(self) -> None:
+        # EVAL_USAGE_FILE must stay valid from the arm's cwd (the temp workspace)
+        task = self.task(runs=1, arms=[{"name": "u", "command": USAGE}])
+        saved = Path.cwd()
+        os.chdir(self.tmp)
+        try:
+            self.assertEqual(self.quiet(["run", str(task), "--out", "rel/res"]), 0)
+        finally:
+            os.chdir(saved)
+        doc = json.loads((self.tmp / "rel" / "res" / "results.json").read_text())
+        self.assertTrue(doc["runs"][0]["passed"])
+        self.assertEqual(doc["summary"]["u"]["tokens"]["median"], 120)
+
+    def test_judge_must_exit_zero(self) -> None:
+        payload = {"criteria": {"c": {"justification": "fine", "score": 9}}}
+        failing = py(f"import sys; print({json.dumps(json.dumps(payload))}); sys.exit(1)")
+        out = self.tmp / "res"
+        task = self.task(runs=1, arms=[{"name": "good", "command": WRITE_OK}],
+                         judge={"command": failing, "scale": [1, 10], "threshold": 7,
+                                "rubric": [{"name": "c", "weight": 1}]})
+        self.assertEqual(self.quiet(["run", str(task), "--out", str(out)]), 0)
+        run = json.loads((out / "results.json").read_text())["runs"][0]
+        self.assertFalse(run["grade"]["judge"]["ok"])
+        self.assertFalse(run["passed"])
+
+    def test_judge_timeout_fails_even_after_printing(self) -> None:
+        payload = {"criteria": {"c": {"justification": "fine", "score": 9}}}
+        slow = py(f"import sys,time; print({json.dumps(json.dumps(payload))}, flush=True); time.sleep(5)")
+        out = self.tmp / "res"
+        task = self.task(runs=1, timeout_s=1, arms=[{"name": "good", "command": WRITE_OK}],
+                         judge={"command": slow, "scale": [1, 10], "threshold": 7,
+                                "rubric": [{"name": "c", "weight": 1}]})
+        self.assertEqual(self.quiet(["run", str(task), "--out", str(out)]), 0)
+        run = json.loads((out / "results.json").read_text())["runs"][0]
+        self.assertFalse(run["grade"]["judge"]["ok"])
+        self.assertFalse(run["passed"])
+
     def test_bad_commit_leaves_no_temp_dir_and_marks_results_incomplete(self) -> None:
         if shutil.which("git") is None:
             self.skipTest("git not installed")
@@ -259,6 +313,25 @@ class IterateTests(Base):
         doc = json.loads((out / "results.json").read_text())
         self.assertEqual(doc["stopped"], "plateau")
         self.assertEqual(len(doc["iterations"]), 3)
+
+    def test_grader_baseline_is_taken_before_the_loop(self) -> None:
+        # round 1's arm plants workspace code that the grader executes (as pytest runs conftest.py),
+        # so the grader is rewritten after round 1's tamper check; round 2 must not re-baseline on it
+        grader = self.tmp / "grader.py"
+        grader.write_text("import os, sys\nos.path.exists('hook.py') and exec(open('hook.py').read())\n"
+                          "sys.exit(0)\n")
+        hook_src = f"open({str(grader)!r}, 'a').write('# tampered\\n')\n"
+        plant = py(f"open('out.txt','w').write('backoff'); open('hook.py','w').write({hook_src!r})")
+        task = self.task(arms=[{"name": "gen", "command": plant}],
+                         checks=[{"type": "command", "command": [PY, str(grader)]}],
+                         judge={"command": judge_cmd(4), "scale": [1, 10], "threshold": 7,
+                                "rubric": [{"name": "correctness", "weight": 1}, {"name": "clarity", "weight": 1}]})
+        out = self.tmp / "res"
+        self.assertEqual(self.quiet(["iterate", str(task), "--arm", "gen", "--out", str(out),
+                                     "--max-iter", "5", "--patience", "5"]), 0)
+        doc = json.loads((out / "results.json").read_text())
+        self.assertEqual(doc["stopped"], "void")
+        self.assertEqual(len(doc["iterations"]), 2)
 
 
 class ReportTests(Base):

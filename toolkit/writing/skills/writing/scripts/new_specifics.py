@@ -8,7 +8,8 @@ Run it after any rewriting pass (humanizer v4+ may add "a specific detail it kno
 A specific counts as new when it appears in AFTER but in neither BEFORE nor any --sources file.
 Each one must be traced to the writer or a source, or reverted / turned into [NEED: ...]
 (writing law 1). Matching is literal after light normalisation (case, commas in numbers,
-full-width digits); it is a tripwire, so read the flagged lines rather than trusting a clean
+full-width digits) and on whole tokens: a number or date must not sit inside a longer number
+("4" is not known from "14"), and a name or quote must not sit inside a longer word; it is a tripwire, so read the flagged lines rather than trusting a clean
 run on prose that paraphrases heavily. Exit 1 when anything new is found.
 """
 from __future__ import annotations
@@ -48,12 +49,23 @@ def specifics(text: str) -> list[tuple[str, str]]:
     return list(seen.values())
 
 
+def is_known(kind: str, surface: str, known: str) -> bool:
+    """True when the normalised surface occurs in `known` as a whole token, not inside a longer one."""
+    s = norm(surface)
+    if kind in ("number", "date"):
+        left, right = r"(?<![\d.])", r"(?!\.?\d)"
+    else:
+        left = r"(?<!\w)" if re.match(r"\w", s) else ""
+        right = r"(?!\w)" if re.search(r"\w$", s) else ""
+    return re.search(left + re.escape(s) + right, known) is not None
+
+
 def new_specifics(before: str, after: str, sources: list[str]) -> list[tuple[str, str, int]]:
     known = norm(before + "\n" + "\n".join(sources))
     out = []
     lines = after.splitlines()
     for kind, surface in specifics(after):
-        if norm(surface) in known:
+        if is_known(kind, surface, known):
             continue
         line = next((i for i, ln in enumerate(lines, 1) if surface in ln), 0)
         out.append((kind, surface, line))

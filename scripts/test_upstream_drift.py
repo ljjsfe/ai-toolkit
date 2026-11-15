@@ -35,11 +35,16 @@ class ParseTests(unittest.TestCase):
         self.assertEqual(more["z"], {"plugins/p/skills"})
 
 
-def fake_api(existing: set[str], commits: dict[str, list[dict]]):
+def fake_api(existing: set[str], commits: dict[str, list[dict]], fail_compare: bool = False):
     def api(args: list[str]) -> tuple[int, str]:
         q = args[0]
         if "/contents/" in q:
             return (0, "{}") if q.split("/contents/")[1] in existing else (1, "Not Found")
+        if "/compare/" in q:
+            if fail_compare:
+                return 1, "API rate limit exceeded"
+            files = [{"filename": p + "/SKILL.md"} for p in commits]
+            return 0, json.dumps({"files": files, "commits": [c for cs in commits.values() for c in cs]})
         path = q.split("&path=")[1].split("&")[0] if "&path=" in q else ""
         return 0, json.dumps(commits.get(path, []))
     return api
@@ -50,7 +55,7 @@ def commit(sha: str, msg: str) -> dict:
 
 
 class DriftTests(unittest.TestCase):
-    entry = {"repo": "o/r", "reviewed_on": "2026-11-14"}
+    entry = {"repo": "o/r", "reviewed_on": "2026-11-14", "reviewed_sha": "a" * 40}
 
     def test_removed_path_is_reported(self) -> None:
         r = ud.drift("gstack", self.entry, {"investigate", "review"}, fake_api({"review"}, {}))
@@ -66,6 +71,10 @@ class DriftTests(unittest.TestCase):
         api = fake_api({"review"}, {"review": [commit("a", "review: add enum check")]})
         self.assertEqual(ud.drift("gstack", self.entry, {"review"}, api)["status"], "changed")
         self.assertEqual(ud.drift("gstack", self.entry, {"review"}, fake_api({"review"}, {}))["status"], "unchanged")
+
+    def test_api_failure_is_an_error_not_unchanged(self) -> None:
+        r = ud.drift("gstack", self.entry, {"review"}, fake_api({"review"}, {}, fail_compare=True))
+        self.assertEqual(r["status"], "error")
 
     def test_unlocatable_and_unreviewed(self) -> None:
         self.assertEqual(ud.drift("x", {"repo": None, "note": "n"}, {""})["status"], "unlocatable")

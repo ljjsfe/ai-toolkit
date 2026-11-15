@@ -122,6 +122,13 @@ class EffectTests(unittest.TestCase):
             expstats.ratio_test({"only": ([1, 2], [1, 1])})
 
 
+    def test_ratio_zero_variance(self) -> None:
+        with self.assertRaises(ValueError) as cm:
+            expstats.ratio_test({"control": ([1, 1], [1, 1]), "treatment": ([2, 2], [1, 1])})
+        self.assertIn("zero variance", str(cm.exception))
+        r = expstats.ratio_test({"control": ([1, 1], [1, 1]), "treatment": ([1, 1], [1, 1])})
+        self.assertEqual((r["diff"], r["p"]), (0, 1.0))
+
 class CliTests(unittest.TestCase):
     def _run(self, argv: list[str]) -> dict:
         buf = io.StringIO()

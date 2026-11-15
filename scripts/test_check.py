@@ -179,5 +179,31 @@ class SourceCoverageTests(unittest.TestCase):
         self.assertIn("- up/c — z — missing: no runner — used in: alpha", out[gap_i:])
 
 
+class YamlStrictnessTests(unittest.TestCase):
+    def test_values_a_real_yaml_loader_would_reject_or_truncate(self) -> None:
+        self.assertIsNone(check.yaml_value_problem('"plain json string"'))
+        self.assertIsNone(check.yaml_value_problem("'it''s fine [port \"abc\"]'"))
+        self.assertIsNone(check.yaml_value_problem("upstream/x (MIT) — y [port \"abcdefghijklm\"]"))
+        self.assertIn("unescaped", check.yaml_value_problem('"a [port "b"] c"'))
+        self.assertIn("lone", check.yaml_value_problem("'don't'"))
+        self.assertIn("comment", check.yaml_value_problem("ce-debug (MIT, PR #2039) — z [idea]"))
+
+    def test_frontmatter_errors_are_reported(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            d = Path(tmp) / "toolkit" / "x" / "skills" / "demo"
+            d.mkdir(parents=True)
+            smd = d / "SKILL.md"
+            smd.write_text('---\nname: demo\ndescription: d\nversion: 1.0.0\nsources:\n'
+                           '  - "bad [port "quoted"] item"\n  - fix (PR #12) [idea]\n---\n# Demo\n',
+                           encoding="utf-8")
+            errors: list[str] = []
+            saved, check.ROOT = check.ROOT, Path(tmp)
+            try:
+                check.parse_skill_frontmatter(smd, errors)
+            finally:
+                check.ROOT = saved
+        self.assertEqual(len(errors), 2, errors)
+
+
 if __name__ == "__main__":
     unittest.main()

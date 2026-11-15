@@ -95,6 +95,32 @@ class DashboardTests(unittest.TestCase):
         self.assertIn("sustained", cmp["signals"]["curve_3m10y_inverted"])
         self.assertFalse(cmp["signals"]["unemployment_rising"]["sustained"])
 
+    def test_same_release_is_not_sustained(self) -> None:
+        # two runs between releases see the same observation: that is not persistence
+        with tempfile.TemporaryDirectory() as tmp:
+            ids = sorted({i for v in fd.SERIES.values() for i in v} | {"T10Y3M"})
+            prev = fd.build(*fd.load(ids, fake_fetcher()))
+            prev["as_of_run"] = "2000-01-01"
+            Path(tmp, "2000-01-01.json").write_text(json.dumps(prev), encoding="utf-8")
+            _, snap = self._run(fake_fetcher(), tmp)
+        for name, sig in snap["comparison"]["signals"].items():
+            self.assertIsNot(sig["sustained"], True, name)
+            self.assertIn("same release", sig["status"], name)
+        self.assertIn("observation_date", snap["signals"]["sahm_triggered"])
+
+    def test_new_release_with_same_reading_is_sustained(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            ids = sorted({i for v in fd.SERIES.values() for i in v} | {"T10Y3M"})
+            prev = fd.build(*fd.load(ids, fake_fetcher()))
+            prev["as_of_run"] = "2000-01-01"
+            prev["signals"] = {k: dict(v, observation_date="1999-01-01")
+                               for k, v in fd.signals(prev).items()}
+            Path(tmp, "2000-01-01.json").write_text(json.dumps(prev), encoding="utf-8")
+            _, snap = self._run(fake_fetcher(), tmp)
+        sig = snap["comparison"]["signals"]["sahm_triggered"]
+        self.assertIs(sig["sustained"], True)
+        self.assertEqual(sig["previous_observation_date"], "1999-01-01")
+
     def test_first_run_has_nothing_sustained(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             _, snap = self._run(fake_fetcher(), tmp)

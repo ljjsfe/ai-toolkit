@@ -77,6 +77,41 @@ class LedgerTests(unittest.TestCase):
         self.path().write_text("\n".join(lines[:first] + lines[first + 1:]) + "\n")
         self.assertEqual(self.run_cli("verify", "ACME")[0], 1)
 
+    def _two_checks(self) -> None:
+        self.run_cli("new", "ACME", "--side", "long", "--date", "2026-03-01")
+        self.run_cli("log", "ACME", "--outcome", "intact", "--fact", "a", "--next", "2026-05-01", "--reason", "r",
+                     "--date", "2026-03-10")
+        self.run_cli("log", "ACME", "--outcome", "insufficient", "--fact", "no figure", "--next", "2026-08-01",
+                     "--reason", "r", "--date", "2026-05-02")
+
+    def test_deleted_final_row_is_detected(self) -> None:
+        # the last row has no successor whose chain would break; the header must catch it
+        self._two_checks()
+        lines = self.path().read_text().splitlines()
+        last = next(i for i, ln in enumerate(lines) if ln.startswith("| 2026-05-02"))
+        self.path().write_text("\n".join(lines[:last] + lines[last + 1:]) + "\n")
+        code, out = self.run_cli("verify", "ACME")
+        self.assertEqual(code, 1)
+        self.assertIn("latest_outcome", out)
+
+    def test_reopened_header_on_closed_ledger_is_detected(self) -> None:
+        self._two_checks()
+        self.run_cli("close", "ACME", "--as", "closed", "--reason", "sold", "--date", "2026-06-01")
+        self.assertEqual(self.run_cli("verify", "ACME"), (0, "OK\n"))
+        self.path().write_text(self.path().read_text().replace("state: closed", "state: open"))
+        code, out = self.run_cli("verify", "ACME")
+        self.assertEqual(code, 1)
+        self.assertIn("state", out)
+
+    def test_close_refuses_a_date_before_the_last_row(self) -> None:
+        self._two_checks()
+        before = self.path().read_text()
+        code, out = self.run_cli("close", "ACME", "--as", "closed", "--reason", "sold", "--date", "2026-04-01")
+        self.assertEqual(code, 2)
+        self.assertIn("before the last check", out)
+        self.assertEqual(self.path().read_text(), before)
+        self.assertEqual(self.run_cli("verify", "ACME"), (0, "OK\n"))
+
     def test_dates_must_move_forward(self) -> None:
         self.run_cli("new", "ACME", "--side", "long", "--date", "2026-03-01")
         self.run_cli("log", "ACME", "--outcome", "intact", "--fact", "a", "--next", "2026-05-01", "--reason", "r",

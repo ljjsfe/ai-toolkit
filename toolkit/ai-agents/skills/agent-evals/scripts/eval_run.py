@@ -25,7 +25,8 @@ EVAL_WORKDIR, EVAL_ARM, EVAL_RUN_ID, EVAL_USAGE_FILE and (iterate only) EVAL_FEE
 environment. An arm that writes {"input_tokens", "output_tokens", "cost_usd"} JSON to
 EVAL_USAGE_FILE gets those recorded; nothing is estimated.
 
-The judge command prints JSON {"criteria": {"<name>": {"justification": "...", "score": N}}}.
+The judge command prints JSON {"criteria": {"<name>": {"justification": "...", "score": N}}} and
+exits 0 within timeout_s; a non-zero exit or a timeout fails the judge whatever it printed.
 A criterion without a non-empty justification, or with a score outside the rubric scale, fails
 the judge. The weighted score is sum(weight*score)/sum(weight).
 
@@ -282,7 +283,10 @@ def fingerprint(paths: list[Path]) -> dict[str, str]:
 
 
 def grade(task: dict, ws: Path, arm_result: dict, env: dict, before: dict[str, str] | None = None) -> dict:
-    """Grade a finished arm. If a grader file changed while the arm ran, the run is void."""
+    """Grade a finished arm. If a grader file differs from the baseline `before`, the run is void.
+
+    `before` is one fingerprint taken before the whole batch (or iterate loop), never re-taken per run,
+    so a grader corrupted in an earlier run cannot become the next run's baseline."""
     if before is not None:
         changed = [p for p, h in fingerprint([Path(x) for x in before]).items() if h != before[p]]
         if changed:
@@ -294,7 +298,12 @@ def grade(task: dict, ws: Path, arm_result: dict, env: dict, before: dict[str, s
     out = {"checks": checks, "deterministic_pass": det_pass}
     if task.get("judge"):
         j = run_cmd(task["judge"]["command"], ws, env, timeout)
-        out["judge"] = score_judge(task["judge"], j["stdout"])
+        if j["timed_out"]:
+            out["judge"] = {"ok": False, "error": f"judge timed out after {timeout}s"}
+        elif j["exit"] != 0:
+            out["judge"] = {"ok": False, "error": f"judge exited {j['exit']}, not 0"}
+        else:
+            out["judge"] = score_judge(task["judge"], j["stdout"])
         out["judge"]["stderr_tail"] = j["stderr"][-2000:]
     out["passed"] = det_pass and (not task.get("judge") or out["judge"].get("passed", False))
     return out
@@ -387,6 +396,7 @@ def _env(ws: Path, arm: str, run_id: str, usage: Path, feedback: Path | None = N
 
 def cmd_run(task: dict, out: Path, runs: int, k: int, seed: int | None, keep: bool,
             overwrite: bool = False) -> dict:
+    out = out.resolve()  # the arm runs with the workspace as cwd; env paths must not be relative
     results_path = _prepare_out(out, task, overwrite)
     schedule = [arm for arm in task["arms"] for _ in range(runs)]
     random.Random(seed).shuffle(schedule)  # interleave arms in one batch
@@ -394,8 +404,11 @@ def cmd_run(task: dict, out: Path, runs: int, k: int, seed: int | None, keep: bo
     doc = {"task": task["name"], "task_sha256": task["_sha256"], "mode": "run",
            "runs_per_arm": runs, "seed": seed, "complete": False}
     try:
-        _run_schedule(task, out, schedule, keep, records, mapping)
-        doc["complete"] = True
+        aborted = _run_schedule(task, out, schedule, keep, records, mapping)
+        if aborted:
+            doc["aborted"] = aborted
+        else:
+            doc["complete"] = True
     finally:
         # a failure mid-batch still leaves every finished run on record, marked incomplete
         (out / "mapping.json").write_text(json.dumps(mapping, indent=2), encoding="utf-8")
@@ -405,8 +418,9 @@ def cmd_run(task: dict, out: Path, runs: int, k: int, seed: int | None, keep: bo
 
 
 def _run_schedule(task: dict, out: Path, schedule: list[dict], keep: bool,
-                  records: list[dict], mapping: dict) -> None:
-    graders = grader_files(task)
+                  records: list[dict], mapping: dict) -> str | None:
+    """Run the schedule. Returns None when every run finished, or why the batch was aborted."""
+    baseline = fingerprint(grader_files(task))  # one immutable baseline for the whole batch
     for i, arm in enumerate(schedule, 1):
         run_id = f"run-{i:03d}"
         run_dir = out / "runs" / run_id
@@ -415,9 +429,8 @@ def _run_schedule(task: dict, out: Path, schedule: list[dict], keep: bool,
         ws, cleanup = make_workspace(task, run_id)
         try:
             env = _env(ws, arm["name"], run_id, usage_file)
-            before = fingerprint(graders)
             arm_result = run_cmd(arm["command"], ws, env, task.get("timeout_s", 900))
-            graded = grade(task, ws, arm_result, env, before)
+            graded = grade(task, ws, arm_result, env, baseline)
         finally:
             if keep:
                 (run_dir / "workspace.txt").write_text(str(ws) + "\n", encoding="utf-8")
@@ -432,6 +445,10 @@ def _run_schedule(task: dict, out: Path, schedule: list[dict], keep: bool,
             "usage": read_usage(usage_file),
             "arm_result": {k2: arm_result[k2] for k2 in ("exit", "timed_out", "seconds")},
         })
+        if graded.get("void"):
+            # every later run would be graded by a corrupted grader: stop, results stay incomplete
+            return f"{run_id}: {graded['void']}; remaining {len(schedule) - i} run(s) not executed"
+    return None
 
 
 def cmd_iterate(task: dict, arm_name: str, out: Path, max_iter: int, patience: int, keep: bool,
@@ -442,9 +459,10 @@ def cmd_iterate(task: dict, arm_name: str, out: Path, max_iter: int, patience: i
     arm = next((a for a in task["arms"] if a["name"] == arm_name), None)
     if arm is None:
         raise TaskError(f"no arm named {arm_name!r}")
+    out = out.resolve()  # the arm runs with the workspace as cwd; env paths must not be relative
     results_path = _prepare_out(out, task, overwrite)
     (out / "feedback").mkdir(exist_ok=True)
-    graders = grader_files(task)
+    baseline = fingerprint(grader_files(task))  # one baseline for the whole loop, never re-taken
     ws, cleanup = make_workspace(task, "iter")
     iterations, best, since_best, stop = [], None, 0, "max_iter"
     try:
@@ -455,9 +473,8 @@ def cmd_iterate(task: dict, arm_name: str, out: Path, max_iter: int, patience: i
             # from reading the out directory at all needs a sandbox or a separate user
             feedback = out / "feedback" / f"iter-{i - 1:03d}.json"
             env = _env(ws, arm_name, f"iter-{i:03d}", run_dir / "usage.json", feedback if i > 1 else None)
-            before = fingerprint(graders)
             arm_result = run_cmd(arm["command"], ws, env, task.get("timeout_s", 900))
-            graded = grade(task, ws, arm_result, env, before)
+            graded = grade(task, ws, arm_result, env, baseline)
             if graded.get("void"):
                 (run_dir / "grade.json").write_text(json.dumps(graded, indent=2), encoding="utf-8")
                 stop = "void"

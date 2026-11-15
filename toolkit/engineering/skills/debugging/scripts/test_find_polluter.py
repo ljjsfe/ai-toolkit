@@ -65,8 +65,23 @@ class Victim(unittest.TestCase):
         run, calls = victim_runner("v", {"b"})
         code, found = fp.bisect_victim(run, "v", ["a", "v", "b"], log=quiet)
         self.assertEqual(found, ["b"])
-        self.assertTrue(all(c.count("v") == 1 for c in calls))
+        self.assertTrue(all(c.count("v") <= 1 for c in calls))  # candidate-only probes omit v
 
+
+    def test_candidate_failing_on_its_own_is_not_blamed(self):
+        def run(tests: list[str]) -> bool:  # "bad" fails by itself; the victim is never polluted
+            return "bad" not in tests
+        code, found = fp.bisect_victim(run, "v", ["a", "b", "bad", "c"], log=quiet)
+        self.assertEqual((code, found), (2, []))
+
+    def test_self_failing_half_is_skipped_not_blamed(self):
+        # "bad" fails unless "zz" (a fixture setter) is in the same run; "d" really pollutes v.
+        def run(tests: list[str]) -> bool:
+            if "bad" in tests and "zz" not in tests:
+                return False
+            return not ("v" in tests and "d" in tests[: tests.index("v")])
+        code, found = fp.bisect_victim(run, "v", ["a", "bad", "zz", "d"], log=quiet)
+        self.assertEqual((code, found), (0, ["d"]))
 
 class Artifact(unittest.TestCase):
     def test_finds_creator_and_stops(self):

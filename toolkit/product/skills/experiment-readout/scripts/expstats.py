@@ -296,7 +296,9 @@ def ratio_test(arms: dict[str, tuple[list[float], list[float]]], alpha: float = 
     rt, vt = ratio_and_var(nt_, dt_)
     se = math.sqrt(vc + vt)
     diff = rt - rc
-    z = diff / se if se else 0.0
+    if se == 0 and diff != 0:
+        raise ValueError("zero variance: the test is undefined; report the difference descriptively")
+    z = diff / se if se else 0.0  # se == 0 here means diff == 0 too: z = 0, p = 1
     zc = Z.inv_cdf(1 - alpha / 2)
     return {"test": "ratio_delta_method", "control": c_name, "treatment": t_name,
             "ratio_control": rc, "ratio_treatment": rt, "diff": diff,

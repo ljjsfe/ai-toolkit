@@ -40,6 +40,14 @@ class NewSpecificsTests(unittest.TestCase):
         before = "Revenue reached 1,200,000 dollars."
         self.assertEqual(ns.new_specifics(before, "Revenue reached 1200000 dollars.", []), [])
 
+    def test_substring_of_known_number_or_name_is_still_new(self) -> None:
+        got = self.kinds("Builds fell from 14 minutes to 6 for 4 engineers.\n")
+        self.assertIn(("number", "4"), got)
+        names = ns.new_specifics("We met Ada Lovelace Institute staff.", "We met, then Ada Love signed.", [])
+        self.assertIn("Ada Love", [s for _, s, _ in names])
+        self.assertEqual(ns.new_specifics("Ratio was 6.5 overall.", "Ratio was 6.5 overall.", []), [])
+        self.assertIn("6", [s for _, s, _ in ns.new_specifics("Ratio was 6.5 overall.", "Ratio was 6.", [])])
+
     def test_cli_exit_codes(self) -> None:
         import tempfile
         with tempfile.TemporaryDirectory() as tmp:

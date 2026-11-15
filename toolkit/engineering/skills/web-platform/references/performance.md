@@ -73,8 +73,12 @@ Task budget:
   limited (Chrome 109, Edge 109; no Firefox or Safari) and ignored elsewhere. Prefer document
   rules, exclude state-changing URLs such as `/logout` and `/add-to-cart`, and do not use them in
   single-page apps.
-- `Cache-Control: no-store` stops the page entering the back/forward cache; reserve it for private
-  data and use `no-cache` or `max-age=0` for pages that just need to be fresh.
+- `Cache-Control: no-store` can keep the page out of the back/forward cache. Chrome has admitted
+  no-store pages since its April 2025 rollout, but evicts them on cookie or auth changes, when the
+  page uses WebSocket, WebTransport or WebRTC, or when a fetch/XHR response is itself no-store, and
+  caps their stay at 3 minutes; other browsers may still refuse them (Chrome for Developers,
+  "Enabling bfcache for Cache-Control: no-store", checked 2026-11-14). Reserve it for private data
+  and use `no-cache` or `max-age=0` for pages that just need to be fresh.
 
 ## CLS
 

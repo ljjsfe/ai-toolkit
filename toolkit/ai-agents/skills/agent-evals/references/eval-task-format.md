@@ -25,9 +25,11 @@ Commands are argv lists, never shell strings. Each gets these environment variab
 
 **Keep graders out of reach — the runner only detects tampering, it does not prevent it.**
 Arms run with no sandbox, as your user. Put check and judge scripts outside the workspace
-(absolute paths in the task file): before each arm runs, the runner hashes every existing
-absolute-path file named in a check or judge command, and voids the run ("grader files changed
-during the arm's run") if any changed. It cannot stop the arm *reading* those files, and it
+(absolute paths in the task file): once, before the batch (or the iterate loop) starts, the
+runner hashes every existing absolute-path file named in a check or judge command; each run is
+compared against that one baseline and is void ("grader files changed during the arm's run") if
+any changed. A void run aborts the rest of a `run` batch (`complete: false`, `aborted` says why),
+since later runs would be graded by the changed grader. It cannot stop the arm *reading* those files, and it
 cannot see tampering inside the workspace: a `command` check such as `pytest` runs in the
 arm-controlled workspace, so a planted `conftest.py` or an edited test passes everything.
 Prefer checks that run from outside the workspace against its outputs, or have the check
@@ -58,8 +60,9 @@ default 1–5 scale):
               "clarity":     {"justification": "...", "score": 3}}}
 ```
 
-Every rubric criterion must be present, with a non-empty justification and a score on the
-scale, or the judge result is invalid and the run fails. Weighted score =
+The judge must exit 0 within `timeout_s`; a non-zero exit or a timeout makes the judge result
+invalid whatever it printed. Every rubric criterion must be present, with a non-empty
+justification and a score on the scale, or the judge result is invalid and the run fails. Weighted score =
 Σ(weight × score) / Σ(weight). A run passes only if every deterministic check passes, the arm
 exited 0, and (with a judge) the weighted score reaches the threshold. A judge prompt
 template is in `references/judge-calibration.md`.
@@ -78,7 +81,8 @@ environment hits both arms. Re-running into an `--out` directory whose `results.
 from a different task file is refused: a changed eval is a new eval. Re-running into an
 `--out` that already holds results of the same task is refused too, unless you pass
 `--overwrite`, which discards the earlier `runs/`, `feedback/` and `results.json`. A command
-that times out is killed with its whole process group.
+that times out is killed with its whole process group. `--out` is resolved to an absolute path
+before any arm runs, so `EVAL_USAGE_FILE` and `EVAL_FEEDBACK_FILE` work from the workspace cwd.
 
 ## Results layout
 
@@ -93,7 +97,8 @@ that times out is killed with its whole process group.
     usage.json               only if the arm wrote it
 ```
 
-`complete` is `false` when the batch stopped early (an error mid-run): the finished runs are
+`complete` is `false` when the batch stopped early (an error mid-run, or a void run, recorded in
+`aborted`): the finished runs are
 on record but the summary covers only them — do not read it as the full eval.
 
 Per-arm summary: `n`, `passes`, `pass_rate`, `pass_at_k` (chance at least one of k tries

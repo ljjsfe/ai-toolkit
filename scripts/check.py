@@ -53,6 +53,27 @@ def strip_quotes(val: str) -> str:
     return val
 
 
+def yaml_value_problem(raw: str) -> str | None:
+    """Why a frontmatter value would parse differently in a real YAML loader, or None.
+
+    The parser here is lenient; Claude Code, Codex and Antigravity use real YAML, so a value
+    they cannot read (or read truncated) must fail validation instead of being repaired here."""
+    v = raw.strip()
+    if v.startswith('"'):
+        if not v.endswith('"') or len(v) < 2:
+            return "double-quoted value is not closed"
+        try:
+            json.loads(v)
+        except json.JSONDecodeError:
+            return "double-quoted value has an unescaped quote or backslash (use single quotes)"
+    elif v.startswith("'"):
+        if not v.endswith("'") or len(v) < 2 or re.search(r"(?<!')'(?!')", v[1:-1]):
+            return "single-quoted value has a lone ' inside (double it as '')"
+    elif re.search(r"\s#", v):
+        return "unquoted value contains ' #', which YAML reads as a comment (quote the value)"
+    return None
+
+
 def strip_inline_comment(val: str) -> str:
     in_quote = None
     for i, ch in enumerate(val):
@@ -121,6 +142,9 @@ def parse_skill_frontmatter(path: Path, errors: list[str]) -> dict:
                         errors.append(
                             f"{path.relative_to(ROOT)}: unquoted ': ' in YAML list item under {key}: {joined_raw!r}"
                         )
+                    problem = yaml_value_problem(joined_raw)
+                    if problem:
+                        errors.append(f"{path.relative_to(ROOT)}: {problem} in {key}: {joined_raw[:70]!r}")
                     items.append(strip_quotes(joined_raw))
                     continue
                 i += 1
@@ -129,6 +153,9 @@ def parse_skill_frontmatter(path: Path, errors: list[str]) -> dict:
 
         if val[0] not in ('"', "'") and ": " in val:
             errors.append(f"{path.relative_to(ROOT)}: unquoted ': ' in YAML scalar {key}: {val!r}")
+        problem = yaml_value_problem(val)
+        if problem:
+            errors.append(f"{path.relative_to(ROOT)}: {problem} in {key}: {val[:70]!r}")
         data[key] = strip_quotes(val)
         i += 1
 
@@ -146,6 +173,9 @@ def parse_rule_sources(path: Path, errors: list[str]) -> OrderedDict[str, list[s
             out[cur] = []
         elif cur is not None and raw.startswith("  - "):
             item = raw[4:].strip()
+            problem = yaml_value_problem(item)
+            if problem:
+                errors.append(f"{path.relative_to(ROOT)}: {problem}: {item[:70]!r}")
             out[cur].append(strip_quotes(item))
         else:
             errors.append(f"{path.relative_to(ROOT)}: malformed line: {raw!r}")

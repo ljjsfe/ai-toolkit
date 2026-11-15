@@ -14,7 +14,9 @@ Usage:
 
 The skill fills the thesis, claims, kill criteria, pre-mortem, catalysts and promises sections
 by editing the file; this script owns the header and the Status history table. Each history row
-carries a short hash chained to the row before it, so `verify` catches an edited or deleted row.
+carries a short hash chained to the row before it, so `verify` catches an edited or deleted row;
+the header (last_confirmed, last_check, latest_outcome, state) must match the history, which
+catches a deleted final row or a closed thesis whose header was set back to open.
 `log` with outcome `insufficient` leaves "last confirmed" unchanged (skill step 8).
 """
 from __future__ import annotations
@@ -30,6 +32,7 @@ from pathlib import Path
 OUTCOMES = ("intact", "weakened", "broken", "insufficient")
 HISTORY_HEADING = "## Status history"
 HISTORY_HEADER = "| date | outcome | last confirmed | fact | chain |\n|---|---|---|---|---|"
+CLOSING = {"closed as closed": "closed", "closed as invalidated": "invalidated"}
 HEADER_KEYS = ("side", "expiry", "opened", "state", "last_confirmed", "last_check", "latest_outcome",
                "next_check", "next_reason")
 
@@ -139,7 +142,7 @@ def verify_text(text: str) -> list[str]:
         if k not in header:
             errors.append(f"header field {k} is missing")
     prev, last_date = "genesis", ""
-    last_confirmed = "none"
+    last_confirmed, last_check, latest_outcome, state = "none", "none", "none", "open"
     for i, row in enumerate(history_rows(text), 1):
         if len(row) != 5:
             errors.append(f"history row {i} has {len(row)} cells, expected 5")
@@ -149,10 +152,20 @@ def verify_text(text: str) -> list[str]:
         if row[0] < last_date:
             errors.append(f"history row {i} is dated before the row above it")
         prev, last_date = row[4], row[0]
+        if state != "open":
+            errors.append(f"history row {i} comes after the thesis was {state}")
+        if row[1] in CLOSING:
+            state = CLOSING[row[1]]
+            continue
+        if row[1] in OUTCOMES:
+            last_check, latest_outcome = row[0], row[1]
         if row[1] in ("intact", "weakened", "broken"):
             last_confirmed = f"{row[1]} ({row[0]})"
-    if header.get("last_confirmed") != last_confirmed:
-        errors.append(f"header last_confirmed is {header.get('last_confirmed')!r} but history says {last_confirmed!r}")
+    # the final row has no successor whose chain would break, so the header is checked against it
+    for key, want in (("last_confirmed", last_confirmed), ("last_check", last_check),
+                      ("latest_outcome", latest_outcome), ("state", state)):
+        if header.get(key) != want:
+            errors.append(f"header {key} is {header.get(key)!r} but history says {want!r}")
     return errors
 
 
@@ -208,6 +221,11 @@ def cmd_close(a: argparse.Namespace) -> str:
         raise ValueError("ledger fails verify:\n  " + "\n  ".join(errors))
     when = iso(a.date)
     header = read_header(text)
+    if header.get("state") != "open":
+        raise ValueError(f"thesis is already {header.get('state')}")
+    rows = history_rows(text)
+    if rows and when < rows[-1][0]:
+        raise ValueError(f"date {when} is before the last check {rows[-1][0]}")
     text = append_row(text, [when, f"closed as {a.as_}", header["last_confirmed"], a.reason])
     text = set_header(set_header(text, "state", a.as_), "next_check", "none")
     p.write_text(text, encoding="utf-8")

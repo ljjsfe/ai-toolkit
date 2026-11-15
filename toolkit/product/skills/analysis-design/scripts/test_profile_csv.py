@@ -136,5 +136,17 @@ class ProfileTests(unittest.TestCase):
         self.assertEqual([c["column"] for c in prof["column_profiles"]], ["a", "a#2", "b"])
         self.assertEqual((prof["rows_with_extra_fields"], prof["rows_with_missing_fields"]), (1, 1))
 
+    def test_renamed_duplicate_header_does_not_collide(self) -> None:
+        p = Path(self.tmp.name) / "collide.csv"
+        p.write_text("a,a,a#2\n1,2,3\n", encoding="utf-8")
+        code, out, _ = run(str(p), "--json")
+        self.assertEqual(code, 0)
+        prof = json.loads(out)
+        cols = [c["column"] for c in prof["column_profiles"]]
+        self.assertEqual(len(set(cols)), 3, cols)
+        self.assertEqual(cols[0], "a")
+        self.assertEqual(cols[2], "a#2")
+        self.assertEqual(prof["duplicate_headers"], ["a"])
+
 if __name__ == "__main__":
     unittest.main()

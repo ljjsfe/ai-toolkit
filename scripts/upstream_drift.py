@@ -87,20 +87,40 @@ def drift(name: str, entry: dict, paths: set[str], api=gh) -> dict:
     if not repo:
         return {"upstream": name, "status": "unlocatable", "note": entry.get("note", "")}
     since = entry.get("reviewed_on")
+    base = entry.get("reviewed_sha")
     report = {"upstream": name, "repo": repo, "reviewed_on": since, "paths": []}
+    compare = None
+    if base:
+        # exact: everything after the reviewed commit, not after the review date
+        code, body = api([f"repos/{repo}/compare/{base}...HEAD"])
+        if code == 0:
+            compare = json.loads(body or "{}")
+        else:
+            report["error"] = body.strip()[:120]
     for path in sorted(paths):
         row: dict = {"path": path or "(whole repo)"}
         if path:
             code, _ = api([f"repos/{repo}/contents/{path}", "--silent"])
             row["exists"] = code == 0
-        q = f"repos/{repo}/commits?per_page=20" + (f"&path={path}" if path else "") + (f"&since={since}T23:59:59Z" if since else "")
-        code, body = api([q])
-        if code != 0:
-            row["error"] = body.strip()[:120]
+        if base:
+            if compare is None:
+                row["error"] = report.get("error", "compare failed")
+            else:
+                touched = any(not path or f["filename"] == path or f["filename"].startswith(path.rstrip("/") + "/")
+                              for f in compare.get("files", []))
+                row["commits"] = [] if not touched else [
+                    {"sha": c["sha"][:10], "date": c["commit"]["committer"]["date"][:10],
+                     "subject": c["commit"]["message"].splitlines()[0][:90]}
+                    for c in compare.get("commits", [])][-20:]
         else:
-            commits = json.loads(body or "[]")
-            row["commits"] = [{"sha": c["sha"][:10], "date": c["commit"]["committer"]["date"][:10],
-                               "subject": c["commit"]["message"].splitlines()[0][:90]} for c in commits]
+            q = f"repos/{repo}/commits?per_page=20" + (f"&path={path}" if path else "")
+            code, body = api([q])
+            if code != 0:
+                row["error"] = body.strip()[:120]
+            else:
+                row["commits"] = [{"sha": c["sha"][:10], "date": c["commit"]["committer"]["date"][:10],
+                                   "subject": c["commit"]["message"].splitlines()[0][:90]}
+                                  for c in json.loads(body or "[]")]
         report["paths"].append(row)
     retired = entry.get("retired_paths", {})
     for r in report["paths"]:
@@ -108,8 +128,9 @@ def drift(name: str, entry: dict, paths: set[str], api=gh) -> dict:
             r["exists"], r["retired"] = None, retired[r["path"]]
     removed = [r["path"] for r in report["paths"] if r.get("exists") is False]
     changed = [r["path"] for r in report["paths"] if r.get("commits")]
-    report["status"] = ("removed paths" if removed else "changed" if changed else
-                        "unreviewed baseline" if not since else "unchanged")
+    errored = [r["path"] for r in report["paths"] if r.get("error")]
+    report["status"] = ("removed paths" if removed else "error" if errored else "changed" if changed else
+                        "unreviewed baseline" if not base else "unchanged")
     return report
 
 
@@ -131,6 +152,8 @@ def external_changes(since: str, api=gh) -> list[dict]:
             row["release"] = {"tag": rel.get("tag_name"), "date": (rel.get("published_at") or "")[:10],
                               "notes": (rel.get("body") or "").strip().splitlines()[:3]}
         code, body = api([f"repos/{repo}/commits?per_page=10&since={since}T00:00:00Z"])
+        if code != 0:
+            row["error"] = body.strip()[:120]
         row["commits"] = [] if code != 0 else [
             {"date": c["commit"]["committer"]["date"][:10], "subject": c["commit"]["message"].splitlines()[0][:90]}
             for c in json.loads(body or "[]")]
@@ -154,12 +177,13 @@ def main(argv: list[str] | None = None, api=gh) -> int:
         for r in rows if not a.json else []:
             rel = r.get("release") or {}
             head = f"{rel.get('tag')} ({rel.get('date')})" if rel else "no release"
-            print(f"{r['name']:28} {r['repo']}  latest {head}  {len(r['commits'])} commit(s) since {since}")
+            err = f"  ERROR {r['error']}" if r.get("error") else ""
+            print(f"{r['name']:28} {r['repo']}  latest {head}  {len(r['commits'])} commit(s) since {since}{err}")
             for line in rel.get("notes", []) if rel.get("date", "") >= since else []:
                 print(f"    | {line[:110]}")
             for c in r["commits"][:3]:
                 print(f"    {c['date']} {c['subject']}")
-        return 0
+        return 1 if any(r.get("error") for r in rows) else 0
     lock = json.loads(LOCK.read_text(encoding="utf-8"))["upstreams"]
     credited = credited_paths(all_sources())
     names = a.names or sorted(credited)
@@ -182,7 +206,7 @@ def main(argv: list[str] | None = None, api=gh) -> int:
                     print(f"    {c['date']} {c['sha']} {p['path']}: {c['subject']}")
                 if p.get("error"):
                     print(f"    error {p['path']}: {p['error']}")
-    return 1 if any(r["status"] == "removed paths" for r in reports) else 0
+    return 1 if any(r["status"] in ("removed paths", "error") for r in reports) else 0
 
 
 if __name__ == "__main__":

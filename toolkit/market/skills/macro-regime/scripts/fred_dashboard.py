@@ -8,7 +8,9 @@ Usage:
 Every figure comes from https://fred.stlouisfed.org/graph/fredgraph.csv?id=<SERIES> and carries
 its own observation date. `dashboard` prints the ten rows of the skill (nine plus recession
 signals), derived values with their formula, and — when an earlier snapshot exists in --dir —
-each signal's previous reading, so "sustained" can be judged across releases. A series that
+each signal's previous reading. A signal is "sustained" only when its value matches AND its
+observation date differs (a later release); the same observation fetched again is reported as
+"same release, not yet testable". A series that
 cannot be fetched is reported as missing; the skill then does not classify the regime.
 """
 from __future__ import annotations
@@ -184,29 +186,60 @@ def _match(obs: Obs, when: str) -> float:
     return obs[0][1]
 
 
-def signals(snapshot: dict) -> dict[str, object]:
-    """The few readings whose persistence across releases matters for a regime call."""
+def signals(snapshot: dict) -> dict[str, dict]:
+    """The few readings whose persistence across releases matters for a regime call.
+
+    Each signal carries the observation date it was read from, so a later run can tell a new
+    release from the same release fetched again."""
     r = snapshot["rows"]
-    out: dict[str, object] = {}
-    try:
-        out["core_pce_3m_above_yoy"] = r["inflation"]["core_pce"]["3m_annualised_pct"] > r["inflation"]["core_pce"]["yoy_pct"]
-        out["curve_3m10y_inverted"] = r["curve"]["3m10y_pct"]["value"] < 0
-        out["sahm_triggered"] = r["recession"]["sahm_realtime_pp"]["triggered"]
-        out["unemployment_rising"] = r["labour"]["unemployment_pct"]["value"] > r["labour"]["unemployment_prior"]["value"]
-        out["nfci_tighter_than_prior"] = r["financial conditions"]["nfci"]["value"] > r["financial conditions"]["nfci_prior"]["value"]
-    except (KeyError, TypeError):
-        pass
+    spec = {
+        "core_pce_3m_above_yoy": lambda: (
+            r["inflation"]["core_pce"]["3m_annualised_pct"] > r["inflation"]["core_pce"]["yoy_pct"],
+            r["inflation"]["core_pce"].get("date")),
+        "curve_3m10y_inverted": lambda: (r["curve"]["3m10y_pct"]["value"] < 0, r["curve"]["3m10y_pct"].get("date")),
+        "sahm_triggered": lambda: (r["recession"]["sahm_realtime_pp"]["triggered"],
+                                   r["recession"]["sahm_realtime_pp"].get("date")),
+        "unemployment_rising": lambda: (
+            r["labour"]["unemployment_pct"]["value"] > r["labour"]["unemployment_prior"]["value"],
+            r["labour"]["unemployment_pct"].get("date")),
+        "nfci_tighter_than_prior": lambda: (
+            r["financial conditions"]["nfci"]["value"] > r["financial conditions"]["nfci_prior"]["value"],
+            r["financial conditions"]["nfci"].get("date")),
+    }
+    out: dict[str, dict] = {}
+    for name, read in spec.items():
+        try:
+            value, when = read()
+        except (KeyError, TypeError):
+            continue
+        out[name] = {"value": value, "observation_date": when}
     return out
+
+
+def _judge(now: dict, before: dict | None) -> dict:
+    prev_value = before.get("value") if before else None
+    prev_date = before.get("observation_date") if before else None
+    entry = {"now": now["value"], "observation_date": now["observation_date"],
+             "previous": prev_value, "previous_observation_date": prev_date}
+    if before is None:
+        return dict(entry, sustained=None, status="no previous reading")
+    if prev_value != now["value"]:
+        return dict(entry, sustained=False, status="changed")
+    if not prev_date or not now["observation_date"]:
+        return dict(entry, sustained=None, status="observation date unknown, not yet testable")
+    if prev_date == now["observation_date"]:
+        return dict(entry, sustained=None, status="same release, not yet testable")
+    return dict(entry, sustained=True, status="same reading in a later release")
 
 
 def compare(current: dict, previous: dict | None) -> dict:
     if not previous:
         return {"previous": None, "note": "no earlier snapshot; nothing can be called sustained yet"}
-    now, before = signals(current), signals(previous)
+    now = current.get("signals") or signals(current)
+    stored = previous.get("signals")
+    before = stored if isinstance(stored, dict) else signals(previous)
     return {"previous": previous.get("as_of_run"),
-            "signals": {k: {"now": v, "previous": before.get(k),
-                            "sustained": before.get(k) == v}
-                        for k, v in now.items()}}
+            "signals": {k: _judge(v, before.get(k)) for k, v in now.items()}}
 
 
 def main(argv: list[str] | None = None, fetcher=fetch_csv) -> int:
@@ -229,6 +262,7 @@ def main(argv: list[str] | None = None, fetcher=fetch_csv) -> int:
     ids = sorted({i for v in SERIES.values() for i in v} | {"T10Y3M"})
     data, missing = load(ids, fetcher)
     snap = build(data, missing)
+    snap["signals"] = signals(snap)
     previous = None
     if a.dir.is_dir():
         earlier = sorted(p for p in a.dir.glob("*.json") if p.stem < snap["as_of_run"])

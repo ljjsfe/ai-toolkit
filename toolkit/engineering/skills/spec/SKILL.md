@@ -60,7 +60,10 @@ Inspect the repository before creating directories:
    assumptions).
 4. **`MODIFIED` copies the entire requirement block.** Paste the existing `### Requirement:`
    header, updated `SHALL` statement, and *every* surviving `#### Scenario:` block before editing.
-   A partial snippet silently drops omitted scenarios when merged into the living spec.
+   A partial snippet silently drops omitted scenarios when merged into the living spec. To drop a
+   scenario on purpose, put `<!-- removed scenario: <exact name> — <reason> -->` inside the
+   `MODIFIED` block; the merge allows only marked omissions and leaves the marker out of the
+   living spec.
 5. **Living specs hold timeless current behaviour — zero changelog.** `specs/<capability-path>/spec.md`
    contains only `# <Capability>`, `## Purpose`, and `## Requirements`. Never leave delta headers,
    "Added in…", dates, PR numbers, or change logs inside a living spec; `changes/archive/` and
@@ -113,8 +116,9 @@ or a cleaner mechanism, **pause before letting code drift from the artifacts**:
   Checks the proposal sections, delta file locations, SHALL/MUST, `#### Scenario:` blocks with
   WHEN and THEN, requirements stranded outside delta sections, duplicates, conflicting sections,
   RENAMED pairing and stable IDs. It also checks `tasks.md`: a file of plain bullets counts as
-  zero tasks, so nothing reads as unfinished at archive time; every task must be a checkbox, and a
-  numbered ID (`2.1`) must sit under its own `## 2.` group and appear once. A `## Purpose` that
+  zero tasks, so nothing reads as unfinished at archive time; every task must be a checkbox (a
+  `- 1.2 ...` item without one is an error, never silently skipped), a numbered ID (`2.1`) must
+  sit under its own `## 2.` group, and every ID must appear once in the file. A `## Purpose` that
   opens with TBD or TODO is an error, so a placeholder never reaches a living spec. The tasks
   and Purpose checks are errors by **toolkit policy**; OpenSpec itself only warns on them. Fix
   every error before showing the change for sign-off.

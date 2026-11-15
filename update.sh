@@ -31,12 +31,17 @@
   if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
     echo "External components: changes since ${SINCE:-the last 30 days}"
     python3 scripts/upstream_drift.py --externals ${SINCE:+--since "$SINCE"} || true
-    if [ "$YES" -eq 0 ] && [ -t 0 ]; then
+  else
+    echo "gh not available or not signed in: cannot list external changes; read their release notes first"
+  fi
+  if [ "$YES" -eq 0 ]; then
+    if [ -t 0 ]; then
       read -r -p "Install these versions? [y/N] " reply
       case "$reply" in y|Y|yes) ;; *) echo "stopped; nothing installed"; exit 1 ;; esac
+    else
+      echo "no terminal to confirm on: rerun with --yes to install without the review prompt"
+      exit 1
     fi
-  else
-    echo "gh not available or not signed in: cannot list external changes; read their release notes before updating"
   fi
   ./install.sh "$TARGET" --apply --external ${ARGS[@]+"${ARGS[@]}"}
   date +%F > "$STAMP"

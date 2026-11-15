@@ -217,6 +217,17 @@ class TaskTests(unittest.TestCase):
         self.assertIn('tasks.md:7: task ID "2.1" is duplicated (first on line 3)', joined)
         self.assertNotIn("9.9", joined)
 
+    def test_numbered_item_without_checkbox_is_flagged(self) -> None:
+        errors = self.check("## 1. Sessions\n- [x] 1.1 done\n- 1.2 still required\n2. 1.3 also required\n")
+        joined = "\n".join(errors)
+        self.assertIn('tasks.md:3: task "1.2" is a list item without a checkbox', joined)
+        self.assertIn('tasks.md:4: task "1.3" is a list item without a checkbox', joined)
+        self.assertEqual(self.check("## 1. Sessions\n- [x] 1.1 done\n- note: see design.md\n"), [])
+
+    def test_ids_outside_numbered_groups_are_checked_for_duplicates(self) -> None:
+        errors = self.check("- [ ] 1.1 first\n\n## Notes\n- [ ] 1.1 again\n")
+        self.assertIn('tasks.md:4: task ID "1.1" is duplicated (first on line 1)', "\n".join(errors))
+
     def test_validate_reports_task_errors(self) -> None:
         with Fixture() as f:
             (f.change / "tasks.md").write_text("- revoke sessions\n", encoding="utf-8")
@@ -273,6 +284,29 @@ class MergeTests(unittest.TestCase):
                 spec_check.merge_change(f.change, f.specs, write=True, retire=set())
             self.assertIn("Idle session is rejected", str(cm.exception))
             self.assertEqual(f.living.read_text(encoding="utf-8"), before)
+
+    def test_marked_scenario_removal_is_allowed_and_marker_not_merged(self) -> None:
+        partial = FULL_MODIFIED.split("#### Scenario: Idle session is rejected")[0].replace(
+            "#### Scenario: Request within",
+            "<!-- removed scenario: Idle session is rejected — covered by REQ-AUTH-001 now -->\n\n"
+            "#### Scenario: Request within")
+        with Fixture(delta=DELTA.format(modified=partial)) as f:
+            spec_check.merge_change(f.change, f.specs, write=True, retire=set())
+            text = f.living.read_text(encoding="utf-8")
+        self.assertNotIn("Idle session is rejected", text)
+        self.assertNotIn("removed scenario", text)
+        self.assertIn("24 hours of inactivity", text)
+
+    def test_removal_marker_needs_reason_and_existing_scenario(self) -> None:
+        base = FULL_MODIFIED.split("#### Scenario: Idle session is rejected")[0]
+        for marker, msg in (("<!-- removed scenario: Idle session is rejected -->", "reason"),
+                            ("<!-- removed scenario: Nope — gone -->", "Nope")):
+            with self.subTest(marker=marker):
+                delta = DELTA.format(modified=base.replace("#### Scenario: Request", marker + "\n\n#### Scenario: Request"))
+                with Fixture(delta=delta) as f:
+                    with self.assertRaises(spec_check.MergeError) as cm:
+                        spec_check.merge_change(f.change, f.specs, write=False, retire=set())
+                self.assertIn(msg, str(cm.exception))
 
     def test_near_miss_header_aborts(self) -> None:
         delta = DELTA.format(modified=FULL_MODIFIED.replace("Idle session expiration", "idle  Session expiration", 1))

@@ -13,7 +13,9 @@ archiving without the script or when a merge precondition fails and you need to 
      the capability, confirm retirement intent and delete the capability's `spec.md` rather than
      leaving an empty `## Requirements` section.
    - **`MODIFIED`** — replace the entire matching requirement block with the delta's full block.
-     Abort if the living block has a scenario the delta block lacks (law 4).
+     Abort if the living block has a scenario the delta block lacks (law 4), unless the delta
+     block carries `<!-- removed scenario: <exact name> — <reason> -->` for it. Abort too if a
+     marker has no reason or names a scenario the living block lacks; strip markers on merge.
    - **`ADDED`** — append new requirement blocks after checking no duplicate ID or header exists.
    - A header that matches only after ignoring case or spacing is an error, never a match. Plan
      every capability before writing any: one failure means nothing is written.

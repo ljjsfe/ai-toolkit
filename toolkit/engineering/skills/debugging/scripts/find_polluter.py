@@ -15,9 +15,18 @@ pytest does by default (unless pytest-xdist or a random-order plugin is on — t
 `-p no:xdist -p no:randomly` or similar); vitest and jest run files in parallel by default, so
 pass their serial flag (`vitest run --no-file-parallelism`, `jest --runInBand`) inside --cmd.
 
+A failing run only proves the victim failed if the candidates pass without it, because the
+runner reports one exit code for the whole run. So a candidate set "breaks the victim" only when
+`candidates + victim` fails AND `candidates` alone passes. If the full candidate set fails on its
+own, the script stops with exit 2 (fix or drop the failing candidate first). During bisection a
+half that fails on its own is inconclusive and never blamed: the other half is tried, and if
+neither half is a clean break while one was inconclusive, the script stops with exit 2 and names
+the remaining set. This costs one extra run per step, only when a set-plus-victim run fails.
+
 `{tests}` in --cmd is replaced by the test paths as separate arguments (no shell is used). If it
-is absent, the paths are appended. Exit code 0: polluter found; 1: not found; 2: bad set-up
-(victim fails alone, failure does not reproduce, artefact already present, command not found).
+is absent, the paths are appended. Exit code 0: polluter found; 1: not found; 2: bad set-up or
+inconclusive (victim fails alone, failure does not reproduce, candidates fail without the victim,
+artefact already present, command not found).
 
 The script never deletes anything; in artefact mode remove the artefact yourself before running.
 Standard library only.
@@ -65,24 +74,46 @@ def make_runner(cmd: str, timeout: float | None) -> Runner:
     return run
 
 
+BREAKS, CLEAN, SELF_FAIL = "breaks", "clean", "self-fail"
+
+
+def probe(run: Runner, subset: list[str], victim: str) -> str:
+    """BREAKS when subset+victim fails and subset alone passes; SELF_FAIL when the subset fails
+    on its own (the run's failure cannot be pinned on the victim); CLEAN when subset+victim passes."""
+    if run(subset + [victim]):
+        return CLEAN
+    return BREAKS if run(subset) else SELF_FAIL
+
+
 def bisect_victim(run: Runner, victim: str, candidates: list[str], log: Callable[[str], None] = print) -> tuple[int, list[str]]:
     """Return (exit code, smallest candidate set found that still breaks the victim)."""
     cands = [c for c in candidates if c != victim]
     if not run([victim]):
         log(f"victim fails on its own — not an ordering problem: {victim}")
         return 2, []
-    if run(cands + [victim]):
+    first_probe = probe(run, cands, victim)
+    if first_probe == CLEAN:
         log("victim passes after all candidates — the failure does not reproduce with this order")
+        return 2, []
+    if first_probe == SELF_FAIL:
+        log("the candidates fail without the victim, so a failed run does not show the victim failed; "
+            "fix or drop the failing candidate(s) and rerun")
         return 2, []
     steps = 0
     while len(cands) > 1:
         steps += 1
         half = len(cands) // 2
         first, second = cands[:half], cands[half:]
-        if not run(first + [victim]):
+        p1 = probe(run, first, victim)
+        p2 = probe(run, second, victim) if p1 != BREAKS else CLEAN
+        if p1 == BREAKS:
             cands = first
-        elif not run(second + [victim]):
+        elif p2 == BREAKS:
             cands = second
+        elif SELF_FAIL in (p1, p2):
+            log(f"step {steps}: a half fails without the victim, so it cannot be judged; "
+                f"remaining {len(cands)} candidate(s): {' '.join(cands)}")
+            return 2, cands
         else:
             log(f"step {steps}: neither half alone breaks the victim — the polluters interact; smallest set: {len(cands)}")
             return 0, cands

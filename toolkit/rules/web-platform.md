@@ -23,7 +23,8 @@ fallback code: the `web-platform` skill.
 - Menus, tooltips and toasts use the `popover` attribute (Baseline 2025) instead of an overlay
   library; load `@oddbird/popover-polyfill` only when `"popover" in HTMLElement.prototype` is false.
 - Open and close from HTML with invokers, `commandfor` + `command="show-modal"`/`"toggle-popover"`
-  (Baseline Dec 2025); never put `popovertarget` and `commandfor` on one button, it double-toggles.
+  (Baseline Dec 2025). Keeping `popovertarget` on the same button is a safe fallback for browsers
+  with popover but no invokers: where `commandfor` resolves, the button runs the command instead.
 - Anchor positioning's core is Baseline (Newly available 2026-01-13: Chrome 125, Firefox 147,
   Safari 26); the full feature needs Chrome 157 / Safari 27 and is not in Firefox, so gate newer
   parts inside `@supports` and keep an absolute-position fallback.
@@ -40,7 +41,9 @@ fallback code: the `web-platform` skill.
   falling back to `setTimeout`; move work over ~250ms to a worker.
 - `content-visibility: auto` only on below-the-fold sections of long pages, always paired with
   `contain-intrinsic-size: auto <estimate>`, or the page jumps on scroll.
-- `Cache-Control: no-store` on a non-private page blocks the back/forward cache; use `no-cache`.
+- `Cache-Control: no-store` can keep a page out of the back/forward cache: Chrome (since Apr 2025)
+  admits it but evicts on cookie changes or WebSocket/WebTransport/WebRTC use, and other browsers
+  may refuse it; on a non-private page use `no-cache` (checked 2026-11-14).
 - A one-time code is one `type="text" inputmode="numeric" autocomplete="one-time-code"` field,
   never `type="number"` or split boxes; never block paste.
 - A custom Enter-to-submit handler must skip `event.isComposing || event.keyCode === 229`, or IME

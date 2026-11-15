@@ -13,8 +13,14 @@ aborts when a target is missing, a rename target exists, a header matches only a
 or spacing, a MODIFIED block lacks a scenario the living spec has, or a REMOVED would retire a
 capability not named with --retire.
 
-`validate` also checks tasks.md (every task a checkbox; a numbered task ID sits in its own
-`## N.` group and appears once) and fails a `## Purpose` that opens with TBD or TODO; `audit`
+To drop one scenario from a requirement, list it inside the MODIFIED block as
+`<!-- removed scenario: <exact scenario name> — <reason> -->`. The merge then allows that scenario
+to be missing and leaves the marker out of the living spec. It aborts if the marker has no reason,
+names a scenario the living requirement lacks, or names one the block still contains.
+
+`validate` also checks tasks.md (every task a checkbox; a list item that opens with a task ID
+such as `- 1.2 ...` but has no checkbox is an error; a numbered task ID sits in its own `## N.`
+group, and every task ID appears once in the file) and fails a `## Purpose` that opens with TBD or TODO; `audit`
 applies the same Purpose rule to living specs. These are errors by toolkit policy (OpenSpec
 reports them as warnings).
 """
@@ -43,6 +49,10 @@ TASK_RE = re.compile(r"^\s*(?:[-*+]|\d{1,9}[.)])\s*\[\s*[^\]\s]?\s*\]\s*(.*)$")
 LIST_ITEM_RE = re.compile(r"^\s{0,3}(?:[-*+]|\d{1,9}[.)])\s+\S")
 GROUP_HEADING_RE = re.compile(r"^ {0,3}##(?!#)\s*(?:(\d+)\.(?:\s|$))?")
 TASK_ID_RE = re.compile(r"^(\d+(?:\.\d+)+[A-Za-z]*)(?=\s|$)")
+LIST_ITEM_BODY_RE = re.compile(r"^\s*(?:[-*+]|\d{1,9}[.)])\s+(.*)$")
+# Inside a MODIFIED block: `<!-- removed scenario: <name> — <reason> -->` (em/en dash or --).
+REMOVED_SCENARIO_RE = re.compile(r"^\s*<!--\s*removed scenario:\s*(.+?)\s+(?:—|–|--)\s+(\S.*?)\s*-->\s*$", re.I)
+REMOVED_SCENARIO_ANY_RE = re.compile(r"<!--\s*removed scenario\b", re.I)
 # A Purpose nobody wrote: TBD/TODO opening it. In capitals it is the marker whatever follows;
 # in any other case only when punctuation or the line end follows, so Spanish "Todo el..." passes.
 PLACEHOLDER_SHOUTED_RE = re.compile(r"^(?:TBD|TODO)(?![^\W_]|_)")
@@ -76,6 +86,26 @@ class Block:
     @property
     def scenarios(self) -> list[str]:
         return [m.group(1) for ln in self.lines if (m := SCENARIO_RE.match(ln))]
+
+    @property
+    def removed_scenarios(self) -> list[str]:
+        """Scenario names this block drops on purpose, from well-formed removal markers."""
+        return [m.group(1) for ln in self.lines if (m := REMOVED_SCENARIO_RE.match(ln))]
+
+    def without_markers(self) -> list[str]:
+        """Block lines with removal markers (and the blank line each leaves behind) taken out."""
+        out: list[str] = []
+        skip_blank = False
+        for ln in self.lines:
+            if REMOVED_SCENARIO_ANY_RE.search(ln):
+                skip_blank = not out or not out[-1].strip()
+                continue
+            if skip_blank and not ln.strip():
+                skip_blank = False
+                continue
+            skip_blank = False
+            out.append(ln)
+        return out
 
     @property
     def statement(self) -> str:
@@ -244,21 +274,27 @@ def check_tasks(path: Path) -> list[str]:
         errors.append(f"{where}: no task is a checkbox, so progress counts 0 tasks and nothing reads as "
                       'unfinished; write each task as "- [ ] 1.1 <behaviour delivered>"')
         return errors
+    task_lines = dict(tasks)
+    for i, ln in visible:
+        if i in task_lines or not (m := LIST_ITEM_BODY_RE.match(ln)):
+            continue
+        if (tid := TASK_ID_RE.match(m.group(1))):
+            errors.append(f'tasks.md:{i}: task "{tid.group(1)}" is a list item without a checkbox, so progress '
+                          f'never counts it; write "- [ ] {tid.group(1)} ..."')
     group: str | None = None
     seen: dict[str, int] = {}
-    task_lines = dict(tasks)
     for i, ln in visible:
         if (g := GROUP_HEADING_RE.match(ln)) and ln.lstrip().startswith("##"):
             group = g.group(1)
             continue
-        if group is None or i not in task_lines:
+        if i not in task_lines:
             continue
         m = TASK_ID_RE.match(task_lines[i])
         if not m:
             continue
         tid = m.group(1)
         lead = tid.split(".")[0].lstrip("0") or "0"
-        if lead != (group.lstrip("0") or "0"):
+        if group is not None and lead != (group.lstrip("0") or "0"):
             errors.append(f'tasks.md:{i}: task "{tid}" sits under group {group} but its number points to '
                           f"group {tid.split('.')[0]}; move or renumber it")
         if tid in seen:
@@ -284,6 +320,10 @@ def check_requirement(b: Block, label: str, rel: str, errors: list[str], warning
         name = sc.splitlines()[0].strip()
         if not re.search(r"\bWHEN\b", sc) or not re.search(r"\bTHEN\b", sc):
             errors.append(f'{where}: scenario "{name}" under "{b.name}" needs both WHEN and THEN')
+    for ln in b.lines:
+        if REMOVED_SCENARIO_ANY_RE.search(ln) and not REMOVED_SCENARIO_RE.match(ln):
+            errors.append(f'{where}: removal marker under "{b.name}" must read '
+                          f'"<!-- removed scenario: <name> — <reason> -->" with a reason: {ln.strip()[:80]!r}')
     if need_id and not REQ_ID_RE.search(b.name):
         warnings.append(f'{where}: {label} "{b.name}" has no stable [REQ-...] ID')
 
@@ -433,12 +473,22 @@ def plan_capability(delta: Delta, living_path: Path, retire: set[str]) -> str | 
         blocks.pop(_find(blocks, rem.name, cap, "REMOVED"))
     for mod in delta.modified:
         i = _find(blocks, mod.name, cap, "MODIFIED")
-        missing = [s for s in blocks[i].scenarios if norm(s) not in {norm(x) for x in mod.scenarios}]
+        living_names = {norm(s) for s in blocks[i].scenarios}
+        kept_names = {norm(x) for x in mod.scenarios}
+        dropped = {norm(x) for x in mod.removed_scenarios}
+        for name in mod.removed_scenarios:
+            if norm(name) not in living_names:
+                raise MergeError(f'{cap}: MODIFIED "{mod.name}" marks scenario "{name}" removed, but the living '
+                                 "requirement has no such scenario; fix the name")
+            if norm(name) in kept_names:
+                raise MergeError(f'{cap}: MODIFIED "{mod.name}" marks scenario "{name}" removed but still contains it')
+        missing = [s for s in blocks[i].scenarios if norm(s) not in kept_names | dropped]
         if missing:
             raise MergeError(f'{cap}: MODIFIED "{mod.name}" drops scenario(s) the living spec has: '
                              + ", ".join(f'"{s}"' for s in missing)
-                             + "; copy the full block (law 4) or move them to REMOVED intent explicitly")
-        blocks[i] = Block(blocks[i].name, mod.lines, blocks[i].line_no)
+                             + '; copy the full block (law 4) or mark each intended removal with '
+                             '"<!-- removed scenario: <name> — <reason> -->"')
+        blocks[i] = Block(blocks[i].name, mod.without_markers(), blocks[i].line_no)
     for add in delta.added:
         for b in blocks:
             if norm(b.name) == norm(add.name):

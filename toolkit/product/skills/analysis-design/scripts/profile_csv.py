@@ -183,6 +183,25 @@ def render(p: dict) -> str:
     return "\n".join(lines)
 
 
+def unique_columns(header: list[str]) -> tuple[list[str], list[str]]:
+    """Rename repeated header names to `name#N`, skipping any N that is already taken by another
+    header or an earlier rename, so DictReader never maps two fields to one key."""
+    taken = set(header)
+    seen: Counter = Counter()
+    columns, dup = [], []
+    for h in header:
+        seen[h] += 1
+        if seen[h] > 1:
+            dup.append(h)
+            n = seen[h]
+            while f"{h}#{n}" in taken:
+                n += 1
+            h = f"{h}#{n}"
+            taken.add(h)
+        columns.append(h)
+    return columns, dup
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Profile a CSV extract before analysis.")
     ap.add_argument("file")
@@ -206,14 +225,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         with path.open(newline="", encoding=a.encoding) as fh:
             header = next(csv.reader(fh, delimiter=a.delimiter), [])
-            seen: Counter = Counter()
-            columns, dup = [], []
-            for h in header:
-                seen[h] += 1
-                if seen[h] > 1:
-                    dup.append(h)
-                    h = f"{h}#{seen[h]}"
-                columns.append(h)
+            columns, dup = unique_columns(header)
             rows = list(csv.DictReader(fh, fieldnames=columns, delimiter=a.delimiter))
     except UnicodeDecodeError as e:
         print(f"error: {a.file} is not {a.encoding} ({e.reason} at byte {e.start}); pass --encoding, e.g. latin-1",
