@@ -188,6 +188,11 @@ class YamlStrictnessTests(unittest.TestCase):
         self.assertIn("lone", check.yaml_value_problem("'don't'"))
         self.assertIn("comment", check.yaml_value_problem("ce-debug (MIT, PR #2039) — z [idea]"))
 
+    def test_more_values_yaml_rejects(self) -> None:
+        self.assertIsNotNone(check.yaml_value_problem("'bad" + "'" * 3 + "quote'"))
+        self.assertIsNotNone(check.yaml_value_problem("[unterminated"))
+        self.assertIsNotNone(check.yaml_value_problem("*alias"))
+
     def test_frontmatter_errors_are_reported(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             d = Path(tmp) / "toolkit" / "x" / "skills" / "demo"

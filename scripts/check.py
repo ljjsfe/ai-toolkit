@@ -67,8 +67,10 @@ def yaml_value_problem(raw: str) -> str | None:
         except json.JSONDecodeError:
             return "double-quoted value has an unescaped quote or backslash (use single quotes)"
     elif v.startswith("'"):
-        if not v.endswith("'") or len(v) < 2 or re.search(r"(?<!')'(?!')", v[1:-1]):
+        if not v.endswith("'") or len(v) < 2 or "'" in v[1:-1].replace("''", ""):
             return "single-quoted value has a lone ' inside (double it as '')"
+    elif v[:1] in "[{*&!|>%@`":
+        return f"unquoted value starts with {v[0]!r}, which YAML reads as syntax (quote the value)"
     elif re.search(r"\s#", v):
         return "unquoted value contains ' #', which YAML reads as a comment (quote the value)"
     return None

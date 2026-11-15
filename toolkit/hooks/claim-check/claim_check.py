@@ -130,7 +130,8 @@ SEGMENT_SPLIT = re.compile(r"&&|\|\||;|\n|\|")
 REDIRECT_RE = re.compile(r"(?<![0-9&>])>>?\s*(?!&)([^\s|&;<>]+)")
 SCRATCH_TARGET_RE = re.compile(r"^(/dev/|/tmp/|/private/tmp/|/var/folders/|\$TMPDIR|\$\{TMPDIR)")
 CONTENT_WRITERS_RE = re.compile(r"^\s*(echo|printf|cat|tee)\b")
-DOC_SUFFIXES = (".md", ".mdx", ".rst", ".txt", ".adoc")
+DOC_SUFFIXES = (".md", ".mdx", ".rst", ".adoc")  # not .txt: requirements.txt, CMakeLists.txt are code
+CAPTURE_SUFFIXES = (".log", ".out", ".err")  # redirecting a program's output here is capture, not an edit
 
 
 def split_segments(cmd: str) -> list[str]:
@@ -145,6 +146,10 @@ def split_segments(cmd: str) -> list[str]:
             elif ch == "\\" and quote == '"' and i + 1 < len(cmd):
                 cur.append(cmd[i + 1])
                 i += 1
+        elif ch == "#" and (not cur or cur[-1].isspace()):
+            while i < len(cmd) and cmd[i] != "\n":  # an unquoted comment runs to the end of the line
+                i += 1
+            continue
         elif ch in ("'", '"'):
             quote = ch
             cur.append(ch)
@@ -168,11 +173,18 @@ def _segment_writes(seg: str) -> bool:
     Redirecting a program's output (`pytest > log`) or writing to a scratch path is not an edit."""
     if re.search(r"\bsed\s+(-[a-zA-Z]*i\b|--in-place)|\bperl\s+-[a-zA-Z]*i|\bgit\s+(apply|am|checkout\s+--|restore)\b|\bpatch\s", seg):
         return True
-    targets = [t for t in REDIRECT_RE.findall(seg) if not SCRATCH_TARGET_RE.match(t)]
+    if SCRIPT_WRITE_RE.search(seg):  # inline code (python -c, node -e) that writes files
+        return True
     tee = re.search(r"\btee\b(?:\s+-a)?\s+([^\s|&;<>]+)", seg)
     if tee and not SCRATCH_TARGET_RE.match(tee.group(1)):
         return True
-    return bool(targets) and bool(CONTENT_WRITERS_RE.match(seg))
+    for target in REDIRECT_RE.findall(seg):
+        if SCRATCH_TARGET_RE.match(target):
+            continue
+        if target.lower().endswith(CAPTURE_SUFFIXES) and not CONTENT_WRITERS_RE.match(seg):
+            continue  # `pytest > test-output.log`: the program ran, its output was saved
+        return True
+    return False
 
 
 def _shell_effect(cmd: str) -> tuple[bool, bool]:
@@ -301,7 +313,7 @@ def _edits_only_docs(args: object) -> bool:
 def _severe_findings(text: str) -> bool:
     """A line that reports a P0/P1 at a file:line, and is not a 'no P0/P1' statement."""
     for line in text.splitlines():
-        if (SEVERE_FINDING.search(line) and re.search(r"[\w./-]+\.\w+:\d+", line)
+        if (SEVERE_FINDING.search(line) and re.search(r"[\w./-]+:\d+|\bline\s+\d+", line)
                 and not re.search(r"\bno\s+(open\s+)?P[01]\b|\bzero\s+P[01]\b|P[01]\s*:\s*(none|0)\b", line, re.I)):
             return True
     return False

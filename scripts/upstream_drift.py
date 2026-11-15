@@ -102,7 +102,19 @@ def drift(name: str, entry: dict, paths: set[str], api=gh) -> dict:
         if path:
             code, _ = api([f"repos/{repo}/contents/{path}", "--silent"])
             row["exists"] = code == 0
-        if base:
+        truncated = compare is not None and len(compare.get("files", [])) >= 300
+        if base and truncated:
+            # GitHub lists at most 300 changed files per compare: fall back to this path's history
+            since_date = (compare.get("base_commit", {}).get("commit", {}).get("committer", {}).get("date")
+                          or f"{since}T00:00:00Z")
+            code, body = api([f"repos/{repo}/commits?per_page=20&since={since_date}" + (f"&path={path}" if path else "")])
+            if code != 0:
+                row["error"] = body.strip()[:120]
+            else:
+                row["commits"] = [{"sha": c["sha"][:10], "date": c["commit"]["committer"]["date"][:10],
+                                   "subject": c["commit"]["message"].splitlines()[0][:90]}
+                                  for c in json.loads(body or "[]") if not c["sha"].startswith(base)]
+        elif base:
             if compare is None:
                 row["error"] = report.get("error", "compare failed")
             else:

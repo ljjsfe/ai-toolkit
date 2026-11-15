@@ -76,6 +76,19 @@ class DriftTests(unittest.TestCase):
         r = ud.drift("gstack", self.entry, {"review"}, fake_api({"review"}, {}, fail_compare=True))
         self.assertEqual(r["status"], "error")
 
+    def test_truncated_compare_falls_back_to_path_history(self) -> None:
+        def api(args: list[str]) -> tuple[int, str]:
+            q = args[0]
+            if "/compare/" in q:
+                files = [{"filename": f"other/{i}.md"} for i in range(300)]
+                return 0, json.dumps({"files": files, "commits": [commit("c", "big sync")],
+                                      "base_commit": {"commit": {"committer": {"date": "2026-11-14T08:00:00Z"}}}})
+            if "&path=review" in q:
+                return 0, json.dumps([commit("d", "review: new rule")])
+            return 0, "[]"
+        r = ud.drift("gstack", self.entry, {"review"}, api)
+        self.assertEqual(r["status"], "changed")
+
     def test_unlocatable_and_unreviewed(self) -> None:
         self.assertEqual(ud.drift("x", {"repo": None, "note": "n"}, {""})["status"], "unlocatable")
         r = ud.drift("y", {"repo": "o/r", "reviewed_on": None}, {""}, fake_api(set(), {}))

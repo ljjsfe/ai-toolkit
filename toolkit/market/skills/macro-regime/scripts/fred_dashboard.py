@@ -227,8 +227,10 @@ def _judge(now: dict, before: dict | None) -> dict:
         return dict(entry, sustained=False, status="changed")
     if not prev_date or not now["observation_date"]:
         return dict(entry, sustained=None, status="observation date unknown, not yet testable")
-    if prev_date == now["observation_date"]:
+    if now["observation_date"] == prev_date:
         return dict(entry, sustained=None, status="same release, not yet testable")
+    if now["observation_date"] < prev_date:
+        return dict(entry, sustained=None, status="older observation than the saved one; re-fetch")
     return dict(entry, sustained=True, status="same reading in a later release")
 
 

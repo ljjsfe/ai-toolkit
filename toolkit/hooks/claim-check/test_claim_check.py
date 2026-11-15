@@ -284,6 +284,17 @@ class ClaimCheckTests(unittest.TestCase):
         explain = "Spec conformance means meeting the brief. P0 is an outage, P1 a user-facing bug."
         self.assertFalse(review_needs_refutation([user("what is P0"), asst(text(explain))]))
 
+    def test_codex_verify_pass_regressions(self):
+        from claim_check import _shell_effect
+        self.assertEqual(_shell_effect('python3 -c "print(123)" > ./src/a.ts'), (True, False))
+        self.assertTrue(_shell_effect("python -c \"open('x','w').write('x')\" > output.log")[0])
+        self.assertEqual(_shell_effect("sed -i 's/a/b/' app.py # don't forget\npytest -q"), (True, True))
+        cfg = [user("bump"), asst(tool("Edit", {"file_path": "requirements.txt"})), tool_result(), asst(text("Done."))]
+        self.assertTrue(should_block(cfg))
+        for loc in ("Findings (standards): P1 Dockerfile:40 bug", "Findings (standards): P1 path/to/file.py line 40"):
+            report = [user("review"), asst(text("Spec conformance: met\n" + loc))]
+            self.assertTrue(review_needs_refutation(report), loc)
+
     def test_antigravity_transcript_blocks_and_allows(self):
         blocked = [
             agy_user("fix bug"),

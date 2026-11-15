@@ -121,6 +121,17 @@ class DashboardTests(unittest.TestCase):
         self.assertIs(sig["sustained"], True)
         self.assertEqual(sig["previous_observation_date"], "1999-01-01")
 
+    def test_earlier_observation_is_not_sustained(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            ids = sorted({i for v in fd.SERIES.values() for i in v} | {"T10Y3M"})
+            prev = fd.build(*fd.load(ids, fake_fetcher()))
+            prev["as_of_run"] = "2000-01-01"
+            prev["signals"] = {k: dict(v, observation_date="2999-01-01")
+                               for k, v in fd.signals(prev).items()}
+            Path(tmp, "2000-01-01.json").write_text(json.dumps(prev), encoding="utf-8")
+            _, snap = self._run(fake_fetcher(), tmp)
+        self.assertIsNot(snap["comparison"]["signals"]["sahm_triggered"]["sustained"], True)
+
     def test_first_run_has_nothing_sustained(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             _, snap = self._run(fake_fetcher(), tmp)
