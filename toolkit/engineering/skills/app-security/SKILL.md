@@ -18,6 +18,8 @@ sources:
   - upstream/getsentry-skills/skills/security-model (Apache-2.0, commit d04211a) — optional persistent SECURITY_MODEL.md (boundaries, invariants with IDs, reportable classes, narrow exclusions) read from the base revision by later reviews; owner confirms anything that suppresses findings; suspected gaps stay out of it [port "SECURITY_MODEL.md" "read it from the base branch" "only the owner can confirm"]
   - upstream/trailofbits-skills/plugins/post-patch-validation (CC BY-SA 4.0 — ideas only, no wording) — fix validation against the vulnerable base and the patch, root-cause variants, preserved behaviour, stated evidence level [port "on the vulnerable base" "other routes to the same root cause" "the evidence level reached"]
   - upstream/stripe-ai/skills/stripe-best-practices (MIT) — verify settled payment status before fulfillment on async payment webhooks [port "settled payment status"]
+  - upstream/stripe-ai/skills/stripe-best-practices/{SKILL.md,references/billing.md} (MIT) — subscription lifecycle webhook handler required; automatic_tax collects nothing without an active registration [port "invoice.payment_failed" "without an active registration"]
+  - RFC 8252 OAuth 2.0 for Native Apps (BCP 212, sections 6, 8.12 and appendix B; IETF Trust, facts restated) — no embedded user-agents, in-app browser tabs, PKCE required for public native clients [port "an embedded webview instead" "or an in-app browser tab"]
 ---
 
 # App Security
@@ -59,6 +61,7 @@ false-positive patterns and do-not-flag list before any candidate goes in the fi
 | mass assignment | request bodies cannot set role, owner, tenant, price or status fields |
 | tenant isolation | jobs, exports, search indexes, caches and admin tools respect it too |
 | webhooks and integrations | trace the whole middleware and handler chain before calling a signature missing; signature over the **raw** body, constant-time compare, replay window, idempotent handling, event bound to the right tenant; verify **settled payment status** before fulfillment (checkout-completed is not cleared funds on async methods) |
+| subscriptions and tax | a webhook handler covers `customer.subscription.*`, `invoice.paid` and `invoice.payment_failed`; `automatic_tax` collects nothing without an active registration in the customer's jurisdiction |
 | feature gates | a diff that makes a gated, internal or unreleased feature reachable without its gate (flipped default, guard dropped on one path, route registered outside the gated block) |
 
 ## Reviewing a change

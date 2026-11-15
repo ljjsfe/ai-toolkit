@@ -22,7 +22,7 @@ is missing from the skill), `idea` or `gap`; see [CREDITS.md](CREDITS.md).
 | strategy | `liu-ayi` — a strategic-analysis framework built on order-and-institution checks, base rates and calibrated decisions |
 | career | `career-navigator` |
 | writing | `writing` — posts, articles and social media in the writer's voice, no invented facts; de-AI pass via humanizer / humanizer-zh (external) with inline fallback |
-| rules | `core.md` (always loaded, ~20 lines) plus language traps that load only for matching files: Python, Java/Spring, C++, TypeScript/React/Next.js, web platform (HTML/CSS/JS), Flutter/Dart, SQL/containers |
+| rules | `core.md` (always loaded, ~20 lines) plus language traps that load only for matching files: Python, Java/Spring, C++, TypeScript/React/Next.js, web platform (HTML/CSS/JS), Swift, Kotlin, React Native/Expo, Flutter/Dart, SQL/containers |
 | hooks | `claim-check` — blocks "done / fixed / tests pass" claims made after editing files without running anything (Claude Code, Antigravity, Codex transcript support) |
 
 Design taste is delegated to [impeccable](https://github.com/pbakaus/impeccable) plus three of
@@ -32,7 +32,8 @@ Design taste is delegated to [impeccable](https://github.com/pbakaus/impeccable)
 [webapp-testing](https://github.com/anthropics/skills) (or optional [agent-browser](https://github.com/vercel-labs/agent-browser)), safety hooks to
 [claude-code-hooks](https://github.com/karanb192/claude-code-hooks) (optional), go-to-market
 execution (positioning, launch, onboarding, signup, churn, referrals) to six skills of
-[marketingskills](https://github.com/coreyhaines31/marketingskills), and handoff to Codex
+[marketingskills](https://github.com/coreyhaines31/marketingskills), stack-specific vendor skills as optional, per-project installs (shadcn/ui, Vercel AI SDK,
+Playwright CLI, SwiftUI, Expo, Android, Stripe), and handoff to Codex
 to [codex-plugin-cc](https://github.com/openai/codex-plugin-cc) — installed from their own
 sources (see `toolkit/external.yaml`).
 

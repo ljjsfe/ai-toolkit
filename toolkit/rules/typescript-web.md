@@ -11,7 +11,9 @@ paths:
 # TypeScript, React and Next.js traps
 
 Check `package.json` versions first; if `node_modules/next/dist/docs/` exists (Next.js 16.3+),
-read the version-matched docs there before guessing Next 16+ APIs.
+read the version-matched docs there before guessing Next 16+ APIs. Same for the Vercel AI SDK:
+`node_modules/ai/docs/` and `node_modules/@ai-sdk/<name>/docs/`. Never write model IDs from
+memory; list the provider's current ones first.
 
 **TypeScript**
 - `strict: true` does not enable `noUncheckedIndexedAccess` or `exactOptionalPropertyTypes`.

@@ -21,6 +21,11 @@
       "reviewed_sha": "77740860973fc8bf81fb979ef6ab7829be866843",
       "reviewed_on": "2026-11-14"
     },
+    "android-skills": {
+      "repo": "android/skills",
+      "reviewed_sha": "5815d27fda564aa9f07ebdcb5e57ed3e8d904e0d",
+      "reviewed_on": "2026-11-14"
+    },
     "anthropics-financial-services": {
       "repo": "anthropics/financial-services",
       "reviewed_sha": "3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f",
@@ -67,6 +72,11 @@
       "reviewed_sha": "d2ef2680594f9a17526a6e1a2e18b3d242c5d17b",
       "reviewed_on": "2026-11-14",
       "note": "renamed from affaan-m/everything-claude-code on 2026-10-01 (c05b2d6)"
+    },
+    "expo-skills": {
+      "repo": "expo/skills",
+      "reviewed_sha": "ab6cb2c58b0daa7555590d869dd1aa2ddb5d7632",
+      "reviewed_on": "2026-11-14"
     },
     "ferdinandobons-startup-skill": {
       "repo": "ferdinandobons/startup-skill",
@@ -213,6 +223,16 @@
     "trailofbits-skills": {
       "repo": "trailofbits/skills",
       "reviewed_sha": "149d7b21f4067765b82e67029730b42d228ef4b4",
+      "reviewed_on": "2026-11-14"
+    },
+    "twostraws-swiftui-agent-skill": {
+      "repo": "twostraws/SwiftUI-Agent-Skill",
+      "reviewed_sha": "f2920b63995263f57b3e198674e89a602efba6d2",
+      "reviewed_on": "2026-11-14"
+    },
+    "vercel-ai": {
+      "repo": "vercel/ai",
+      "reviewed_sha": "8ba3940d3dd1f3cd3c4365bbaec505c6ef0eb1e3",
       "reviewed_on": "2026-11-14"
     },
     "vercel-labs-agent-skills": {

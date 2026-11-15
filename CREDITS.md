@@ -65,6 +65,8 @@ Procedure carried over; anchored in the skill text.
 - upstream/getsentry-skills/skills/security-model (Apache-2.0, commit d04211a) — optional persistent SECURITY_MODEL.md (boundaries, invariants with IDs, reportable classes, narrow exclusions) read from the base revision by later reviews; owner confirms anything that suppresses findings; suspected gaps stay out of it — used in: app-security
 - upstream/trailofbits-skills/plugins/post-patch-validation (CC BY-SA 4.0 — ideas only, no wording) — fix validation against the vulnerable base and the patch, root-cause variants, preserved behaviour, stated evidence level — used in: app-security
 - upstream/stripe-ai/skills/stripe-best-practices (MIT) — verify settled payment status before fulfillment on async payment webhooks — used in: app-security
+- upstream/stripe-ai/skills/stripe-best-practices/{SKILL.md,references/billing.md} (MIT) — subscription lifecycle webhook handler required; automatic_tax collects nothing without an active registration — used in: app-security
+- RFC 8252 OAuth 2.0 for Native Apps (BCP 212, sections 6, 8.12 and appendix B; IETF Trust, facts restated) — no embedded user-agents, in-app browser tabs, PKCE required for public native clients — used in: app-security
 - third-party skill adapted from Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 — description rewritten for routing, template arrow z-order and legend placement aligned to spec (MIT; see LICENSE in this folder) — used in: architecture-diagram
 - third-party skill from Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 (MIT) — worked examples (web app, microservices, AWS serverless) shipped under resources/examples with the AWS legend moved below its region — used in: architecture-diagram
 - authored for this toolkit from a stated need (render-and-check) — a static geometry check script and a look-in-the-browser step for the spacing and legend rules — used in: architecture-diagram
@@ -277,16 +279,23 @@ Procedure carried over; anchored in the skill text.
 - upstream/everything-claude-code/skills/{postgres-patterns,docker-patterns} (MIT) — RLS auth call wrapped in a subquery; pinned tags, non-root, no secrets in layers, ports bound to 127.0.0.1 — used in: rule data-and-containers
 - upstream/supabase-agent-skills/skills/supabase-postgres-best-practices (MIT) — SECURITY DEFINER search_path pinning, RLS predicate indexing and recursion, transaction-mode pooler limits — used in: rule data-and-containers
 - upstream/supabase-agent-skills/skills/supabase/SKILL.md (MIT) — views bypass RLS unless created with security_invoker on PG15+ — used in: rule data-and-containers
+- upstream/supabase-agent-skills/skills/supabase/SKILL.md (MIT) — user_metadata is user-editable, TO authenticated alone is IDOR, UPDATE needs a SELECT policy, Storage upsert policies, user deletion keeps tokens valid — used in: rule data-and-containers
 - upstream/everything-claude-code/agents/flutter-reviewer.md (MIT) — mounted check after await, cancel subscriptions and controllers in dispose — used in: rule flutter
 - upstream/everything-claude-code/rules/dart/coding-style.md (MIT) — sealed classes with exhaustive switches — used in: rule flutter
+- Kotlin coroutines documentation (kotlinx.coroutines docs/topics/coroutines-cancellation.md, plus runCatching catching Throwable in the stdlib source; Apache-2.0) — rethrow CancellationException — used in: rule kotlin
+- upstream/android-skills/system/edge-to-edge/SKILL.md (Apache-2.0) — enableEdgeToEdge, one inset method via Scaffold padding, adjustResize for keyboards — used in: rule kotlin
+- Android developer docs, Android 15 behavior changes and the androidx.security release notes (CC-BY-2.5) — edge-to-edge enforced when targeting API 35; security-crypto deprecated in 1.1.0-alpha07 in favour of the Android Keystore — used in: rule kotlin
 - upstream/jeffallan-claude-skills/skills/spring-boot-engineer (MIT) — WebSecurityConfigurerAdapter removal, no block() in WebFlux — used in: rule java
 - Python 3.11–3.13 documentation (PEP 654 except*, PEP 695 type parameter syntax, PEP 698 override, PEP 702 warnings.deprecated; PSF-2.0) — version-gated typing and ExceptionGroup handling — used in: rule python
+- upstream/expo-skills/plugins/expo/skills/{eas-update,expo-dev-client,expo-native-ui,expo-web-to-native}/** (MIT) — OTA updates cannot add native code, runtime-version policy is a separate decision, EXPO_PUBLIC_ inlining, SecureStore over AsyncStorage, development builds beyond Expo Go's modules — used in: rule react-native
+- upstream/twostraws-swiftui-agent-skill/swiftui-pro/{SKILL.md,references/{api,data,hygiene}.md} (MIT) — soft deprecations, deployment-target checks, private @State under the Xcode 27 macro, @AppStorage in @Observable, element-based row identity, SwiftData with CloudKit, Keychain for secrets — used in: rule swift
 - upstream/everything-claude-code/skills/nextjs-turbopack (MIT) — proxy.ts is not a misnamed middleware.ts — used in: rule typescript-web
 - upstream/everything-claude-code/rules/react/security.md (MIT) — Server Actions are public endpoints — used in: rule typescript-web
 - upstream/vercel-labs-agent-skills/skills/{react-best-practices,composition-patterns} (MIT) — children/slots over render functions across RSC boundaries, React.cache() per-request dedup, Next.js after() — used in: rule typescript-web
 - upstream/vercel-next-js/skills (MIT) — Next.js 16 "use cache" / cacheLife / cacheTag and local version-matched docs in node_modules/next/dist/docs/ — used in: rule typescript-web
 - upstream/vercel-next-js/{skills/next-cache-components-adoption,docs/01-app/03-api-reference/04-functions/{navigation,prefetch}.mdx} (MIT) — cacheComponents rejects dynamic/revalidate/fetchCache exports and the old dynamicIO key; navigation()/prefetch() lose the unstable_ prefix in 16.4 — used in: rule typescript-web
 - upstream/vercel-labs-agent-skills/skills/react-view-transitions (MIT) — ViewTransition and addTransitionType stable from React 19.3; no react@canary under the App Router — used in: rule typescript-web
+- upstream/vercel-ai/skills/use-ai-sdk/SKILL.md (Apache-2.0) — bundled version-matched AI SDK docs, no model IDs from memory — used in: rule typescript-web
 - upstream/googlechrome-modern-web-guidance/skills/modern-web-guidance/guides/{ui-components/dialog,ui-behaviors/declarative-dialog-popover-control,ui-behaviors/light-dismiss-a-dialog,ui-behaviors/prevent-page-scroll-under-modal-dialog}.md (CC-BY-4.0, adapted) — native dialog without ARIA or scroll-lock workarounds, closedby fallback, popover over overlay libraries, invoker commands; the guide's popovertarget/commandfor double-toggle warning is not ported (the HTML activation algorithm runs one or the other), and popovertarget is kept as a fallback — used in: rule web-platform
 - upstream/googlechrome-modern-web-guidance/skills/modern-web-guidance/guides/{css/css-layout,ui-atoms/viewport-aware-dropdowns,forms/branded-select-styling}.md (CC-BY-4.0, adapted) — anchor positioning still limited with @supports gating, no 100vw for full width, customizable select degradation — used in: rule web-platform
 - upstream/googlechrome-modern-web-guidance/skills/modern-web-guidance/guides/ui-behaviors/{same-document-transitions,cross-document-transitions}.md (CC-BY-4.0, adapted) — view transition support split between same- and cross-document — used in: rule web-platform
@@ -331,6 +340,13 @@ The upstream has this capability and the toolkit does not (yet).
 - humanizer (MIT) — https://github.com/blader/humanizer
 - humanizer-zh (MIT) — https://github.com/op7418/Humanizer-zh
 - marketingskills-gtm (MIT) — https://github.com/coreyhaines31/marketingskills
+- shadcn (MIT) — https://github.com/shadcn-ui/ui
+- ai-sdk (Apache-2.0) — https://github.com/vercel/ai
+- playwright-cli (Apache-2.0) — https://github.com/microsoft/playwright-cli
+- swiftui-pro (MIT) — https://github.com/twostraws/SwiftUI-Agent-Skill
+- expo (MIT) — https://github.com/expo/skills
+- android-skills (Apache-2.0) — https://github.com/android/skills
+- stripe (MIT) — https://github.com/stripe/ai
 - webapp-testing (Apache-2.0) — https://github.com/anthropics/skills
 - agent-browser (Apache-2.0) — https://github.com/vercel-labs/agent-browser
 - mcp-builder (Apache-2.0) — https://github.com/anthropics/skills

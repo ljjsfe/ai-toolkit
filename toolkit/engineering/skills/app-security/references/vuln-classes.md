@@ -31,6 +31,7 @@ compliance.
 | Exceptional conditions | A10 | error handlers around auth and payment checks | the check fails open (exception → allow), partial state left after an error, rollback missing |
 | CSRF | — | cookie-authenticated state-changing endpoints | no token, `SameSite` or origin check on a state change |
 | Open redirect | — | `next`, `return_to`, `redirect_uri` parameters | arbitrary external redirect, especially in OAuth flows |
+| Mobile OAuth | — | native-app sign-in | an embedded WebView instead of the system browser or an in-app browser tab (Custom Tabs, iOS auth session); no PKCE |
 | File upload | — | upload handlers and storage | executable types served from the app origin, content type trusted from the client, no size limit, user-chosen file names |
 | Mass assignment | — | model binding from request bodies | see the "Where to look first" table in `SKILL.md` |
 
