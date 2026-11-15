@@ -150,9 +150,17 @@ def main(argv: list[str]) -> int:
     if not argv:
         print(__doc__)
         return 2
+    if argv[0] in ("-h", "--help"):
+        print(__doc__)
+        return 0
     failed = False
     for name in argv:
-        errors, warnings = check(Path(name).read_text(encoding="utf-8"))
+        try:
+            text = Path(name).read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as e:
+            print(f"error: cannot read {name}: {e}", file=sys.stderr)
+            return 2
+        errors, warnings = check(text)
         for w in warnings:
             print(f"{name}: warning: {w}")
         for e in errors:

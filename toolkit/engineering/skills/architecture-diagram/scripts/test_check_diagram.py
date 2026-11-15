@@ -28,6 +28,12 @@ def box(x: int, y: int, label: str) -> str:
 
 
 class CheckDiagramTests(unittest.TestCase):
+    def test_help_and_missing_file_exit_cleanly(self) -> None:
+        import contextlib, io
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(check_diagram.main(["--help"]), 0)
+            self.assertEqual(check_diagram.main(["/no/such/diagram.html"]), 2)
+
     def test_shipped_files_pass(self) -> None:
         for f in [RESOURCES / "template.html", *sorted((RESOURCES / "examples").glob("*.html"))]:
             with self.subTest(file=f.name):
