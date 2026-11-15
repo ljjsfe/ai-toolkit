@@ -5,7 +5,7 @@ description: >-
   missing requirements, sibling sweeps, weakened-gate checks, git-history context, and independent
   refutation of P0/P1s. For offensive security audits use app-security; for design/plan reviews use
   system-design.
-version: 1.4.1
+version: 1.4.2
 sources:
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/{action-class-rubric.md,subagent-template.md} (MIT) — P0–P3; check callers, guards and framework defaults [port "data loss, security hole" "framework defaults"]
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/* (MIT) — per-lens checklists (correctness sentinel and lifecycle-writer checks, reliability timeouts, retries and error-path leaks), anchored 25/50/75/100 confidence, per-persona do-not-flag lists [port "Sentinel meaning changes" "Every writer of a lifecycle state" "Deleted-but-referenced files" "Swallowed errors" "Leaks on error paths" "Retry storms" "Anchored confidence" "Do-not-flag list"]
@@ -41,8 +41,8 @@ A review that cries wolf is worse than none. Fewer, defensible findings beat a l
 3. **Sweep sideways.** For each real finding, search for the same pattern at every other call
    site or entry point, and grade severity on the worst instance found.
 4. **Weakened gates are findings in their own right.** List every change to tests, snapshots,
-   CI config, lint rules or type strictness in the diff and justify each one. Grep the diff
-   against the pattern catalogue in `references/gate-patterns.md`.
+   CI config, lint rules or type strictness in the diff and justify each one. First read
+   `references/gate-patterns.md`, then grep the diff against its pattern catalogue.
 5. **Review the change, not the file.** A real problem that this change neither introduced nor
    made reachable goes in the appendix marked `pre-existing`. "Made reachable" means the diff
    adds a caller or an input source, or removes a guard — cite that changed line as the
@@ -90,7 +90,7 @@ even when small.
 
 Read blame and log of the changed lines, earlier pull requests touching these files, and
 invariant comments in the modified files; a change that undoes an earlier fix is a finding.
-Commands: `references/scope-and-history.md`.
+Before running them, read `references/scope-and-history.md` (the commands).
 
 ## Severity and confidence
 
@@ -104,14 +104,14 @@ Commands: `references/scope-and-history.md`.
 P0/P1 must include the snippet, the failure walked end to end, and why existing guards (types,
 validation, framework defaults) do not prevent it. Cannot produce all three → demote or drop.
 
-Confidence uses the 0/25/50/75/100 anchors in `references/lenses.md`: 75 and up needs the
+Before scoring confidence, read the 0/25/50/75/100 anchors in `references/lenses.md`: 75 and up needs the
 quoted line, 50 goes to the appendix (a P0 at 50 is listed there as `unconfirmed P0` with
 what would confirm it — it never skips the P0/P1 evidence rule above), 25 and below is
 dropped.
 
 The repo's own conventions override any generic style rule; a design smell is a judgement call,
-never a hard violation. Where the repo is silent, use the smell vocabulary and fixes at the end
-of `references/lenses.md`, labelled "possible <smell>".
+never a hard violation. Where the repo is silent, read the smell vocabulary and fixes at the end
+of `references/lenses.md` and use them, labelled "possible <smell>".
 
 ## Output
 

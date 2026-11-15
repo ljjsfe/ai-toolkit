@@ -5,7 +5,7 @@ description: >-
   coverage and quality checks, a plan stress-test (survivorship, baselines, Simpson's), tracking
   gaps. Trigger on 数据分析, 指标口径, "why did X drop?" (no launch behind it), "is this data
   clean?". A/B tests or post-launch shifts: experiment-readout.
-version: 1.0.1
+version: 1.0.2
 sources:
   - upstream/ai-analyst-lab-ai-analyst/.claude/skills/question-framing (MIT) — goal, decision, metric, hypothesis ladder; the "what would you do differently" test; reporting vs analysis; justified dimensions; falsifiable success criteria; impact and feasibility ordering [port "what will you do differently" "that is reporting, not analysis" "each dimension needs a reason" "success criteria must be falsifiable" "informs a decision due soon"]
   - upstream/ai-analyst-lab-ai-analyst/.claude/skills/stress-test (MIT) — data availability before method, hypothesis, baseline, survivorship, segment reversal, concurrent changes, kill criteria, output fit, each with a pass/warn/fail verdict [port "check the data exists before the method" "a naive baseline" "who is excluded from the denominator" "reverse inside a segment" "what else changed in the same window" "what result would reject the hypothesis" "pass / warn / fail"]
@@ -42,7 +42,7 @@ enough; never let the design outgrow the question.
 
 Work through the five parts in order and write each down; read the matching section of
 `references/procedure.md` for the full checklist of any part you have not done before this
-session. Templates for the brief, spec, data report and requests are in `references/templates.md`.
+session. Before writing the brief, spec, data report or a request, read `references/templates.md`.
 
 ## 1. Frame — the question ladder
 
@@ -69,7 +69,7 @@ on the key. For a CSV extract:
 
 Then check coverage, freshness, completeness (flag nulls above 5%), duplicates, join fan-out
 (rows per grain key before and after each join), timezone, bot/test traffic and impossible values
-— blocker conditions per check in `references/procedure.md`. Mark each finding blocker / warning /
+— read the blocker conditions per check in `references/procedure.md` first. Mark each finding blocker / warning /
 info, then call proceed / proceed with caution / blocked: blockers stop the analysis; warnings
 travel into the findings as caveats. Never fix data silently: every dedupe, exclusion or
 imputation is written down with the rows it touched. Coverage, bots, upstream fan-out and
@@ -79,14 +79,14 @@ business rules stay manual; the profiler cannot see them.
 
 List what the analysis needs before looking at what exists. Mark each item available / partial /
 missing / derivable; derivable is not available, so a proxy carries a stated confidence. Try a
-workaround before any instrumentation request (P0–P3, steps in `references/procedure.md`), then
+workaround before any instrumentation request (P0–P3; read the steps in `references/procedure.md` first), then
 state feasibility: full, partial (which questions are deferred) or blocked.
 
 ## 5. Stress-test the plan
 
 Check the data exists before the method. Then give each check pass / warn / fail with a one-line
 reason: hypothesis, baseline, survivorship, segment mix (Simpson's), confounds, kill criteria,
-output fit (fail conditions in `references/procedure.md`).
+output fit (read the fail conditions in `references/procedure.md` first).
 
 Verdict (toolkit policy): any fail → fix before running; two or more fails → redesign from the
 ladder; warns only → run and carry them as caveats.

@@ -5,7 +5,7 @@ description: >-
   with zero invented facts ([NEED: ...] placeholders, competing openings, platform rules, de-AI
   editing pass, fresh-reader check). Trigger on 写文章, 发帖, 公众号, 推文, 写稿. Not for resumes
   (career-navigator) or AGENTS.md/CLAUDE.md (agent-instructions).
-version: 1.4.0
+version: 1.4.1
 sources:
   - upstream/khazix-skills/khazix-writer (MIT) — first-hand observation is what a model cannot supply; ask the writer for it [port "first-hand detail comes from the writer"]
   - upstream/marketingskills/skills/copywriting/references/ai-tells.md (MIT) — placeholder for missing proof instead of an invented fact; the swap test [port "never fill it with something" "apply the swap test"]
@@ -70,8 +70,8 @@ it is allowed to claim**. This skill fixes those two things and runs a de-AI lin
    - Then scan for the tells that survive a first pass — sentences shaped like wisdom,
      self-narration, tidy closers, staccato bursts, perfect balance between sections,
      reflexive specificity — and, without a profile, ask the writer where the piece should
-     be uneven; the table and the questions are in `references/second-pass-tells.md` (read
-     when a cleaned draft still reads as generated, or sounds like nobody);
+     be uneven; when a cleaned draft still reads as generated or sounds like nobody, first
+     read `references/second-pass-tells.md` (the table and the questions);
    - Preserve every fact, number, quote, condition, epistemic hedge (`may`, `reported`, `可能`,
      `据称`), the `PERSONAL.md` voice rules, and every `[NEED: ...]` marker verbatim.
    With a profile in place, also run `scripts/voice_metrics.py <corpus> --draft <draft>` and
@@ -107,10 +107,10 @@ Built from 3–10 pieces the writer actually published, stored in `toolkit/writi
 - **Measured, then instructed** — `scripts/voice_metrics.py <corpus folder>` gives per-language
   min / median / max for sentence-length spread, short/long share, punctuation, stock-phrase,
   contrast and nominalisation density; each range becomes an instruction in the profile, and
-  `--draft draft.md` flags where a draft leaves the range. Beat sheets and structure
-  archetypes, the forbidden map of the writer's own cases and lines, and a writer-specific
-  AI-flavour self-check are in `references/voice-distilling.md` (read when building or
-  refreshing the profile, or when a draft reads as AI and the profile cannot say why).
+  `--draft draft.md` flags where a draft leaves the range. When building or
+  refreshing the profile, or when a draft reads as AI and the profile cannot say why, first
+  read `references/voice-distilling.md` (beat sheets and structure archetypes, the forbidden
+  map of the writer's own cases and lines, a writer-specific AI-flavour self-check).
 
 ## Output
 

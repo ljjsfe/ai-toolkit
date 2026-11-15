@@ -4,7 +4,7 @@ description: >-
   Hold an open-ended design conversation before planning: one question + guess per turn, frame goal
   and constraints before proposing, 2–3 distinct mechanisms, and a live decision log. Trigger on
   "discuss the design", 讨论方案/聊设计; once settled use system-design, spec, or agent-architecture.
-version: 1.3.1
+version: 1.3.2
 sources:
   - upstream/superpowers/skills/brainstorming (MIT) — think wide privately, nothing built before approval [port "generate several privately" "nothing gets built during the discussion"]
   - upstream/superpowers/skills/brainstorming/{SKILL.md,builder-check-prompt.md} (MIT) — design played back in short chunks each ending with a what-is-missing question; builder check as a required subagent pass with a prompt and three-pile triage; sizing and splitting the work [port "end the chunk by asking what is wrong or missing" "dispatch a fresh subagent" "minor, my call" "say how big the work is" "several independent designs"]
@@ -67,7 +67,7 @@ Cover this ground through the one-at-a-time dialogue, never as a checklist read 
   contradiction with what the user says before building on it.
 - Before proposing, learn the landscape (generic category terms only; ask before sending
   anything off the machine), then get the numbered premises agreed or disagreed one by one.
-  Procedure: `references/dialogue.md`, "Grounding the frame".
+  Read `references/dialogue.md`, "Grounding the frame", before starting.
 - **Unfamiliar territory.** If the user cannot weigh the options (they say so, or two "no idea,
   you decide" answers in a row on a domain-judgement point), offer a blindspot pass — a decision
   map, not a lesson, of 3–7 decisions with your defaults. It is not when they are merely
@@ -94,8 +94,8 @@ best at, what it costs, and the bet it makes. Then recommend one, tied to the st
 Play the design back in 200–300-word chunks as parts form, marking what you filled in as your
 proposal, and end each chunk by asking what is wrong or missing. Log decisions whenever
 something settles, not at the end; before closing, check combinations of decisions once each.
-Not converging after several rounds → step back to the frame. Detail: `references/dialogue.md`,
-"Playback and convergence".
+Not converging after several rounds → step back to the frame. Before the first playback, read
+`references/dialogue.md`, "Playback and convergence".
 
 ## Step 5 — Size and split
 
@@ -127,8 +127,8 @@ Show the log whenever it changes. At the end, write the design doc so a builder 
 from it without the conversation. For a project-sized design, run the builder check first:
 dispatch a fresh subagent with no
 conversation history on the saved doc, sort its questions into three piles (answered already ·
-minor, my call · the user's) and bring only the user's pile back, in one message. Prompt and
-triage rules: `references/builder-check.md` — read when the doc is written.
+minor, my call · the user's) and bring only the user's pile back, in one message. When the
+doc is written, read `references/builder-check.md` (prompt, triage rules) before dispatching.
 
 ```
 DECISION LOG

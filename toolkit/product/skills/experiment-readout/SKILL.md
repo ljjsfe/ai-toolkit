@@ -4,7 +4,7 @@ description: >-
   Design and read product A/B tests and launch metric shifts: pre-registered primary/guardrail
   rules, SRM halt gate, power/sample arithmetic, bias-vs-noise separation, and multiple-comparison
   correction. Trigger on 实验结果, AB测试读数, "did this launch work?". For AI evals use agent-evals.
-version: 1.2.1
+version: 1.2.2
 sources:
   - upstream/ai-analyst-lab-ai-analyst/.claude/skills/srm-check (MIT) — SRM as a blocking gate, per-period SRM, investigation paths [port "sample ratio mismatch halts the readout" "per-period check" "where to look"]
   - upstream/ai-analyst-lab-ai-analyst/.claude/skills/guardrails (MIT) — clear / trade-off / degraded verdicts, net impact in shared units [port "the bound crosses the tolerance" "net-impact line"]
@@ -44,8 +44,8 @@ Run the gates in order; a gate that fails stops the readout or changes what it m
 - **Power.** From the baseline rate or variance, the MDE and daily eligible traffic, compute the
   sample and the days to reach it with `expstats.py power-prop --baseline <rate> --mde-rel <lift> --daily <eligible/day>` (or
   `power-mean --sd <sd> --mde-abs <effect>`), adding `--ratio <treatment/control>` for an
-  uneven split. Halving the MDE quadruples the sample. A hand sanity check is in
-  `references/assignment-and-power.md`.
+  uneven split. Halving the MDE quadruples the sample. To sanity-check by hand, read
+  `references/assignment-and-power.md` first.
 - **Not viable forces a decision.** If the needed run is longer than the team will wait, do not
   launch and hope: choose a larger MDE worth shipping for, a more sensitive metric, more traffic,
   or a non-randomised method (Gate 6). Record which.
@@ -64,8 +64,8 @@ Run the gates in order; a gate that fails stops the readout or changes what it m
 - Threshold: the ai-analyst skills block at p ≤ 0.01 for a single final check and use
   p < 0.0005 while monitoring. **When checking many periods, days or segments, correct for the
   number of checks** (Bonferroni or Holm), or use that stricter threshold.
-- On failure: stop. Report expected vs observed and where to look (see
-  `references/assignment-and-power.md`, which keeps the per-period check). Offer a clean time
+- On failure: stop. Report expected vs observed and where to look (read
+  `references/assignment-and-power.md` first: it keeps the per-period check). Offer a clean time
   window only if the per-period check shows one.
 - **Assignment checks, beside SRM** — read `references/assignment-and-power.md` and run all
   four: units in more than one variant (flag above 0.1% of exposed with at least 5), a flag

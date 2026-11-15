@@ -5,7 +5,7 @@ description: >-
   test authorisation with a second identity/tenant, and report only findings with a concrete
   attack path. Use before shipping auth, tenancy, payments, or webhooks (diff review: code-review;
   LLM/tool agents: agent-security).
-version: 1.3.1
+version: 1.3.2
 sources:
   - upstream/gstack/cso (MIT) — boundary and invariant census first, sibling propagation, exploitability gating, three separate judgements, independent re-derivation, webhook review order, two-user and two-tenant negative controls [port "map before you hunt" "tested with a second identity" "look for its siblings" "are separate judgements" "re-derive the result" "trace the whole middleware and handler chain"]
   - upstream/gstack/cso/{SKILL.md,sections/audit-phases.md} (MIT) — OWASP Top 10 coverage map, secrets in git history, dependency supply chain, CI pull_request_target, reproduction contract, complete / partial / not-assessed report header [port "Copy this table into the report" "Secrets in code and git history" "Dependency supply chain" "pull_request_target or workflow_run" "Reproduction contract" "the same request is refused" "complete, partial or not assessed"]
@@ -49,7 +49,7 @@ sources:
 
 ## Coverage beyond authorisation
 
-After the map, walk the OWASP Top 10 class table in `references/vuln-classes.md` and mark
+After the map, read `references/vuln-classes.md`, walk its OWASP Top 10 class table and mark
 every row assessed, not assessed (with the reason) or n/a in the report. Read its
 false-positive patterns and do-not-flag list before any candidate goes in the findings.
 
@@ -85,7 +85,7 @@ attack trips a specific security assertion (B received A's data), not just a non
 nothing under the harness was changed to get there. Once a fix exists, **fix confirmed** means
 the same request is refused and the legitimate control still passes, run on the vulnerable base
 and on the patch, with the evidence level reached stated. Anything less is **traced** or
-**plausible**. Steps and rules: `references/reproduction.md` — read before running one.
+**plausible**. Before running one, read `references/reproduction.md` (steps and rules).
 
 ## Optional output — SECURITY_MODEL.md
 

@@ -4,7 +4,7 @@ description: >-
   Scan a market for competitors and unmet demand: separate observed (dated source) / inferred /
   implication, treat "not seen" != "absent", rank behavioural signals (workarounds, rejected PRs)
   over upvotes, and name existing tools before killing an idea. Interviews: customer-discovery.
-version: 1.2.0
+version: 1.2.1
 sources:
   - upstream/marketingskills/skills/{competitor-profiling,competitors} (MIT) — observed / inferred / implication, not observed is not absent, dated snapshots, switching evidence both ways [port "three labelled layers for every competitor fact" "not observed is not absent" "switching evidence both ways"]
   - upstream/geekjourneyx-github-demand-radar/references/{rice-jtbd-rubric.md,pr-scan-guide.md,negative-filters.md} (MIT) — job inference, workaround and rejected-PR signals, not-noise table, standalone-tool ease [port "the request is not the need" "a pull request the maintainer rejected" "do not discard silent" "only when the decision is a tool or wrapper"]
@@ -56,9 +56,9 @@ Two jobs, one discipline: **who is already here** (competitors) and **what is st
 
 ## Demand
 
-1. Collect signals: GitHub issues and closed-unmerged PRs (the five `gh api search/issues`
-   queries and the noise filters are in `references/github-demand.md`, read when GitHub is in
-   scope; `scripts/demand_filter.py` applies the mechanical drops and prints each reason), Reddit, HN, arXiv,
+1. Collect signals: GitHub issues and closed-unmerged PRs (when GitHub is in scope, first
+   read `references/github-demand.md` for the five `gh api search/issues` queries and the noise
+   filters; `scripts/demand_filter.py` applies the mechanical drops and prints each reason), Reddit, HN, arXiv,
    Techmeme and Polymarket via `last30days` if installed (else dated web search), reviews and
    domain forums. Keep `signal · URL · quote · date · platform · type`. Do not discard silent
    reactions (reach), "won't fix" replies (confirmed gap) or issues open for years (chronic pain).

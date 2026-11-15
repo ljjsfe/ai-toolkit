@@ -4,7 +4,7 @@ description: >-
   Threat-model and harden an agent with tools, MCP servers, file/network access, credentials, or
   money: untrusted text and self-notes as data, code-level authority, deny-by-default, human-gated
   destructive calls, and supply-chain checks. For surrounding web/API security use app-security.
-version: 1.2.1
+version: 1.2.2
 sources:
   - upstream/everything-claude-code/skills/{agent-security-hardening,mcp-dependency-review,prompt-caching-strategy,llm-trading-agent-security} (MIT) — deny-wins policy, path containment, sentinel-secret test, MCP pinning tiers, cache keys are not access checks, trading limits [port "deny wins, and the unclassifiable is denied" "is_relative_to" "sentinel secret" "pin the server version" "authorise before the lookup" "per-action and rolling"]
   - upstream/everything-claude-code/skills/{agent-security-hardening,llm-trading-agent-security} (MIT) — trust-boundary map (source, parser, validator, side effect); identifier allowlists and argv separation; env-value validation; private temp files; tool-output bounding with truncation markers and control-character stripping; a tests-cover-it completion gate per hardening step; transaction deadlines and MEV protection [port "Trust-boundary map" "source → parser → validator → side effect" "allowlist pattern with a hard length cap" "separate argv elements after" "Reject missing or whitespace-only environment values" "created atomically with mode" "append a truncation marker with the original size" "strip control characters and terminal escape sequences" "a tests-cover-it completion gate per step" "short transaction deadline" "private mempool or protected RPC for MEV protection" "Final verification gate"]
@@ -127,8 +127,8 @@ step, the final verification gate, trading-agent transaction protections.
 - Per-action and rolling (e.g. 24h) spend limits enforced outside the model.
 - Circuit breaker: halt on consecutive losses or a drawdown threshold; resume only by a human.
 - Separate, minimally funded credentials for the agent; never the main account's keys.
-- Per-transaction protections — simulation, minimum received from an independent price,
-  slippage caps, deadlines, MEV routing — are in `references/hardening.md` (trading section).
+- Before wiring any transaction path, read the trading section of `references/hardening.md`
+  (simulation, minimum received from an independent price, slippage caps, deadlines, MEV routing).
 
 **Evaluation and self-improvement loops**
 - Rubrics, test suites and evaluator code are locked from the agent (see `agent-evals`); an

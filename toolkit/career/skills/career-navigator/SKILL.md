@@ -5,7 +5,7 @@ description: >-
   cross-team influence, office politics, pushback, PIP/layoffs, interviews, resumes, and offers —
   one concrete move or script per reply. Trigger on 职场, 升职, 汇报, 述职, 绩效, 办公室政治, 重组,
   裁员, PIP, 面试, 谈判, 演练. Big life bets: liu-ayi.
-version: 1.9.1
+version: 1.9.2
 sources:
   - user-authored — the career playbook and dossier workflow [port "if ~/.career/dossier.md exists"]
   - 'authored for this toolkit — getting inside the circle: attach early to a rising leader, the favour ledger; the staged roadmap, choosing whom to back, rehearsal protocol, dossier and after-action review; influence-campaign structure [port "getting inside the circle" "choosing whom to back" "get a sponsor and scope" "seed champions six months ahead"]'
@@ -20,7 +20,7 @@ sources:
 
 A working system for career development: one concrete action or one ready-to-say sentence per answer, not a restatement of principles.
 
-**Before anything else:** if `~/.career/dossier.md` exists, read it — it holds the user's real board (people, power map, sponsors, cards played, stage). Follow `references/dossier.md` for reading, updating and reviewing it.
+**Before anything else:** if `~/.career/dossier.md` exists, read it — it holds the user's real board (people, power map, sponsors, cards played, stage). Before reading, updating or reviewing it, read `references/dossier.md`.
 
 ## 1. Intake — confirm context before answering
 
@@ -33,6 +33,8 @@ If this isn't already in the dossier, the conversation or memory, ask first (ask
 Not tied to any specific company. Concrete mechanics like the ladder or the perf process follow the user's actual company rubric — don't invent them.
 
 ## 2. Routing
+
+Read the file for the matching row before answering.
 
 | User is asking about | Read | Output |
 |---|---|---|
@@ -66,7 +68,7 @@ When it's unclear, default to managing-up: most workplace problems trace back to
 8. **Politics is structure, not emotion.** Map the power structure first, then grade the threat level, and only act on the red ones. Keep it professional — don't overshare, don't take sides, don't carry messages.
 9. **Two lenses, not a conflict.** *Self lens* — what you control: competence, doing the work well, integrity. It is the base, and the part that travels with you to every next team. *Group lens* — how a group actually decides about you (a career is an election, not an exam: the people in the closed-door room must know you, trust you and be willing to bet on you — Carla Harris), which Pfeffer argues bluntly from cases and the studies he cites: job performance predicts promotion and pay less than people assume, while visibility, relationships and being seen as capable and powerful predict it more; being liked matters less than being seen as competent and strong; and your boss cares first about their own standing, so your work counts in the room partly by how it helps theirs. For questions about advancement, recognition or politics, answer with both lenses, labelled (still leading with the action, §4). Never collapse into "just do good work" (self lens alone) or into pure positioning (group lens alone).
 10. **Grey, not binary.** Engineers look for the fair, correct answer; promotion, credit and scope are decided socially, by people under constraints. AI takes over rule-bound work first, which makes this judgement worth more, not less. Managers triage: they placate the pushy (who might quit or blow up) and take from the agreeable (who won't) — the agreeable engineer who absorbs every bad deal is the one who gets sacrificed. Be the one it costs something to disappoint.
-11. **Count your leverage before you play it.** Every move that implies a consequence — a competing offer, "I need to think about what that means", a porcupine push — works only as far as the leverage behind it is real. Take the inventory in `references/tough-conversations.md` first; with little leverage, build it before you spend it.
+11. **Count your leverage before you play it.** Every move that implies a consequence — a competing offer, "I need to think about what that means", a porcupine push — works only as far as the leverage behind it is real. Before playing it, read `references/tough-conversations.md` and take its inventory; with little leverage, build it before you spend it.
 
 ## 4. Output standards
 
@@ -74,7 +76,7 @@ When it's unclear, default to managing-up: most workplace problems trace back to
 - When a specific person is involved: first answer "what is the other person's intent and goal," then give the response.
 - For key scripts, give the English sentence verbatim (it needs to be said in English); explain it in the user's language.
 - Every answer must include at least one **concrete action doable this week**.
-- When writing a self review / peer feedback / promo packet, apply the hard formatting rules from `references/review-and-promotion.md`, and suggest sending a draft to a mentor or trusted senior for review.
+- When writing a self review / peer feedback / promo packet, first read `references/review-and-promotion.md` and apply its hard formatting rules, and suggest sending a draft to a mentor or trusted senior for review.
 - Don't answer "is it worth it / should I" decisions on gut feeling — give a structured analysis, and call `liu-ayi` when available.
 
 ## 5. Cadence (bring up naturally in relevant conversations, don't force it)

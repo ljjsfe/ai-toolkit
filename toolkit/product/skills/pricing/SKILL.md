@@ -4,7 +4,7 @@ description: >-
   Set, test, and change pricing from willingness-to-pay evidence: pick value metric before tiers,
   segment distributions (never average WTP), sort leader/filler/killer features, and stage price
   increases to new cohorts first. Trigger on 定价, 涨价, 收费方案. Competitor prices: market-scan.
-version: 1.2.0
+version: 1.2.1
 sources:
   - upstream/wondelai-skills/monetizing-innovation/SKILL.md (MIT) — value metric before level, segment by willingness to pay, zero pushback as the under-pricing signature [port "value metric, then packaging, then the number" "never average willingness to pay" "zero pushback means too cheap"]
   - upstream/wondelai-skills/monetizing-innovation/references/wtp-conversations.md (MIT) — top-box scoring, haircut stated numbers, curve not average, red flags in answers [port "count only 5s" "haircut them" "quoting the market back"]
@@ -56,9 +56,9 @@ trade-offs: ranking or allocating 100 points). Sample-size heuristic from the so
 B2B conversations per segment (under 10, directional); B2C needs 150–300 survey respondents
 per segment, about 200 for a conjoint; before sending one, run the survey checks in
 the survey-design reference of `customer-discovery` (is a survey the right tool, pilot,
-report sample and non-response). The question scripts in order, the simplified conjoint
-and the full sizing table are in `references/wtp-scripts.md` (read when preparing a WTP
-conversation or survey); `scripts/conjoint_count.py` counts win rates per level from the
+report sample and non-response). When preparing a WTP conversation or survey, first
+read `references/wtp-scripts.md` (the question scripts in order, the simplified conjoint,
+the full sizing table); `scripts/conjoint_count.py` counts win rates per level from the
 choice tasks.
 
 ## Step 2 — Value metric

@@ -4,7 +4,7 @@ description: >-
   Validate demand with real users before building: pre-written kill conditions, past-behaviour-only
   interview scripts, commitment-graded evidence per segment, and priced fake-door/concierge tests.
   Trigger on 用户访谈, 验证需求, "would people pay?". Market map: market-scan; scope: product-scoping.
-version: 1.2.0
+version: 1.2.1
 sources:
   - upstream/sreshtalluri-mom-test/skills/mom-test (MIT) — past-behaviour rule, reflexes for bad data, evidence ladder [port "ask only about past and current behaviour" "grade every fact on the ladder"]
   - upstream/sreshtalluri-mom-test/skills/mom-test-check-questions (MIT) — question failure tests and reframe shapes [port "rewrite it into one of the shapes"]
@@ -86,10 +86,10 @@ Also ask the status-quo question: what do they do now, even badly, and what does
 ## Step 3 — Debrief on the ladder
 
 Split notes into **facts** (what the customer said or did, near-verbatim) and
-**interpretations** (anyone's guess about meaning). Grade each fact on a tier here and on
-its rung in `references/ladder-and-scorecard.md` (read when debriefing: the 19 rungs break
-ties and the 15-row interview scorecard can disqualify a leading or pitched interview from
-the count):
+**interpretations** (anyone's guess about meaning). Before grading, read
+`references/ladder-and-scorecard.md` (its 19 rungs break ties; its 15-row interview scorecard
+can disqualify a leading or pitched interview from the count), then grade each fact on a tier
+here and on its rung there:
 
 | tier | signals | counts as |
 |---|---|---|
@@ -135,9 +135,8 @@ heuristic from the upstream (adjust per segment): 5–15% visitor-to-signup can 
 warm niche traffic; under 1% on cold paid traffic is often a kill signal for that offer. After
 the call to action, say honestly that it is not built yet.
 
-A survey counts how common something is; it does not explain why. Before writing or reading
-one, use `references/survey-design.md` (read when a survey is proposed or its results are
-being reported).
+A survey counts how common something is; it does not explain why. When a survey is proposed,
+or before writing, reading or reporting one, read `references/survey-design.md`.
 
 ## Step 6 — Practice, prep and outreach
 
@@ -148,9 +147,9 @@ being reported).
 - **Next question:** classify what the customer just said, list what is still missing, and
   rank follow-ups by stage.
 
-The persona rules, the prep sheet and the ranking table are in `references/practice.md` (read
-when rehearsing, preparing a call, or choosing a follow-up). Message rules for cold
-outreach, intros and follow-ups are in `references/outreach.md` (read before writing one).
+Before rehearsing, preparing a call or choosing a follow-up, read `references/practice.md`
+(persona rules, prep sheet, ranking table). Before writing cold outreach, an intro or a
+follow-up message, read `references/outreach.md` (message rules).
 
 Where demand might exist: market-scan. What goes in the first version: product-scoping.
 Price-point evidence: pricing.

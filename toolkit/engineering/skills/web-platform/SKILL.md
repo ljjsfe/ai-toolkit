@@ -5,7 +5,7 @@ description: >-
   dialog/popover/invokers/anchor/select over JS libraries, INP/LCP/CLS and long tasks, forms and
   autofill, passkeys, CSP/Trusted Types, Temporal dates, legacy modernising. Not for visual design
   (impeccable), mobile feel (mobile-native), React/Next (typescript-web rule), webapp-testing.
-version: 1.0.0
+version: 1.0.1
 sources:
   - upstream/googlechrome-modern-web-guidance/skills/modern-web-guidance/SKILL.md (CC-BY-4.0, adapted) — Baseline policy (Widely available needs no fallback, otherwise follow the fallback unless the project states a policy; Baseline-year targets), conditional polyfills, verify legacy-scan findings before modernising [port "a Baseline YYYY target" "keep the library as the fallback" "drop false positives"]
   - upstream/googlechrome-modern-web-guidance/skills/modern-web-guidance/guides/performance/{performance,identify-inp-causes,identify-heavy-scripts,break-up-long-tasks,schedule-tasks-by-priority}.md (CC-BY-4.0, adapted) — field attribution with web-vitals, INP subparts, LoAF style vs layout split, deadline-based yielding with a setTimeout fallback, task budget [port "Split the slow interaction into its three subparts" "Yield on a deadline, not a counter" "puts it at the front" "A console log is not field data"]
@@ -46,6 +46,8 @@ nobody measured.
    load any polyfill conditionally, never unconditionally.
 
 ## Route
+
+Read the file for the matching row before answering.
 
 | task | read |
 |---|---|

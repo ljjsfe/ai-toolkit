@@ -126,9 +126,7 @@ Procedure carried over; anchored in the skill text.
 - upstream/jeffallan-claude-skills/skills/architecture-designer/references/nfr-checklist.md (MIT) — numeric non-functional requirements before design; RPO and RTO as separate targets — used in: system-design
 - upstream/everything-claude-code/skills/redis-patterns (MIT) — cache stampede named with a concrete fix — used in: system-design
 - upstream/jeffallan-claude-skills/skills/cloud-architect/references/multi-cloud.md (MIT) — lock-in tier per service type; multi-cloud only for a named exit scenario — used in: system-design
-- upstream/gstack/plan-eng-review (MIT; retired upstream 2026-11-07 as a standalone skill after a null eval; its method lives on as /autoplan Phase 3) — boring-by-default test — used in: system-design
 - upstream/gstack/review (MIT) — two-real-callers rule for extraction — used in: system-design
-- upstream/gstack/plan-eng-review/sections/review-sections.md (MIT; retired upstream 2026-11-07 as a standalone skill after a null eval; its method lives on as /autoplan Phase 3) — complexity smell (8+ files or 2+ new classes), the critical-gap rule (no test, no handling, silent failure) — used in: system-design
 - upstream/compound-engineering-plugin/skills/ce-doc-review (MIT) — adequate needs no change; name the downstream cost — used in: system-design
 - upstream/compound-engineering-plugin/skills/ce-doc-review/references/{personas/*,synthesis-and-presentation}.md (MIT) — coherence, feasibility and adversarial persona reviewers with independent verification — used in: system-design
 - upstream/mattpocock-skills/skills/engineering/{domain-modeling,triage,codebase-design} (MIT) — decision-record gate, prior-solution search, deletion and seam tests — used in: system-design
@@ -273,7 +271,7 @@ Procedure carried over; anchored in the skill text.
 - upstream/xbtlin-ai-berkshire/codex-skills/wechat-article (MIT) — every formula or number gets a plain-language gloss; when editor and reader disagree, the reader wins — used in: writing
 - upstream/anthropics-skills/skills/doc-coauthoring (licence not stated for this skill; method only) — test the draft on a fresh agent that sees only the draft — used in: writing
 - upstream/{blader-humanizer,op7418-humanizer-zh} (MIT) — the de-AI editing pass (external skills in toolkit/external.yaml) and the inline structural fallback checklist when external skills are absent — used in: writing
-- upstream/everything-claude-code/rules/common/{git-workflow,coding-style}.md (MIT) — commit type list, immutable updates, validation at system boundaries — used in: rule core
+- upstream/everything-claude-code/rules/common/{git-workflow,coding-style}.md (MIT) — commit type list, validation at system boundaries — used in: rule core
 - C++ Core Guidelines (CP.44, CP.51, F.16, F.45, ES.84; MIT) — unnamed lock guards incl. unique_lock member shadowing, lambda and coroutine reference lifetimes, views over temporaries — used in: rule cpp
 - upstream/everything-claude-code/agents/database-reviewer.md (MIT) — structure from this source and the next; cursor pagination instead of OFFSET — used in: rule data-and-containers
 - upstream/everything-claude-code/skills/{postgres-patterns,docker-patterns} (MIT) — RLS auth call wrapped in a subquery; pinned tags, non-root, no secrets in layers, ports bound to 127.0.0.1 — used in: rule data-and-containers

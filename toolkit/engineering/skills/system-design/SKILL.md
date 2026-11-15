@@ -5,14 +5,12 @@ description: >-
   cost, failure domains), or review an existing technical design/plan without inventing findings.
   Not for unsettled framing (design-discussion), behavioral specs (spec), agent loops
   (agent-architecture), or diffs (code-review).
-version: 1.2.0
+version: 1.3.0
 sources:
   - upstream/jeffallan-claude-skills/skills/architecture-designer/references/nfr-checklist.md (MIT) — numeric non-functional requirements before design; RPO and RTO as separate targets [port "numbers before boxes" "resilience as three numbers"]
   - upstream/everything-claude-code/skills/redis-patterns (MIT) — cache stampede named with a concrete fix [port "cache stampede when a hot key expires"]
   - upstream/jeffallan-claude-skills/skills/cloud-architect/references/multi-cloud.md (MIT) — lock-in tier per service type; multi-cloud only for a named exit scenario [port "grade each one's lock-in" "is not a reason for multi-cloud"]
-  - upstream/gstack/plan-eng-review (MIT; retired upstream 2026-11-07 as a standalone skill after a null eval; its method lives on as /autoplan Phase 3) — boring-by-default test [port "boring by default"]
   - upstream/gstack/review (MIT) — two-real-callers rule for extraction [port "two verified real callers"]
-  - upstream/gstack/plan-eng-review/sections/review-sections.md (MIT; retired upstream 2026-11-07 as a standalone skill after a null eval; its method lives on as /autoplan Phase 3) — complexity smell (8+ files or 2+ new classes), the critical-gap rule (no test, no handling, silent failure) [port "touches 8 or more files or adds 2 or more new classes" "no test, no error handling, and it would fail silently"]
   - upstream/compound-engineering-plugin/skills/ce-doc-review (MIT) — adequate needs no change; name the downstream cost [port "is a valid outcome" "every finding names its cost"]
   - upstream/compound-engineering-plugin/skills/ce-doc-review/references/{personas/*,synthesis-and-presentation}.md (MIT) — coherence, feasibility and adversarial persona reviewers with independent verification [port "the document disagreeing with itself" "whether it can be built as written" "whether it is *right*" "a reviewer's claim is a lead, not a finding"]
   - upstream/mattpocock-skills/skills/engineering/{domain-modeling,triage,codebase-design} (MIT) — decision-record gate, prior-solution search, deletion and seam tests [port "record a decision only when it is hard to reverse" "check it does not already exist" "deletion test" "one adapter behind an interface"]
@@ -83,10 +81,10 @@ real cost.
 
 ## Review mode — an existing design, plan or refactor
 
-Evidence on review ceremony is thin and points one way: gstack retired its standalone plan-review
-skill on 2026-11-07 after plain Opus 5.5 found 15 of 16 seeded flaws unaided and the skill cost
-7.1 times more. So spend the effort on the numbered checks below and the cost of each finding,
-and keep step 8's persona passes for large or risky documents only.
+Review ceremony does not pay on current models: gstack retired its plan-review skill
+(2026-11-07) after plain Opus 5.5 found 15 of 16 seeded flaws unaided at 1/7 of the cost, and
+superpowers dropped subagent plan reviews (v5.0.6) after 5 versions x 5 trials showed the same
+plan quality with or without them. Spend the effort on the checks below.
 
 1. **"This is fine" is a valid outcome.** Judge whether the document would guide correct work,
    not how detailed it is; do not invent findings.
@@ -97,22 +95,15 @@ and keep step 8's persona passes for large or risky documents only.
 5. Check the numbers the design states, if any, and check that components and failure handling
    honour any active `spec` (living capability specs or change deltas); review mode does not demand
    a full estimate.
-6. **Count the moving parts.** If the plan touches 8 or more files or adds 2 or more new classes
-   or services (count the proposed change, not files read for context), stop before the other
-   tests and ask whether a smaller arrangement with the same features and contracts exists; put
-   each proposed cut to the user separately.
-7. **Critical gap rule.** For each new or changed path, name one realistic production failure and say
-   whether it has a test, has error handling, and whether the user would see a clear error or
-   nothing. A failure with no test, no error handling, and it would fail silently is a **critical
-   gap**: it blocks the plan until one of the three is fixed.
-8. **Large or risky documents get persona passes.** Run coherence, feasibility and adversarial
-   reviewers as separate fresh subagents, then verify every claim yourself before it becomes a
-   finding. Lenses, prompt and verification steps: `references/review-personas.md` — read when
-   the plan is large or touches money, auth, migrations or a public contract.
+6. **Self-review inline before reporting:** placeholders (TBD, "similar to X"), internal
+   contradictions, scope beyond the goal, ambiguous steps a builder would have to guess.
+7. **Persona subagent passes only when the user asks for them.** If asked, run coherence,
+   feasibility and adversarial reviewers as fresh subagents and verify every claim before it
+   becomes a finding; read `references/review-personas.md` first for the lenses, prompt and
+   verification steps.
 
 | test | ask |
 |---|---|
-| boring by default | new technology where known technology would do? A team affords about three innovations — which is this spending? |
 | essential vs accidental | which complexity comes from the problem, which from the solution? Cut the second |
 | deletion test | if this layer or module were deleted, would complexity vanish or move into callers? |
 | seam test | one adapter behind an interface is a hypothetical seam; two (often production + a test fake) make it real |
@@ -125,7 +116,7 @@ a real trade-off.
 ## Output
 
 Review mode: verdict (proceed / proceed with changes / rethink) · findings by consequence ·
-critical gaps · what already exists ·
+what already exists ·
 open questions that change the design. Design mode:
 
 ```

@@ -4,7 +4,7 @@ description: >-
   Ship safe production changes (expand-migrate-contract schema/data migrations, idempotent retries,
   deploys, rollbacks, burn-rate alerts) and run live incidents (mitigate first, capture evidence,
   confirm signal recovery). For non-urgent bugs use debugging.
-version: 1.2.1
+version: 1.2.2
 sources:
   - upstream/everything-claude-code/skills/{database-migrations,docker-patterns} (MIT) — expand-migrate-contract, CONCURRENTLY, batched backfills [port "expand → migrate → contract" "create index concurrently" "backfills in keyset batches"]
   - upstream/everything-claude-code/skills/database-migrations (MIT) — forward-only migrations in production; no NOT NULL column without a default on a live table [port "migrations are forward-only in production" "never add a not null column without a default"]
@@ -77,8 +77,8 @@ Alert on error-budget burn rate over multiple windows, not a raw error-rate thre
 writing what happens when the error budget runs out (exhausted: only security patches and fixes
 that restore reliability ship); capacity alerts on projected exhaustion (`predict_linear`);
 track data freshness apart from latency; logs carry a correlation ID and an entry-point field;
-trust `X-Forwarded-For` only behind a configured trusted proxy chain. Windows, the budget table
-and proxy arithmetic: `references/deploys-and-alerting.md`.
+trust `X-Forwarded-For` only behind a configured trusted proxy chain. Before setting alerts
+or budgets, read `references/deploys-and-alerting.md` (windows, budget table, proxy arithmetic).
 
 ## When something breaks — iron laws
 
@@ -103,7 +103,7 @@ and proxy arithmetic: `references/deploys-and-alerting.md`.
 |---|---|---|
 | outage or degradation | engineering on call | status updates at a fixed cadence |
 | data loss or corruption | database owner + engineering lead | stop writes that spread the damage before repairing |
-| security breach | security + engineering + legal | revoke or rotate exposed credentials; isolate rather than wipe; start the legal clocks (GDPR 72 h for a controller — see `references/incident-clocks.md`) |
+| security breach | security + engineering + legal | revoke or rotate exposed credentials; isolate rather than wipe; start the legal clocks (GDPR 72 h for a controller — read `references/incident-clocks.md` first) |
 | compliance | compliance + legal + leadership | per the regulation or contract |
 | third-party failure | engineering + product + vendor | vendor status and contractual SLA |
 | runaway or compromised AI agent | engineering + owner of spend and data | kill it in code — see `agent-security` |

@@ -4,7 +4,7 @@ description: >-
   Audit a stock valuation (never buy/sell advice): require dated quote + diluted share count, read
   price-implied expectations first, cross-check >=2 method families, audit terminal value vs ROIC/r/g,
   and split return into fundamentals vs rerating. Trigger on 估值, 贵不贵, 合理价值, "is X cheap?".
-version: 1.4.1
+version: 1.4.2
 sources:
   - upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — structure of §1 (snapshot rows, red flags); method-by-business pairings (reorganised); 3%, 5%, 25%, ±30% thresholds; same-family rule; joint-upgrade and double-count checks; DCF shown only when its inputs can be written out; return split incl. EV path; no-rerating case [port "over 3% apart" "apart by more than about 5%" "more than about 25% apart" "roughly ±30% off the anchor" "only a different family counts" "it is being paid for twice" "counts as a value only when its ledger is complete" "no-rerating case" "split in currency through the bridge"]
   - upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — a named data route for quote, consensus and share count; currency conversion for ADRs and foreign issuers; a unit-magnitude check; scenarios that change operating inputs, not only the multiple; A/B/C grades for forward-revenue evidence; the mid-cycle EPS formula and contract-coverage adjustment for cyclicals [port "name the route before the numbers" "convert EPS and every denominator into the price currency" "check the magnitude before writing" "changes only the multiple is a multiple sensitivity" "grade each block of forward revenue" "median net margin over a full cycle" "contract-locked part"]
@@ -158,8 +158,8 @@ flows: WACC for firm cash flows, cost of equity for equity cash flows.
 - Show a grid of r against g. Its centre cell must equal the base-case value; if it does not,
   the model is wrong somewhere.
 - r is built, not asserted: CAPM cost of equity, after-tax cost of debt, market-value weights.
-  The build table, its traps and the validation run are in `references/wacc-and-dcf.md` (read
-  when a DCF enters the answer); `scripts/dcf_check.py wacc` prints the build and
+  When a DCF enters the answer, first read `references/wacc-and-dcf.md` (the build table, its
+  traps, the validation run); `scripts/dcf_check.py wacc` prints the build and
   `scripts/dcf_check.py check model.json` fails a model whose value does not follow from its
   inputs, whose PV(TV) share is over 80%, or whose grid centre is not the base.
 
@@ -196,7 +196,7 @@ e + m + e×m; dividends are added separately. Report the cross term: EPS +30% wi
 −25% gives −2.5% (−7.5 points of it from the cross term), not +5%.
 
 For EV multiples, split in currency through the bridge, not in percentages on the price
-(worked example in `references/inputs.md`). With a denominator that is not positive, use the
+(read the worked example in `references/inputs.md` first). With a denominator that is not positive, use the
 currency bridge too.
 
 ## Auditing someone else's model

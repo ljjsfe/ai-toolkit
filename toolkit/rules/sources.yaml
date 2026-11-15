@@ -2,7 +2,7 @@
 # loaded into context and every token there is paid each session. Same format as a skill's
 # `sources:`; validated and synced to CREDITS.md by `python3 scripts/check.py`.
 core:
-  - upstream/everything-claude-code/rules/common/{git-workflow,coding-style}.md (MIT) — commit type list, immutable updates, validation at system boundaries [port "type one of feat, fix" "prefer immutable updates" "validate at system boundaries"]
+  - upstream/everything-claude-code/rules/common/{git-workflow,coding-style}.md (MIT) — commit type list, validation at system boundaries [port "type one of feat, fix" "validate at system boundaries"]
 cpp:
   - C++ Core Guidelines (CP.44, CP.51, F.16, F.45, ES.84; MIT) — unnamed lock guards incl. unique_lock member shadowing, lambda and coroutine reference lifetimes, views over temporaries [port "always name the guard" "a reference parameter dangles" "over a borrowed"]
 data-and-containers:

@@ -5,7 +5,7 @@ description: >-
   WHEN/THEN scenarios with stable IDs), conditional design, and vertical tasks; surface human-gated
   decisions; merge deltas into timeless living specs after verification. Not for open framing
   (design-discussion) or sizing (system-design).
-version: 1.2.1
+version: 1.2.2
 sources:
   - 'upstream/fission-ai-openspec v2.0.0 schemas/spec-driven/{schema.yaml,templates/*} (MIT, https://github.com/Fission-AI/OpenSpec) — proposal/specs/design/tasks artifact DAG, capability-named layout, normative SHALL/MUST requirements with WHEN/THEN scenarios, conditional design, zero-delta escape hatch [port "draft artifacts in dependency order" "names a cohesive capability" "at least one when/then scenario per requirement" "write only when cross-cutting" "no spec delta: observable behaviour unchanged"]'
   - 'upstream/fission-ai-openspec v2.0.0 src/core/specs-apply.ts and skills/openspec-{propose,apply-change,sync-specs,update-change,archive-change} (MIT, https://github.com/Fission-AI/OpenSpec) — full-block MODIFIED anti-loss rule, RENAMED/REMOVED/MODIFIED/ADDED merge order, capability retirement guard, bi-directional change reconciliation [port "modified copies the entire requirement block" "apply operations in strict order" "confirm retirement intent" "reconcile in whichever direction"]'
@@ -125,7 +125,7 @@ or a cleaner mechanism, **pause before letting code drift from the artifacts**:
 - `spec_check.py merge changes/<slug> --specs <specs-root>` — the archive dry run (below).
 - `spec_check.py audit <specs-root>` — the living-spec audit (below).
 
-If Python cannot run, do each check by hand (`references/archive.md` for the merge) and say the
+If Python cannot run, do each check by hand (read `references/archive.md` before the merge) and say the
 script was not run.
 
 ## 4. Archive — merge deltas into living specs
@@ -137,9 +137,9 @@ memory, prints what it would create, update or retire, and stops on the first pr
 fails; nothing is written. Fix the delta, rerun, then add `--write`. A capability the deltas
 would empty is retired only with `--retire <capability>` after the user confirms.
 
-The steps it performs (strict operation order RENAMED → REMOVED → MODIFIED → ADDED, abort
-conditions, the post-merge audit, the archive folder name) are in `references/archive.md`; read
-it when doing the merge by hand. Finish by moving `changes/<slug>/` to
+When doing the merge by hand, first read `references/archive.md` for the steps it performs
+(strict operation order RENAMED → REMOVED → MODIFIED → ADDED, abort conditions, the post-merge
+audit, the archive folder name). Finish by moving `changes/<slug>/` to
 `changes/archive/YYYY-MM-DD-<slug>/`.
 
 ## Hand-offs

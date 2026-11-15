@@ -19,5 +19,3 @@ Always loaded. Keep this file short; detail lives in skills.
   APIs); trust internal calls.
 - **Scale process to the change.** A one-line fix does not need a plan, a subagent or a new
   test suite; a change to data, auth, money or a public API does.
-- **Prefer immutable updates** (return new objects rather than mutating inputs) unless the
-  surrounding code clearly does otherwise.
