@@ -64,9 +64,6 @@ BASE_EXTERNAL_PREFIXES = (
     "impeccable",
     "design-taste-frontend",
     "last30days",
-    "review-animations",
-    "mobile-native",
-    "break-ui",
     "humanizer",
     "agent-browser",
     "webapp-testing",
@@ -235,7 +232,12 @@ def frontmatter(path):
 
 
 skills = {}
-for skill_md in sorted(toolkit.glob("*/skills/*/SKILL.md")) + sorted(personal.glob("skills/*/SKILL.md")):
+# toolkit/<category>/vendor/<name>: upstream skills copied unchanged (toolkit/vendored.json)
+for skill_md in (
+    sorted(toolkit.glob("*/skills/*/SKILL.md"))
+    + sorted(toolkit.glob("*/vendor/*/SKILL.md"))
+    + sorted(personal.glob("skills/*/SKILL.md"))
+):
     frontmatter(skill_md)
     d = skill_md.parent
     if d.name in skills:
@@ -565,6 +567,26 @@ def adapt_external_cmd(cmd: str, active_tools: set[str]) -> str:
 
 
 install_store()
+
+# Vendored skills used to be externals installed by the `skills` CLI. If its lock still tracks
+# one, `npx skills update` would overwrite the pinned copy with upstream HEAD; say so once.
+vendored_path = toolkit / "vendored.json"
+vendored_names = (
+    {n for src in json.loads(vendored_path.read_text(encoding="utf-8"))["sources"].values() for n in src["skills"]}
+    if vendored_path.is_file() else set()
+)
+skill_lock = home / ".agents" / ".skill-lock.json"
+try:
+    locked = set(json.loads(skill_lock.read_text(encoding="utf-8")).get("skills", {})) if skill_lock.is_file() else set()
+except (json.JSONDecodeError, AttributeError):
+    locked = set()
+if vendored_names & locked:
+    names = " ".join(sorted(vendored_names & locked))
+    print(
+        f"\nnote: the skills CLI still tracks {names}, which now ship vendored with the toolkit."
+        f"\n      Remove its record so `npx skills update` cannot replace the pinned copy:"
+        f"\n      npx -y skills@latest remove -g {names} -y && ./install.sh {target} --apply"
+    )
 
 print("\nExternal components (external.yaml):")
 failed = []

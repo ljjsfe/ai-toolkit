@@ -25,8 +25,9 @@ is missing from the skill), `idea` or `gap`; see [CREDITS.md](CREDITS.md).
 | rules | `core.md` (always loaded, ~20 lines) plus language traps that load only for matching files: Python, Java/Spring, C++, TypeScript/React/Next.js, web platform (HTML/CSS/JS), Swift, Kotlin, React Native/Expo, Flutter/Dart, SQL/containers |
 | hooks | `claim-check` — blocks "done / fixed / tests pass" claims made after editing files without running anything (Claude Code, Antigravity, Codex transcript support) |
 
-Design taste is delegated to [impeccable](https://github.com/pbakaus/impeccable) plus three of
-[emilkowalski/skills](https://github.com/emilkowalski/skills) (motion review, mobile-web feel, worst-case data), trend signals to
+Design taste is delegated to [impeccable](https://github.com/pbakaus/impeccable); three skills of
+[emilkowalski/skills](https://github.com/emilkowalski/skills) (motion review, mobile-web feel, worst-case data)
+ship vendored with the toolkit (see below). Trend signals go to
 [last30days](https://github.com/mvanhorn/last30days-skill), de-AI prose editing to
 [humanizer](https://github.com/blader/humanizer) and [humanizer-zh](https://github.com/op7418/Humanizer-zh), browser UI verification to
 [webapp-testing](https://github.com/anthropics/skills) (or optional [agent-browser](https://github.com/vercel-labs/agent-browser)), safety hooks to
@@ -50,11 +51,17 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
 ```
 
 - `--external` runs each non-optional installer listed in `toolkit/external.yaml` scoped to the
-  selected target(s): impeccable, last30days, emilkowalski/skills, humanizer (latest, with an added-facts check),
+  selected target(s): impeccable, last30days, humanizer (latest, with an added-facts check),
   humanizer-zh, six marketingskills GTM skills, webapp-testing, and (for Claude Code) codex-plugin-cc. Entries marked `optional` — currently
   taste-skill, agent-browser, mcp-builder, mcp-server-dev, claude-security and claude-code-hooks —
   are printed, not installed. Any entry placed on `status: trial` must declare `trial_start` and
   `trial_review_by` dates, enforced by `scripts/check.py`.
+- Vendored skills install with the toolkit itself, no `--external` needed: `review-animations`,
+  `mobile-native` and `break-ui` from emilkowalski/skills live unchanged under
+  `toolkit/design/vendor/`, pinned in `toolkit/vendored.json`. Their descriptions are not trimmed
+  to the toolkit's cap (the copies stay unchanged), so `check.py` reports them as a separate
+  resident cost. If an earlier `--external` installed them through the `skills` CLI, install.sh
+  prints the one command that drops that record.
 - Skills are stored once in `~/.agents/skills/`, which Codex reads directly; Claude Code gets
   symlinks in `~/.claude/skills/` and Antigravity gets symlinks in `~/.gemini/config/skills/`
   (including any external skills installed in `~/.agents/skills/`, excluding `*-traps`, since both
@@ -65,8 +72,9 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
   writing voice profile in `toolkit/writing/`); they are merged into that category's skills as
   `PERSONAL.md` at install time.
 - Validation and tests (zero external dependencies):
-  - Full repo check (frontmatter, resident description budget, references, source coverage tags and their anchors, `external.yaml` trial review dates, `CREDITS.md` sync, unit tests, and tests of any skill `scripts/`): `python3 scripts/check.py`
+  - Full repo check (frontmatter, resident description budget, references, source coverage tags and their anchors, vendored file hashes, `external.yaml` trial review dates, `CREDITS.md` sync, unit tests, and tests of any skill `scripts/`): `python3 scripts/check.py`
   - Upstream drift: `python3 scripts/upstream_drift.py [name …]` (needs an authenticated `gh`) lists, for every credited path, whether it still exists upstream and which commits touched it since the commit recorded in `toolkit/upstreams.json`. After re-reading a change and updating the skill, move that upstream's `reviewed_sha` / `reviewed_on` forward. `check.py` fails if a credited upstream is not registered there.
+  - Vendored skills: `python3 scripts/vendor_sync.py` lists upstream commits since each pin; `--update <source>` copies the new upstream folder and re-pins. Read `git diff` before committing, then `python3 scripts/check.py --sync-credits`.
   - Validator & hook tests alone: `python3 scripts/test_check.py` and `python3 toolkit/hooks/claim-check/test_claim_check.py` (also `pytest -q` compatible).
 - `claim-check` is a cheap tripwire, not proof of verification: it checks that a command that is
   not purely read-only (`ls`, `cat`, `git status`… do not count) or a browser check ran after the
@@ -84,8 +92,13 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
    hook enforced them. So where a rule can be checked mechanically it gets a script or a hook
    (claim-check, the anchored credits, the skill scripts); the rest stays as short gates.
 2. One owner per behaviour; skills cross-reference instead of repeating each other.
-3. Rewrite, don't copy — upstream material is read and restated; licences are respected; every
-   credit is tagged and anchored, and `toolkit/upstreams.json` records what was read and when.
+3. Rewrite or vendor, never half of each. Upstream material is read and restated; licences are
+   respected; every credit is tagged and anchored, and `toolkit/upstreams.json` records what was
+   read and when. An upstream skill that is good as written and is plain files (no installer,
+   hook or runtime code) is vendored instead: copied unchanged at a pinned commit with its
+   licence, never edited here (`check.py` verifies file hashes), refreshed only through
+   `scripts/vendor_sync.py --update` after reading the diff. Guards against a vendored rule live
+   in the toolkit skill that uses it.
 4. Resident cost is a budget: descriptions are short, long rules load only when relevant.
 5. When sources disagree, decide in this order:
    1. Check whether they answer the same question. Most conflicts are different contexts (an

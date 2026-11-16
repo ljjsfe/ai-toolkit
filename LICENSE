@@ -22,3 +22,5 @@ SOFTWARE.
 
 The third-party skill in toolkit/engineering/skills/architecture-diagram keeps its own
 licence (see the LICENSE file in that folder).
+Vendored third-party skills under toolkit/*/vendor/ keep their own licence (see the LICENSE file
+in each folder and toolkit/vendored.json).

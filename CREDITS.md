@@ -4,6 +4,8 @@ Skills here were written from the sources below: read and rewritten, not copied.
 Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.
 Each source is tagged in its skill's frontmatter; `python3 scripts/check.py` fails if a
 ported item's anchor text is not actually present in the skill.
+The one exception is the vendored skills listed last: copied unchanged at a pinned commit,
+with their licence, and checked against recorded hashes.
 
 ## Ported
 
@@ -157,7 +159,7 @@ Procedure carried over; anchored in the skill text.
 - upstream/googlechrome-modern-web-guidance/skills/modern-web-guidance/guides/security/{security,trusted-types,sanitize-untrusted-html,validate-origins}.md (CC-BY-4.0, adapted) — sink hygiene, Sanitizer with DOMPurify fallback, Trusted Types rollout, nonce-based CSP rollout, companion headers, origin comparison — used in: web-platform
 - upstream/googlechrome-modern-web-guidance/skills/modern-web-guidance/guides/security/{passkeys,passkey-registration,passkey-authentication,passkey-conditional-create,passkey-management,passkey-reauthentication}.md (CC-BY-4.0, adapted) — server-provided rpId, conditional mediation, conditional create after full sign-in, Signal API gating — used in: web-platform
 - upstream/googlechrome-modern-web-guidance/skills/modern-web-guidance/guides/js/{capture-location-agnostic-data,coordinate-global-events,calculate-event-differentials,sort-high-precision-timestamps,support-global-calendar-systems}.md (CC-BY-4.0, adapted) — Temporal type choice, DST disambiguation, durations, instants, calendars — used in: web-platform
-- authored for this toolkit (cross-source resolution with mobile-native and the review-animations external) — motion values come from the motion rules, not from the view-transition samples — used in: web-platform
+- authored for this toolkit (cross-source resolution with the vendored mobile-native and review-animations) — motion values come from the motion rules, not from the view-transition samples — used in: web-platform
 - upstream/yennanliu-investskill/prompts/thesis-tracker.md (MIT) — structure from this source; ledger fields, four statuses and their bars, last-confirmed vs check outcome, 3–5 KPIs, pre-mortem, next check — used in: thesis-ledger
 - upstream/yennanliu-investskill/prompts/thesis-tracker.md (MIT) — a parseable saved-entry format and location, with a fenced-block fallback the user stores — used in: thesis-ledger
 - upstream/yennanliu-investskill/prompts/10k-digest.md (MIT) — commitment scoring; rerun after a restatement (the stale-data rule is toolkit policy) — used in: thesis-ledger
@@ -297,7 +299,7 @@ Procedure carried over; anchored in the skill text.
 - upstream/googlechrome-modern-web-guidance/skills/modern-web-guidance/guides/{ui-components/dialog,ui-behaviors/declarative-dialog-popover-control,ui-behaviors/light-dismiss-a-dialog,ui-behaviors/prevent-page-scroll-under-modal-dialog}.md (CC-BY-4.0, adapted) — native dialog without ARIA or scroll-lock workarounds, closedby fallback, popover over overlay libraries, invoker commands; the guide's popovertarget/commandfor double-toggle warning is not ported (the HTML activation algorithm runs one or the other), and popovertarget is kept as a fallback — used in: rule web-platform
 - upstream/googlechrome-modern-web-guidance/skills/modern-web-guidance/guides/{css/css-layout,ui-atoms/viewport-aware-dropdowns,forms/branded-select-styling}.md (CC-BY-4.0, adapted) — anchor positioning still limited with @supports gating, no 100vw for full width, customizable select degradation — used in: rule web-platform
 - upstream/googlechrome-modern-web-guidance/skills/modern-web-guidance/guides/ui-behaviors/{same-document-transitions,cross-document-transitions}.md (CC-BY-4.0, adapted) — view transition support split between same- and cross-document — used in: rule web-platform
-- authored for this toolkit (cross-source resolution with mobile-native and the review-animations external) — dvh for app shells vs svh for heroes; motion values defer to the motion rules, not the view-transition samples — used in: rule web-platform
+- authored for this toolkit (cross-source resolution with the vendored mobile-native and review-animations) — dvh for app shells vs svh for heroes; motion values defer to the motion rules, not the view-transition samples — used in: rule web-platform
 - upstream/googlechrome-modern-web-guidance/skills/modern-web-guidance/guides/performance/{performance,optimize-image-priority,break-up-long-tasks,defer-rendering-heavy-content}.md (CC-BY-4.0, adapted) — LCP image discoverable and prioritised, sizes with srcset, 50ms task slicing with a scheduler.yield fallback, worker offload, content-visibility with contain-intrinsic-size; the guide's no-store/bfcache line is qualified per Chrome's 2025 behaviour — used in: rule web-platform
 - upstream/googlechrome-modern-web-guidance/skills/modern-web-guidance/guides/forms/{forms,autofill-sign-in-form,autofill-sign-up-form,sms-otp-form,ime-safe-enter-submit,validate-input-after-interaction}.md (CC-BY-4.0, adapted) — autocomplete tokens, single-field one-time codes, paste allowed, IME-safe Enter, user-invalid styling — used in: rule web-platform
 - upstream/googlechrome-modern-web-guidance/skills/modern-web-guidance/guides/security/{security,trusted-types,sanitize-untrusted-html}.md (CC-BY-4.0, adapted) — safe sinks, Sanitizer with DOMPurify fallback, no pass-through Trusted Types policy, nonce plus strict-dynamic CSP via report-only — used in: rule web-platform
@@ -329,12 +331,15 @@ The upstream has this capability and the toolkit does not (yet).
 - upstream/ai-analyst-lab-ai-analyst/helpers/stats/experiment_stats/{sequential.py,variance_reduction.py} (MIT) — always-valid confidence sequences for repeated looks; CUPED variance reduction — missing: not ported; a sequential design needs an external tool — used in: experiment-readout
 - upstream/ai-analyst-lab-ai-analyst/.claude/skills/triangulation (MIT) — paths run in isolated subagents with per-path record fields — missing: independence is asked for in one line with no mechanism — used in: experiment-readout
 
+## Vendored (copied unchanged at a pinned commit; licence kept beside each copy)
+
+- review-animations, mobile-native, break-ui — https://github.com/emilkowalski/skills at 64eb3deb9a5f (MIT)
+
 ## Adopted external projects (installed from their own source; not included)
 
 - impeccable (Apache-2.0) — https://github.com/pbakaus/impeccable
 - taste-skill (MIT) — https://github.com/Leonxlnx/taste-skill
 - last30days (MIT) — https://github.com/mvanhorn/last30days-skill
-- emil-design-engineering (MIT) — https://github.com/emilkowalski/skills
 - humanizer (MIT) — https://github.com/blader/humanizer
 - humanizer-zh (MIT) — https://github.com/op7418/Humanizer-zh
 - marketingskills-gtm (MIT) — https://github.com/coreyhaines31/marketingskills

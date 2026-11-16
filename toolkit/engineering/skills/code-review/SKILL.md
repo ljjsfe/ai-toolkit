@@ -5,7 +5,7 @@ description: >-
   missing requirements, sibling sweeps, weakened-gate checks, git-history context, and independent
   refutation of P0/P1s. For offensive security audits use app-security; for design/plan reviews use
   system-design.
-version: 1.4.2
+version: 1.4.3
 sources:
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/{action-class-rubric.md,subagent-template.md} (MIT) — P0–P3; check callers, guards and framework defaults [port "data loss, security hole" "framework defaults"]
   - upstream/compound-engineering-plugin/skills/ce-code-review/references/personas/* (MIT) — per-lens checklists (correctness sentinel and lifecycle-writer checks, reliability timeouts, retries and error-path leaks), anchored 25/50/75/100 confidence, per-persona do-not-flag lists [port "Sentinel meaning changes" "Every writer of a lifecycle state" "Deleted-but-referenced files" "Swallowed errors" "Leaks on error paths" "Retry storms" "Anchored confidence" "Do-not-flag list"]
@@ -68,8 +68,9 @@ lists, confidence anchors). Two checks there are mandatory whenever they apply, 
 need code outside the diff: **every writer of a lifecycle state** when the diff writes or adds
 a status, and the **enum/value completeness trace** when it adds a value or widens an input.
 When the change touches auth, tenancy, payments or webhooks, also apply `app-security`.
-Frontend UI, mobile web or motion: also `impeccable`, `mobile-native` and, if installed,
-`review-animations`; browser support, platform APIs or Core Web Vitals: `web-platform`.
+Frontend UI, mobile web or motion: also `impeccable` and `mobile-native`; for motion, read
+`../review-animations/SKILL.md` and its `STANDARDS.md` (in Claude Code it is user-invoked only, so read it rather than call it);
+browser support, platform APIs or Core Web Vitals: `web-platform`.
 
 ## Pass 2 — What is missing
 

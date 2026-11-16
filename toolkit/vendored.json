@@ -1,0 +1,41 @@
+{
+  "_comment": "Upstream skills copied unchanged at a pinned commit, installed with the toolkit's own skills. Never edit a vendored folder: scripts/vendor_sync.py --update replaces it whole and records file hashes that scripts/check.py verifies. Put any guard against an upstream rule in the toolkit skill that uses it.",
+  "sources": {
+    "emilkowalski-skills": {
+      "repo": "emilkowalski/skills",
+      "license": "MIT",
+      "license_path": "LICENSE",
+      "sha": "64eb3deb9a5fbfa041faf783e0bc3fd635872e9c",
+      "synced_on": "2026-11-16",
+      "note": "Only these three: animate, emil-design-eng and prototype overlap impeccable, which owns general UI design, prototyping and motion creation. The copies still name sibling skills that are not installed (animate, animate-expo, emil-design-eng, prototype, choreograph); impeccable covers those jobs. review-animations sets disable-model-invocation: true, so in Claude Code a model cannot call it; toolkit skills read its SKILL.md and STANDARDS.md instead.",
+      "skills": {
+        "review-animations": {
+          "from": "skills/review-animations",
+          "to": "toolkit/design/vendor/review-animations",
+          "files": {
+            "LICENSE": "4ff5bdb7887ec1435c9cab0e8d1a7caee704d894d65c2a008ccc68b1cc2f260b",
+            "SKILL.md": "9ceb5072ce5d5e51b07efa60817c66d06fc6492b7900b44dff5ff0f8f7bcf188",
+            "STANDARDS.md": "2d2c28e9fe98dd55a879bafa1684827c812eb31f6b63fe578141d3978ddc664e"
+          }
+        },
+        "mobile-native": {
+          "from": "skills/mobile-native",
+          "to": "toolkit/design/vendor/mobile-native",
+          "files": {
+            "LICENSE": "4ff5bdb7887ec1435c9cab0e8d1a7caee704d894d65c2a008ccc68b1cc2f260b",
+            "SKILL.md": "705e267bc47ea61e4c6f94d121efeebdb994055f482673b8a72f4a0dd62f1968"
+          }
+        },
+        "break-ui": {
+          "from": "skills/break-ui",
+          "to": "toolkit/design/vendor/break-ui",
+          "files": {
+            "CATALOG.md": "80522dcc81039bf317bce5adcb7b499e9d9da3c98952abb4dfb34ba6c1c32360",
+            "LICENSE": "4ff5bdb7887ec1435c9cab0e8d1a7caee704d894d65c2a008ccc68b1cc2f260b",
+            "SKILL.md": "fb126d176f3b6bf7dfe71f2ae6620ab3dd81e6282c672a1801720055addfce18"
+          }
+        }
+      }
+    }
+  }
+}
