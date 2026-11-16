@@ -36,6 +36,127 @@
           }
         }
       }
+    },
+    "blader-humanizer": {
+      "repo": "blader/humanizer",
+      "license": "MIT",
+      "license_path": "LICENSE",
+      "sha": "b48c832f0f809c1b5658edbb838c2521b72f2413",
+      "synced_on": "2026-11-16",
+      "note": "SKILL.md only: the repo root also holds plugin packaging, CI and a validator script. From 4.0.0 it may add \"a specific detail it knows to be true\" where text is generic, which the writing skill's law 1 forbids; writing runs scripts/new_specifics.py after it and reverts or marks every added specific.",
+      "skills": {
+        "humanizer": {
+          "from": ".",
+          "include": [
+            "SKILL.md"
+          ],
+          "to": "toolkit/writing/vendor/humanizer",
+          "files": {
+            "LICENSE": "4ac4810254ab36d45419141aeb8e69bf50652cfafe5b2dab947d06d44e5cbf96",
+            "SKILL.md": "804a119e924ac30295b298213e0b71b3e38b2667b8ef4fb7b69e9246369b9045"
+          }
+        }
+      }
+    },
+    "op7418-humanizer-zh": {
+      "repo": "op7418/Humanizer-zh",
+      "license": "MIT",
+      "license_path": "LICENSE",
+      "sha": "f4518a8eab97b8bfebc66a89d34320a89bef6930",
+      "synced_on": "2026-11-16",
+      "note": "SKILL.md only: tests/ holds a Python structure check that is not part of the skill.",
+      "skills": {
+        "humanizer-zh": {
+          "from": ".",
+          "include": [
+            "SKILL.md"
+          ],
+          "to": "toolkit/writing/vendor/humanizer-zh",
+          "files": {
+            "LICENSE": "aa00e74769e1b9d8e7fa7094dbfcca9b129a0ded6dce1cf4da050b99146d2fa7",
+            "SKILL.md": "95627fd4437d886f98032ccc62d79136e6310f1fc04e354bb86431795ff206df"
+          }
+        }
+      }
+    },
+    "coreyhaines31-marketingskills": {
+      "repo": "coreyhaines31/marketingskills",
+      "license": "MIT",
+      "license_path": "LICENSE",
+      "sha": "1f837447b20bb6f0e72d87b80ece1c221c362c7d",
+      "synced_on": "2026-11-16",
+      "note": "Six go-to-market skills the toolkit had no owner for. The repo's pricing, ab-testing, competitors, customer-research and copywriting skills are not vendored: pricing, experiment-readout, market-scan, customer-discovery and writing own those jobs here. The copies name sibling skills that are not installed (emails, paywalls, cro, ab-testing, marketing-ideas, offers, influencer-marketing, ads, revops) and link tool guides on GitHub. Evidence still comes from the toolkit's skills: demand from customer-discovery, price from pricing, launch metric reads from experiment-readout.",
+      "skills": {
+        "product-marketing": {
+          "from": "skills/product-marketing",
+          "to": "toolkit/product/vendor/product-marketing",
+          "files": {
+            "LICENSE": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+            "SKILL.md": "8dbccc22998b3cac194c3509fa93d119163b82c9b0a1ce573e6737e5a5ccf555",
+            "evals/evals.json": "0c6599b88f50ec1be91096a36ba6c5a15cf8312151394e3469e5ddb991b19afb",
+            "references/brand-voice.md": "932f3453db2761f03050792e39800150495dab449750b40913a4314ea97e7672"
+          }
+        },
+        "launch": {
+          "from": "skills/launch",
+          "to": "toolkit/product/vendor/launch",
+          "files": {
+            "LICENSE": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+            "SKILL.md": "e4cda379ce9956f3d052e6fd40899f4094b267d21f4297dba73de24a9c93fb73",
+            "evals/evals.json": "f2ceb01d664e24ea253789a9a686997f5cc33a0fc99f57bf215acdada787322c",
+            "references/shipped-changes.md": "873c79d17d3f428147348a9cc2a5e3d6bb8282cf13fc8a143d539840e8abaa96",
+            "references/site-launch-qa.md": "aac0447d0d518468e86e971f4e781b61ee05e81dada402e2edcef709cc6418ab"
+          }
+        },
+        "onboarding": {
+          "from": "skills/onboarding",
+          "to": "toolkit/product/vendor/onboarding",
+          "files": {
+            "LICENSE": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+            "SKILL.md": "3118533cd06066715b6fa3c000e5d2994ad1c36b73cbf82501a9711381514880",
+            "evals/evals.json": "296b62f2dadbeee44108b68ab7f8509e5e7d72f5bc7b89759dc869b623badf97",
+            "references/activation-models.md": "e4d396e2dacfc19bfa33b8bfaaf8639e5a2c0b8a252bf52115ecd2561a2f35e4",
+            "references/experiments.md": "b4caad0b50ca9483a6a79846d0b24a7bab62850b45a3f2232d73f78629468932",
+            "references/minimum-path-to-value.md": "c2b7c71b8436a1456888a26b9c8892c33cd9e1b1bf758f6fd7282c00f87dcdc3"
+          }
+        },
+        "signup": {
+          "from": "skills/signup",
+          "to": "toolkit/product/vendor/signup",
+          "files": {
+            "LICENSE": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+            "SKILL.md": "5d54fb404a0eeb04043899230ad15a72b327a1075cc2c220838caf0cdf6ec3b7",
+            "evals/evals.json": "ce012fff8e559b5f622826826e7b137c650c96f8193a7e10add60f75c2417edd"
+          }
+        },
+        "churn-prevention": {
+          "from": "skills/churn-prevention",
+          "to": "toolkit/product/vendor/churn-prevention",
+          "files": {
+            "LICENSE": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+            "SKILL.md": "f9bfb0ab91fe7a0c126650334e4843e64573cd11564c465b0a4e61fc074644f1",
+            "evals/evals.json": "ee85b927a1bea665b0c080034c76dcc1a81c57be1f4e974a664c7f62c4329dfd",
+            "references/cancel-flow-patterns.md": "d64b9282b956da6831ec97a1fffda5841c5c43a71721b512b66b04bde104c139",
+            "references/dunning-playbook.md": "24b96a01cfba174c9f3adde66d417e7282c0cf31789c2719e6bd37b8ad2ecf8c"
+          }
+        },
+        "referrals": {
+          "from": "skills/referrals",
+          "to": "toolkit/product/vendor/referrals",
+          "files": {
+            "LICENSE": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+            "SKILL.md": "096dfb3de5269edf6de6a47e015793da270a7a4d6ac54751cc103761b67f2657",
+            "evals/evals.json": "5148d0e25787ed7b2305b3f356ebf4c329181933696d1085a3f53f3b32b0e766",
+            "references/affiliate-operations.md": "fc045ff9c7eba29b13219d56d28fb15c8240439acf2df7e7a6205836948513a0",
+            "references/affiliate-programs.md": "b6fe63ca69462d28b7be74f4f5f4f237d2c9f72179dc5d3ef80f8fab37fccce7",
+            "references/program-examples.md": "3ba131b1d6f77c115134a6d56bbf10709fe4822f65b6a3446605cadeebc6b107",
+            "references/review-platform-rules.md": "9c537eaf4be1799d58f1c563fc660f1b4303c89feded6b2eda304c4ff2c0cb01",
+            "references/review-program-operations.md": "9ca87ad31a59da14f525c273f2c3df90d47fedec7e38d7689529f6ea8e445192",
+            "references/review-programs.md": "b5e3783f12da945bafd88c135e1ccebbf1cfb578715b02c0cf73b50af00aa645",
+            "references/viral-mechanisms.md": "04224240fae94bcf9bc64c7d8cac507bdd570049144e4df33946ac4ae8a483e4"
+          }
+        }
+      }
     }
   }
 }

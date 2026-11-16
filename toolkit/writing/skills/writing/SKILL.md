@@ -5,7 +5,7 @@ description: >-
   with zero invented facts ([NEED: ...] placeholders, competing openings, platform rules, de-AI
   editing pass, fresh-reader check). Trigger on 写文章, 发帖, 公众号, 推文, 写稿. Not for resumes
   (career-navigator) or AGENTS.md/CLAUDE.md (agent-instructions).
-version: 1.4.1
+version: 1.5.0
 sources:
   - upstream/khazix-skills/khazix-writer (MIT) — first-hand observation is what a model cannot supply; ask the writer for it [port "first-hand detail comes from the writer"]
   - upstream/marketingskills/skills/copywriting/references/ai-tells.md (MIT) — placeholder for missing proof instead of an invented fact; the swap test [port "never fill it with something" "apply the swap test"]
@@ -18,14 +18,13 @@ sources:
   - upstream/marketingskills/skills/social/references/{platforms.md,x-algorithm.md} (MIT) — specific claim at the top of a post; no engagement bait; verified versus reported platform mechanics [port "the first line carries a specific claim" "never a request for likes" "treat reach advice as directional"]
   - upstream/xbtlin-ai-berkshire/codex-skills/wechat-article (MIT) — every formula or number gets a plain-language gloss; when editor and reader disagree, the reader wins [port "gets a plain-language gloss" "change the text for the reader"]
   - upstream/anthropics-skills/skills/doc-coauthoring (licence not stated for this skill; method only) — test the draft on a fresh agent that sees only the draft [port "give a subagent only the draft"]
-  - upstream/{blader-humanizer,op7418-humanizer-zh} (MIT) — the de-AI editing pass (external skills in toolkit/external.yaml) and the inline structural fallback checklist when external skills are absent [port "run this structural pass directly"]
 ---
 
 # Writing
 
 A model writes fluent prose unprompted. What it gets wrong is **whose** prose it is and **what
 it is allowed to claim**. This skill fixes those two things and runs a de-AI line-editing pass
-(`humanizer` / `humanizer-zh` when installed, or the inline fallback in workflow step 6).
+(`humanizer` / `humanizer-zh`, vendored with the toolkit) followed by checks for what it misses.
 
 ## Iron laws
 
@@ -54,26 +53,20 @@ it is allowed to claim**. This skill fixes those two things and runs a de-AI lin
    concludes. When the piece argues for a choice, say what was not chosen and why.
 5. **Cut** — apply the swap test: a sentence that would read the same on a competitor's or a
    stranger's page says nothing about this writer or this subject; make it specific or delete it.
-6. **De-AI** — if `humanizer` (English) or `humanizer-zh` (Chinese) is installed, run it on the
-   cut draft with `PERSONAL.md` as the voice sample, then run
+6. **De-AI** — run `humanizer` (English) or `humanizer-zh` (Chinese) on the cut draft with
+   `PERSONAL.md` as the voice sample, then run
    `scripts/new_specifics.py <cut draft> <humanized> --sources <notes…>`: humanizer 4+ adds "a
    specific detail it knows to be true" where text is generic, which law 1 forbids. Every number,
    date, name or quote it lists is traced to the writer or a source, or reverted, or becomes
-   `[NEED: …]`. If neither external skill is available in this session, run this structural pass
-   directly:
-   - Cut false contrasts (`not X, but Y` / `不是 X，而是 Y` where nobody claimed X) and one-line
-     dramatic closers that only restate the paragraph above;
-   - Break mechanical rule-of-three padding, habitual em-dash chains, bold-label bullet
-     templates, and chatbot wrappers;
-   - Replace inflated significance verbs (`pivotal`, `underscores`, `赋能`, `重塑`) with plain
-     verbs and concrete facts;
-   - Then scan for the tells that survive a first pass — sentences shaped like wisdom,
+   `[NEED: …]`. Then check what a pattern pass misses:
+   - Scan for the tells that survive a first pass — sentences shaped like wisdom,
      self-narration, tidy closers, staccato bursts, perfect balance between sections,
      reflexive specificity — and, without a profile, ask the writer where the piece should
      be uneven; when a cleaned draft still reads as generated or sounds like nobody, first
      read `references/second-pass-tells.md` (the table and the questions);
-   - Preserve every fact, number, quote, condition, epistemic hedge (`may`, `reported`, `可能`,
-     `据称`), the `PERSONAL.md` voice rules, and every `[NEED: ...]` marker verbatim.
+   - Confirm against the cut draft that every fact, number, quote, condition, epistemic hedge
+     (`may`, `reported`, `可能`, `据称`), the `PERSONAL.md` voice rules, and every `[NEED: ...]`
+     marker survived verbatim.
    With a profile in place, also run `scripts/voice_metrics.py <corpus> --draft <draft>` and
    the self-check list in the profile; fix or justify each flag.
 7. **Fresh-reader test** — give a subagent only the draft and 3–5 questions the piece must

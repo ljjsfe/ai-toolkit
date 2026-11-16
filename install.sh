@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Install the toolkit for Claude Code, Codex, and/or Antigravity (agy).
 #
-#   ./install.sh claude|codex|agy|both|all [--apply] [--replace-legacy] [--external]
+#   ./install.sh claude|codex|agy|both|all [--apply] [--replace-legacy] [--no-external]
 #
 # Targets: `both` means claude+codex (backwards-compatible); `all` means claude+codex+agy.
 # Skills are stored once in ~/.agents/skills/ (read directly by Codex and used by the `skills`
@@ -9,8 +9,10 @@
 # ~/.gemini/config/skills/ (including any external skills installed in ~/.agents/skills/). Rules
 # and Stop hooks stay tool-specific.
 # Without --apply nothing is written: the plan is printed (dry run).
-# --external also installs the externally maintained components in toolkit/external.yaml
-# (skipping entries marked optional), scoped to the selected tool(s).
+# The externally maintained components in toolkit/external.yaml are installed too (skipping
+# entries marked optional), scoped to the selected tool(s); they need network and npx, and
+# impeccable registers a hook in ~/.claude/settings.json. --no-external skips them (offline or
+# toolkit-only installs). --external is accepted for older scripts and changes nothing.
 # --replace-legacy (Claude Code / Antigravity) moves previously installed skills and rules into
 # ~/.toolkit-backup/<timestamp>/ before installing — except claude.ai-synced skills, names in
 # KEEP below or in ~/.toolkit-keep (one per line), and anything external installers added.
@@ -24,12 +26,13 @@ ROOT="$(cd "$(dirname "$0")" && pwd)"
 TARGET="${1:-}"
 APPLY=0
 REPLACE=0
-EXTERNAL=0
+EXTERNAL=1
 for arg in "${@:2}"; do
   case "$arg" in
     --apply) APPLY=1 ;;
     --replace-legacy) REPLACE=1 ;;
     --external) EXTERNAL=1 ;;
+    --no-external) EXTERNAL=0 ;;
     *) echo "unknown option: $arg" >&2; exit 2 ;;
   esac
 done
@@ -64,16 +67,9 @@ BASE_EXTERNAL_PREFIXES = (
     "impeccable",
     "design-taste-frontend",
     "last30days",
-    "humanizer",
     "agent-browser",
     "webapp-testing",
     "mcp-builder",
-    "product-marketing",
-    "launch",
-    "onboarding",
-    "signup",
-    "churn-prevention",
-    "referrals",
     "shadcn",
     "ai-sdk",
     "playwright-cli",
@@ -586,6 +582,7 @@ if vendored_names & locked:
         f"\nnote: the skills CLI still tracks {names}, which now ship vendored with the toolkit."
         f"\n      Remove its record so `npx skills update` cannot replace the pinned copy:"
         f"\n      npx -y skills@latest remove -g {names} -y && ./install.sh {target} --apply"
+        + ("" if external else " --no-external")
     )
 
 print("\nExternal components (external.yaml):")
@@ -598,7 +595,7 @@ for e in externals:
     label = (
         "optional — install yourself when decided"
         if e["optional"]
-        else ("installing" if run and apply else "would install" if run else "run with --external")
+        else ("installing" if run and apply else "would install" if run else "skipped by --no-external")
     )
     print(f"  {e['name']} ({label}):")
     for raw_cmd in e["install"]:
@@ -619,7 +616,11 @@ if "agy" in wanted:
     install_agy()
 
 if failed:
-    print(f"\nExternal installs that failed: {', '.join(failed)} — rerun their commands by hand.", file=sys.stderr)
+    print(
+        f"\nExternal installs that failed: {', '.join(failed)}. The toolkit and vendored skills are"
+        " installed; rerun those commands by hand, or use --no-external when offline.",
+        file=sys.stderr,
+    )
 print(f"\n{len(skills)} skills, {len(rules)} rule files." + ("" if apply else "  Re-run with --apply to write."))
 if apply and backup.exists():
     print(f"Backups in {backup}")

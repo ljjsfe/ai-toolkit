@@ -105,9 +105,9 @@ class ExternalTests(unittest.TestCase):
             return 0, json.dumps([commit("b", "Release 4.0.0")])
         rows = ud.external_changes("2026-11-01", api)
         names = {r["name"] for r in rows}
-        self.assertIn("humanizer", names)
+        self.assertIn("impeccable", names)
         self.assertNotIn("taste-skill", names)  # optional entries are not installed
-        h = next(r for r in rows if r["name"] == "humanizer")
+        h = next(r for r in rows if r["name"] == "impeccable")
         self.assertEqual(h["release"]["tag"], "v4.0.0")
         self.assertEqual(h["commits"][0]["subject"], "Release 4.0.0")
 

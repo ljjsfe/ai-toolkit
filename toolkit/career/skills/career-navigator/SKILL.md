@@ -5,7 +5,7 @@ description: >-
   cross-team influence, office politics, pushback, PIP/layoffs, interviews, resumes, and offers —
   one concrete move or script per reply. Trigger on 职场, 升职, 汇报, 述职, 绩效, 办公室政治, 重组,
   裁员, PIP, 面试, 谈判, 演练. Big life bets: liu-ayi.
-version: 1.9.2
+version: 1.9.3
 sources:
   - user-authored — the career playbook and dossier workflow [port "if ~/.career/dossier.md exists"]
   - 'authored for this toolkit — getting inside the circle: attach early to a rising leader, the favour ledger; the staged roadmap, choosing whom to back, rehearsal protocol, dossier and after-action review; influence-campaign structure [port "getting inside the circle" "choosing whom to back" "get a sponsor and scope" "seed champions six months ahead"]'
@@ -52,7 +52,7 @@ Read the file for the matching row before answering.
 | Hard conversations, pushing back, estimation, committing to a date, saying "no", junk work, asking for opportunities, vague promises, using leverage | `references/tough-conversations.md` | Line-by-line scripts (English) |
 | Mock interview, resume, LinkedIn | `references/interview-and-resume.md` | Simulation / rewrite |
 | Negotiating an offer or level | `references/interview-and-resume.md` | Plan + scripts |
-| Whether to change jobs or accept an offer | `liu-ayi` skill (if available) | Structured analysis + decision |
+| Whether to change jobs or accept an offer | `liu-ayi` skill | Structured analysis + decision |
 
 When it's unclear, default to managing-up: most workplace problems trace back to misalignment.
 
@@ -77,7 +77,7 @@ When it's unclear, default to managing-up: most workplace problems trace back to
 - For key scripts, give the English sentence verbatim (it needs to be said in English); explain it in the user's language.
 - Every answer must include at least one **concrete action doable this week**.
 - When writing a self review / peer feedback / promo packet, first read `references/review-and-promotion.md` and apply its hard formatting rules, and suggest sending a draft to a mentor or trusted senior for review.
-- Don't answer "is it worth it / should I" decisions on gut feeling — give a structured analysis, and call `liu-ayi` when available.
+- Don't answer "is it worth it / should I" decisions on gut feeling — give a structured analysis, and call `liu-ayi`.
 
 ## 5. Cadence (bring up naturally in relevant conversations, don't force it)
 

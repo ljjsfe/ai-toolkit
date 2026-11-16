@@ -272,7 +272,6 @@ Procedure carried over; anchored in the skill text.
 - upstream/marketingskills/skills/social/references/{platforms.md,x-algorithm.md} (MIT) — specific claim at the top of a post; no engagement bait; verified versus reported platform mechanics — used in: writing
 - upstream/xbtlin-ai-berkshire/codex-skills/wechat-article (MIT) — every formula or number gets a plain-language gloss; when editor and reader disagree, the reader wins — used in: writing
 - upstream/anthropics-skills/skills/doc-coauthoring (licence not stated for this skill; method only) — test the draft on a fresh agent that sees only the draft — used in: writing
-- upstream/{blader-humanizer,op7418-humanizer-zh} (MIT) — the de-AI editing pass (external skills in toolkit/external.yaml) and the inline structural fallback checklist when external skills are absent — used in: writing
 - upstream/everything-claude-code/rules/common/{git-workflow,coding-style}.md (MIT) — validation at system boundaries — used in: rule core
 - C++ Core Guidelines (CP.44, CP.51, F.16, F.45, ES.84; MIT) — unnamed lock guards incl. unique_lock member shadowing, lambda and coroutine reference lifetimes, views over temporaries — used in: rule cpp
 - upstream/everything-claude-code/agents/database-reviewer.md (MIT) — structure from this source and the next; cursor pagination instead of OFFSET — used in: rule data-and-containers
@@ -334,15 +333,15 @@ The upstream has this capability and the toolkit does not (yet).
 ## Vendored (copied unchanged at a pinned commit; licence kept beside each copy)
 
 - review-animations, mobile-native, break-ui — https://github.com/emilkowalski/skills at 64eb3deb9a5f (MIT)
+- humanizer — https://github.com/blader/humanizer at b48c832f0f80 (MIT)
+- humanizer-zh — https://github.com/op7418/Humanizer-zh at f4518a8eab97 (MIT)
+- product-marketing, launch, onboarding, signup, churn-prevention, referrals — https://github.com/coreyhaines31/marketingskills at 1f837447b20b (MIT)
 
 ## Adopted external projects (installed from their own source; not included)
 
 - impeccable (Apache-2.0) — https://github.com/pbakaus/impeccable
 - taste-skill (MIT) — https://github.com/Leonxlnx/taste-skill
 - last30days (MIT) — https://github.com/mvanhorn/last30days-skill
-- humanizer (MIT) — https://github.com/blader/humanizer
-- humanizer-zh (MIT) — https://github.com/op7418/Humanizer-zh
-- marketingskills-gtm (MIT) — https://github.com/coreyhaines31/marketingskills
 - shadcn (MIT) — https://github.com/shadcn-ui/ui
 - ai-sdk (Apache-2.0) — https://github.com/vercel/ai
 - playwright-cli (Apache-2.0) — https://github.com/microsoft/playwright-cli

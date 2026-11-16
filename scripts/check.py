@@ -375,12 +375,19 @@ def file_digests(d: Path) -> dict[str, str]:
     return out
 
 
-VENDOR_TEXT_SUFFIXES = {".md", ".txt"}
+VENDOR_TEXT_SUFFIXES = {".md", ".txt", ".json"}  # inert text and data; no code
 
 
 def vendor_file_ok(f: Path) -> bool:
-    """Vendoring is for plain text only: .md/.txt (or the LICENSE), not executable."""
+    """Vendoring is for plain text only: .md/.txt/.json (or the LICENSE), never executable."""
     return (f.suffix.lower() in VENDOR_TEXT_SUFFIXES or f.name == "LICENSE") and not (f.stat().st_mode & 0o111)
+
+
+def include_problem(f: object) -> bool:
+    """True when an include entry could point outside its skill folder."""
+    if not isinstance(f, str) or not f.strip() or f.startswith(("/", "\\")):
+        return True
+    return any(part in ("..", "") for part in f.replace("\\", "/").split("/"))
 
 
 def load_vendored(path: Path, errors: list[str]) -> list[dict]:
@@ -411,6 +418,10 @@ def load_vendored(path: Path, errors: list[str]) -> list[dict]:
                 errors.append(f"{where}: {name}: 'to' must be toolkit/<category>/vendor/{name} (got {dest!r})")
             if not sk.get("from"):
                 errors.append(f"{where}: {name}: 'from' missing")
+            inc = sk.get("include")
+            if inc is not None and (not isinstance(inc, list) or not inc or any(include_problem(f) for f in inc)):
+                errors.append(f"{where}: {name}: 'include' must be a non-empty list of relative file paths "
+                              f"inside 'from' (no '..', no absolute paths): {inc!r}")
             out.append({
                 "name": name, "source": src_name, "repo": src.get("repo", ""),
                 "license": src.get("license", ""), "sha": src.get("sha", ""),

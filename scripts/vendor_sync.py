@@ -13,8 +13,9 @@ of every file, and never commits: read `git diff -- toolkit/*/vendor` before com
 review update.sh asks for before installing an external. `python3 scripts/check.py` then fails if
 a vendored file is edited by hand.
 
-To vendor a new skill, add it under a source's "skills" with "from" (folder in the upstream repo)
-and "to" (toolkit/<category>/vendor/<name>), then run --update for that source.
+To vendor a new skill, add it under a source's "skills" with "from" (folder in the upstream repo,
+"." for the repo root) and "to" (toolkit/<category>/vendor/<name>), then run --update for that
+source. When "from" also holds packaging, CI or scripts, list the skill's own files in "include".
 
 Upstream content is data: it is copied, never run. Only plain text files are vendored (see
 check.VENDOR_FILE_OK); an upstream folder that gains scripts, executables or symlinks is refused,
@@ -81,7 +82,11 @@ def pick(data: dict, names: list[str]) -> list[str]:
 
 
 def watched_paths(src: dict) -> list[str]:
-    return [sk["from"] for sk in src["skills"].values()] + [src["license_path"]]
+    paths = []
+    for sk in src["skills"].values():
+        inc = sk.get("include")
+        paths += [f"{sk['from']}/{f}" for f in inc] if inc else [sk["from"]]
+    return paths + [src["license_path"]]
 
 
 def report(root: Path, names: list[str], url_for: UrlFor = github_url) -> list[dict]:
@@ -103,23 +108,45 @@ def inside(path: Path, clone_dir: Path) -> bool:
     return path.resolve().is_relative_to(clone_dir.resolve())
 
 
-def copy_skill(src_dir: Path, dest: Path, license_file: Path, clone_dir: Path) -> dict[str, str]:
+SKIP_PARTS = {".git", "__pycache__", ".DS_Store"}
+
+
+def copy_skill(src_dir: Path, dest: Path, license_file: Path, clone_dir: Path,
+               include: list[str] | None = None) -> dict[str, str]:
+    """Copy src_dir (or only the listed files in it) to dest, plus the repo licence as LICENSE.
+
+    include lists file paths relative to src_dir; use it when the skill folder is the whole repo
+    root and holds packaging, CI or scripts that are not part of the skill."""
     for p in (src_dir, license_file):
         if not inside(p, clone_dir):
             raise RuntimeError(f"{p}: resolves outside the upstream clone")
-    if not (src_dir / "SKILL.md").is_file():
+    if include:
+        bad_inc = [f for f in include if check.include_problem(f)]
+        if bad_inc:
+            raise RuntimeError(f"{src_dir}: include entries must stay inside the folder: {', '.join(map(str, bad_inc))}")
+        files = [src_dir / f for f in include]
+        missing = [f for f in include if not (src_dir / f).is_file()]
+        if missing:
+            raise RuntimeError(f"{src_dir}: listed files missing upstream: {', '.join(missing)}")
+    else:
+        files = [p for p in src_dir.rglob("*") if not (SKIP_PARTS & set(p.relative_to(src_dir).parts))]
+    if (src_dir / "SKILL.md") not in files:
         raise RuntimeError(f"{src_dir}: no SKILL.md upstream")
-    links = [p for p in src_dir.rglob("*") if p.is_symlink()]
+    links = [p for p in files if p.is_symlink() or not inside(p, src_dir)]
     if links:
         raise RuntimeError(f"{src_dir}: refusing upstream symlinks: {', '.join(str(p) for p in links)}")
-    bad = [p.relative_to(src_dir).as_posix() for p in src_dir.rglob("*") if p.is_file() and not check.vendor_file_ok(p)]
+    files = [p for p in files if p.is_file()]
+    bad = [p.relative_to(src_dir).as_posix() for p in files if not check.vendor_file_ok(p)]
     if bad:
         raise RuntimeError(f"{src_dir}: not plain text, so not vendorable (use external.yaml): {', '.join(bad)}")
-    if (src_dir / "LICENSE").exists():
+    if (src_dir / "LICENSE") in files:
         raise RuntimeError(f"{src_dir}: upstream folder already has a LICENSE; the repo licence cannot be placed beside it")
     if dest.exists():
         shutil.rmtree(dest)
-    shutil.copytree(src_dir, dest, ignore=shutil.ignore_patterns(".git", "__pycache__", ".DS_Store"))
+    for f in files:
+        target = dest / f.relative_to(src_dir)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(f, target)
     shutil.copyfile(license_file, dest / "LICENSE")
     return check.file_digests(dest)
 
@@ -147,7 +174,7 @@ def update(root: Path, names: list[str], ref: str = "", url_for: UrlFor = github
             for skill, sk in src["skills"].items():
                 dest = root / sk["to"]
                 before = check.file_digests(dest) if dest.is_dir() else {}
-                sk["files"] = copy_skill(d / sk["from"], dest, license_file, d)
+                sk["files"] = copy_skill(d / sk["from"], dest, license_file, d, sk.get("include"))
                 if sk["files"] != before:
                     changed.append(sk["to"])
         if src.get("sha") != sha:

@@ -133,6 +133,37 @@ class UpdateTests(VendorFixture):
         with self.assertRaisesRegex(RuntimeError, "not plain text"):
             vendor_sync.update(self.root, [], url_for=self.url_for)
 
+    def test_include_copies_only_listed_files_from_a_repo_root(self) -> None:
+        (self.up / "SKILL.md").write_text(skill_md("alpha"), encoding="utf-8")
+        (self.up / "build.py").write_text("print(1)\n", encoding="utf-8")
+        run(self.up, "add", ".")
+        run(self.up, "commit", "-q", "-m", "root skill")
+        data = self.manifest()
+        data["sources"]["up"]["skills"]["alpha"].update({"from": ".", "include": ["SKILL.md"]})
+        (self.root / "toolkit" / "vendored.json").write_text(json.dumps(data), encoding="utf-8")
+        vendor_sync.update(self.root, [], url_for=self.url_for)
+        dest = self.root / "toolkit" / "design" / "vendor" / "alpha"
+        self.assertEqual(sorted(check.file_digests(dest)), ["LICENSE", "SKILL.md"])
+        self.assertEqual(self.validate(), [])
+        data = self.manifest()
+        data["sources"]["up"]["skills"]["alpha"]["include"] = ["SKILL.md", "build.py"]
+        (self.root / "toolkit" / "vendored.json").write_text(json.dumps(data), encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "not plain text"):
+            vendor_sync.update(self.root, [], url_for=self.url_for)
+
+    def test_include_cannot_leave_the_folder(self) -> None:
+        for bad in (["SKILL.md", "../repo/README.md"], ["/etc/hosts"], ["a//b.md"]):
+            self.assertTrue(any(check.include_problem(f) for f in bad), bad)
+        data = self.manifest()
+        data["sources"]["up"]["skills"]["alpha"]["include"] = ["SKILL.md", "../x.md"]
+        (self.root / "toolkit" / "vendored.json").write_text(json.dumps(data), encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "stay inside the folder"):
+            vendor_sync.update(self.root, [], url_for=self.url_for)
+        errors: list[str] = []
+        check.load_vendored(self.root / "toolkit" / "vendored.json", errors)
+        self.assertTrue(any("'include' must be" in e for e in errors), errors)
+        self.assertFalse(check.include_problem("references/a.md"))
+
     def test_unknown_source_is_refused(self) -> None:
         with self.assertRaises(SystemExit):
             vendor_sync.update(self.root, ["nope"], url_for=self.url_for)
