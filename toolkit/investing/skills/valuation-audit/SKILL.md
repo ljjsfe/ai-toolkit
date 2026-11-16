@@ -4,17 +4,21 @@ description: >-
   Audit a stock valuation (never buy/sell advice): require dated quote + diluted share count, read
   price-implied expectations first, cross-check >=2 method families, audit terminal value vs ROIC/r/g,
   and split return into fundamentals vs rerating. Trigger on 估值, 贵不贵, 合理价值, "is X cheap?".
-version: 1.2.3
+version: 1.4.2
 sources:
-  - upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — structure of §1 (snapshot rows, red flags); method-by-business pairings (reorganised); 3%, 5%, 25%, ±30% thresholds; same-family rule; joint-upgrade and double-count checks; DCF shown only when its inputs can be written out; return split incl. EV path; no-rerating case
-  - Mauboussin and Rappaport, "Expectations Investing" (2001; rev. 2021), https://www.expectationsinvesting.com/ — §2, price-implied drivers and forecast period
-  - Damodaran, valuation teaching material, https://pages.stern.nyu.edu/~adamodar/ — FCFF vs equity models for financials; g near risk-free; reinvestment = g/ROIC; ROIC fade; ROIC = WACC makes growth worthless
-  - upstream/xbtlin-ai-berkshire/codex-skills/investment-research/SKILL.md (MIT) — terminal multiple from economics not peers; 5-point r−g heuristic; same-basis r and g; discrete-risk scenario
-  - upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/dcf-model/SKILL.md (Apache-2.0) — PV(TV) share below 40% check; grid centre equals base
-  - upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/comps-analysis/SKILL.md (Apache-2.0) — median, drop doubtful peers, quartiles, 10% source gap
-  - upstream/yennanliu-investskill/prompts/dcf-valuation.md (MIT) — g below r; TV above 80% flag
-  - upstream/yennanliu-investskill/prompts/stock-valuation.md (MIT) — SBC-adjusted FCF; no EV bridge for P/E price
-  - upstream/tradermonty-claude-trading-skills/skills/kanchi-dividend-sop/references/valuation-and-one-off-checks.md (MIT) — REIT row; one-off profit checks
+  - upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — structure of §1 (snapshot rows, red flags); method-by-business pairings (reorganised); 3%, 5%, 25%, ±30% thresholds; same-family rule; joint-upgrade and double-count checks; DCF shown only when its inputs can be written out; return split incl. EV path; no-rerating case [port "over 3% apart" "apart by more than about 5%" "more than about 25% apart" "roughly ±30% off the anchor" "only a different family counts" "it is being paid for twice" "counts as a value only when its ledger is complete" "no-rerating case" "split in currency through the bridge"]
+  - upstream/b-m-capital-research-honeclaw/skills/valuation-audit/SKILL.md (MIT) — a named data route for quote, consensus and share count; currency conversion for ADRs and foreign issuers; a unit-magnitude check; scenarios that change operating inputs, not only the multiple; A/B/C grades for forward-revenue evidence; the mid-cycle EPS formula and contract-coverage adjustment for cyclicals [port "name the route before the numbers" "convert EPS and every denominator into the price currency" "check the magnitude before writing" "changes only the multiple is a multiple sensitivity" "grade each block of forward revenue" "median net margin over a full cycle" "contract-locked part"]
+  - Mauboussin and Rappaport, "Expectations Investing" (2001; rev. 2021), https://www.expectationsinvesting.com/ — §2, price-implied drivers and forecast period [port "read the price first" "years of above-cost-of-capital growth"]
+  - Damodaran, valuation teaching material, https://pages.stern.nyu.edu/~adamodar/ — FCFF vs equity models for financials; g near risk-free; reinvestment = g/ROIC; ROIC fade; ROIC = WACC makes growth worthless [port "free cash flow to the firm" "long-run g stays near" "reinvestment rate = g ÷ roic" "let terminal roic fade" "at roic = wacc = 8%"]
+  - upstream/xbtlin-ai-berkshire/codex-skills/investment-research/SKILL.md (MIT) — terminal multiple from economics not peers; 5-point r−g heuristic; same-basis r and g; discrete-risk scenario [port "from the business's own economics" "narrow spread (toolkit heuristic, after xbtlin" "same currency and inflation basis" "discrete risks"]
+  - upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/dcf-model/SKILL.md (Apache-2.0) — PV(TV) share below 40% check; grid centre equals base [port "terminal assumptions are not unreasonably harsh" "its centre cell must equal"]
+  - upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/dcf-model/{SKILL.md,scripts/validate_dcf.py} (Apache-2.0) — the WACC build (CAPM, beta, equity risk premium, after-tax cost of debt, weights) and a DCF validation script [port "after-tax cost of debt" "ke = rf + β × erp" "the recomputed per-share value differs" "def check_model"]
+  - upstream/anthropics-financial-services/plugins/agent-plugins/model-builder/skills/comps-analysis/SKILL.md (Apache-2.0) — median, drop doubtful peers, quartiles, 10% source gap [port "drop a doubtful peer" "on an input by more than 10%"]
+  - upstream/yennanliu-investskill/prompts/dcf-valuation.md (MIT) — g below r; TV above 80% flag [port "the perpetuity formula has no meaning there" "the answer rests on the perpetuity"]
+  - upstream/yennanliu-investskill/prompts/stock-valuation.md (MIT) — SBC-adjusted FCF; no EV bridge for P/E price [port "fcf is shown net of it" "is not bridged again"]
+  - upstream/yennanliu-investskill/plugins/us-stock-analysis/skills/*/SKILL.md, Data & Sources section (MIT) — conflicting sources resolved primary over aggregator, then most recent dated; both shown; never averaged [port "wins over an aggregator or data vendor" "the most recently dated one wins" "never take the midpoint of the two"]
+  - upstream/tradermonty-claude-trading-skills/skills/kanchi-dividend-sop/references/valuation-and-one-off-checks.md (MIT) — REIT row; one-off profit checks [port "p/ffo or p/affo" "strip disposal gains"]
+  - upstream/tradermonty-claude-trading-skills/skills/kanchi-dividend-sop/references/valuation-and-one-off-checks.md (MIT) — margin expansion without matching revenue quality; a dividend funded by debt [port "margin expansion that revenue quality does not explain" "a dividend paid from new debt or asset sales" "two or more of these one-off flags"]
 ---
 
 # Valuation Audit
@@ -25,7 +29,12 @@ recommendation.
 ## Hard stops
 
 - **No quote, no price talk.** A timestamped price and a dated diluted share count gate every
-  price-dependent number: cap, multiples, range, the cheap/expensive verdict. Missing either,
+  price-dependent number: cap, multiples, range, the cheap/expensive verdict. Name the route before the numbers: quote from an
+  exchange or broker feed with its timestamp and session; shares from the latest 10-Q/10-K
+  cover and diluted-EPS note (20-F/6-K for foreign filers); consensus as a snapshot with
+  provider, date, fiscal year, number of estimates and accounting basis; guidance from the
+  latest release or call transcript. Without a consensus snapshot, the gap to consensus is
+  "unknown" and your own forecast is never called consensus. Missing quote or shares,
   say which calculations are blocked, then give what still stands on its own (statement
   figures you confirmed, the business-type read).
 - **No advice in any form:** no buy, sell, add or exit levels, no position size, no target
@@ -43,28 +52,31 @@ is removed. Then build this table, each row with source and date:
 | row | what to check |
 |---|---|
 | shares | latest basic count (10-Q / 10-K cover page) plus dilution at today's price: options and warrants by the treasury stock method, unvested RSUs, in-the-money convertibles if-converted; say so if you use the reported diluted average or fully diluted instead |
-| market cap | price × diluted shares, compared with the quoted cap. Over 3% apart (honeclaw's tolerance, roughly the gap stock compensation alone can open between basic and diluted counts) means explain it before going on. Example: 42.00 × 310m = 13.02bn against a quoted 12.4bn is 5% off; the quote used 296m basic shares (42.00 × 296m = 12.43bn), so the gap is explained |
+| market cap | price × diluted shares, compared with the quoted cap. Over 3% apart means explain it before going on |
 | EV bridge | market cap + debt (state whether leases are in) − cash + preferred + minority interests − equity-method stakes. EV multiples pair with EV, P/E and FCF yield with market cap; a P/E-derived price is already per share and is not bridged again |
 | denominators | revenue, EBIT(DA), EPS, FCF: each with period (TTM / FY1 / FY2), GAAP or adjusted, and status (reported, guided, consensus, own assumption) |
 | guidance vs consensus | apart by more than about 5%: say which you use and why |
 | fiscal calendar | if the year does not end in December, name the calendar months FY1 covers |
+| currency | price currency vs reporting currency; ADRs and foreign issuers convert every denominator at a dated rate and the ADR ratio |
+| units | one unit style for the whole piece; check the magnitude of every figure and recompute each per-share result |
 
-Clean the denominators before any multiple touches them:
+Clean the denominators before any multiple touches them. Read `references/inputs.md` when
+any line below applies: it holds the worked cap check, currency and unit rules, the five
+one-off checks, the cyclical and contract-coverage procedure, the A/B/C table and the
+source-conflict order.
 
 - Negative denominator: the multiple is N/M. Do not print a negative or absolute-value multiple.
-- One quarter × 4 is not TTM.
-- Backlog, bookings, RPO or ARR are not revenue.
-- One-offs: strip disposal gains, legal settlements and tax one-offs from earnings; charges
-  called "non-recurring" in most years are recurring.
+- One quarter × 4 is not TTM. Backlog, bookings, RPO or ARR are not revenue.
+- One-offs: strip disposal gains and the other one-offs. Two or more of the five one-off flags:
+  the earnings base is not clean enough for a base case; use the cleaned figure or withhold.
 - Stock compensation: FCF is shown net of it.
-- Cyclicals: show price ÷ peak earnings and price ÷ mid-cycle earnings side by side; a normal
-  multiple on peak earnings is the classic trap.
-- Two data sources disagreeing on an input by more than 10%: resolve or flag before use.
+- Cyclicals: show price ÷ peak and price ÷ mid-cycle earnings side by side; normalise only the
+  spot-exposed part.
+- Forward revenue beyond FY1: grade each block A/B/C; C enters only the high case.
+- Two data sources disagreeing on an input by more than 10%: resolve or flag before use; never
+  average them.
 
 ## 2. Read the price first
-
-The question is not "is my value above the price" but "what must happen for today's price to
-be fair, and is that more or less likely than the market assumes".
 
 - Solve for the value the market puts on the thing your model values: today's EV against
   free cash flow to the firm for an operating company; today's market cap against equity cash
@@ -77,8 +89,7 @@ be fair, and is that more or less likely than the market assumes".
   The sentence has this shape (hypothetical figures): "the price needs 14% growth for 8 years
   at a 22% margin; the last four quarters show 9% and 18%". A price needing the best stretch
   the company has ever had is a finding.
-- Name the driver whose change moves value most. That is where the debate is, and where the
-  rest of the audit should spend its effort.
+- Name the driver whose change moves value most; spend the rest of the audit there.
 - No-rerating case: today's multiple × the forecast denominator. It isolates what the
   forecast earns by itself; the price can still trade below it.
 
@@ -112,9 +123,7 @@ check it from a different family:
   (growth, discount rate, normalised margin). Where the two rest on different bases, bridge
   them through their own inputs instead — P/TBV = P/E × ROTE when all three use the same
   earnings, share count and closing tangible equity (reported ROTE often uses the average;
-  restate it first), so a bank whose two views disagree is carrying an implied return on
-  tangible equity; test that number. Whatever
-  closes most of the gap is the finding.
+  restate it first); test the implied ROTE. Whatever closes most of the gap is the finding.
   Report both values; the base case uses the view whose weak input you can defend, and the
   other stays beside it. An average of the two is never the answer.
 
@@ -148,6 +157,19 @@ flows: WACC for firm cash flows, cost of equity for equity cash flows.
   more than near ones.
 - Show a grid of r against g. Its centre cell must equal the base-case value; if it does not,
   the model is wrong somewhere.
+- r is built, not asserted: CAPM cost of equity, after-tax cost of debt, market-value weights.
+  When a DCF enters the answer, first read `references/wacc-and-dcf.md` (the build table, its
+  traps, the validation run); `scripts/dcf_check.py wacc` prints the build and
+  `scripts/dcf_check.py check model.json` fails a model whose value does not follow from its
+  inputs, whose PV(TV) share is over 80%, or whose grid centre is not the base.
+
+## 4b. Scenarios change the business, not the multiple
+
+Low, base and high each write out the operating input that drives them (volume, price, share,
+capacity, coverage), the denominator it produces, how long the assumption is meant to hold,
+and the multiple with its anchor, each labelled actual, guided, consensus or own assumption. A
+set of cases that changes only the multiple is a multiple sensitivity, not scenarios; label it
+so. The range endpoints are these three computed values and nothing else.
 
 ## 5. Adjustment ledger
 
@@ -173,10 +195,9 @@ With e = change in EPS and m = change in the P/E, price return = (1 + e)(1 + m) 
 e + m + e×m; dividends are added separately. Report the cross term: EPS +30% with the multiple
 −25% gives −2.5% (−7.5 points of it from the cross term), not +5%.
 
-For EV multiples, split in currency through the bridge, not in percentages on the price.
-Example: EBITDA 10 at 10× is EV 100; with net debt 40, equity is 60. EBITDA +30% and the
-multiple −25% give EV 13 × 7.5 = 97.5 and equity 57.5, a return of −4.2%, not −2.5%. With a
-denominator that is not positive, use the currency bridge too.
+For EV multiples, split in currency through the bridge, not in percentages on the price
+(read the worked example in `references/inputs.md` first). With a denominator that is not positive, use the
+currency bridge too.
 
 ## Auditing someone else's model
 
@@ -193,7 +214,7 @@ Price implies: <growth, margin, reinvestment, multiple, years> vs <actuals, guid
 Methods: <view 1: formula = value> | <view 2: formula = value> | gap <x%, input that closes it>
 Terminal: g < r <yes / STOP> | spread <x pts, tested swing> | reinvestment <g/ROIC> | PV(TV)/DCF value <x%, finding if > 80%> | grid centre = base <yes/no>
 Ledger: <anchor → value, size, evidence, shared with>; double counts: <none / list>
-Value range: low <formula = value> | base <formula = value> | high <formula = value>
+Value range: low <operating input → denominator × multiple = value> | base <…> | high <…>
 Price vs range: <where it sits>; no-rerating case <value>; return split e / m / e×m or currency bridge
 Findings: <check — evidence — effect on value> | Gaps: <missing input — what it blocks>
 Not advice: no entry, exit, target or sizing is given. Thesis tracking → thesis-ledger

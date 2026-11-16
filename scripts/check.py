@@ -32,6 +32,13 @@ TRIAL_PROSE_RE = re.compile(
     re.I,
 )
 TRIAL_UNSTARTED_RE = re.compile(r"\bnot\s+yet\s+started\b|尚未开始|未开始", re.I)
+# Every source entry ends in a coverage tag, so a credit can never claim more than the text holds:
+#   [port "anchor" "anchor"]  carried over as procedure; each anchor must appear in the skill text
+#   [idea]                     inspiration only; no procedure from it is claimed
+#   [gap <what is missing>]    the upstream has it and we do not (yet); listed openly in CREDITS.md
+COVERAGE_TAG_RE = re.compile(r"\s*\[(port|idea|gap)\b([^\[\]]*)\]\s*$")
+ANCHOR_RE = re.compile(r'"([^"]+)"')
+MIN_ANCHOR_CHARS = 12
 
 
 def strip_quotes(val: str) -> str:
@@ -44,6 +51,29 @@ def strip_quotes(val: str) -> str:
                 return val[1:-1]
         return val[1:-1].replace("''", "'")
     return val
+
+
+def yaml_value_problem(raw: str) -> str | None:
+    """Why a frontmatter value would parse differently in a real YAML loader, or None.
+
+    The parser here is lenient; Claude Code, Codex and Antigravity use real YAML, so a value
+    they cannot read (or read truncated) must fail validation instead of being repaired here."""
+    v = raw.strip()
+    if v.startswith('"'):
+        if not v.endswith('"') or len(v) < 2:
+            return "double-quoted value is not closed"
+        try:
+            json.loads(v)
+        except json.JSONDecodeError:
+            return "double-quoted value has an unescaped quote or backslash (use single quotes)"
+    elif v.startswith("'"):
+        if not v.endswith("'") or len(v) < 2 or "'" in v[1:-1].replace("''", ""):
+            return "single-quoted value has a lone ' inside (double it as '')"
+    elif v[:1] in "[{*&!|>%@`":
+        return f"unquoted value starts with {v[0]!r}, which YAML reads as syntax (quote the value)"
+    elif re.search(r"\s#", v):
+        return "unquoted value contains ' #', which YAML reads as a comment (quote the value)"
+    return None
 
 
 def strip_inline_comment(val: str) -> str:
@@ -114,6 +144,9 @@ def parse_skill_frontmatter(path: Path, errors: list[str]) -> dict:
                         errors.append(
                             f"{path.relative_to(ROOT)}: unquoted ': ' in YAML list item under {key}: {joined_raw!r}"
                         )
+                    problem = yaml_value_problem(joined_raw)
+                    if problem:
+                        errors.append(f"{path.relative_to(ROOT)}: {problem} in {key}: {joined_raw[:70]!r}")
                     items.append(strip_quotes(joined_raw))
                     continue
                 i += 1
@@ -122,6 +155,9 @@ def parse_skill_frontmatter(path: Path, errors: list[str]) -> dict:
 
         if val[0] not in ('"', "'") and ": " in val:
             errors.append(f"{path.relative_to(ROOT)}: unquoted ': ' in YAML scalar {key}: {val!r}")
+        problem = yaml_value_problem(val)
+        if problem:
+            errors.append(f"{path.relative_to(ROOT)}: {problem} in {key}: {val[:70]!r}")
         data[key] = strip_quotes(val)
         i += 1
 
@@ -139,10 +175,62 @@ def parse_rule_sources(path: Path, errors: list[str]) -> OrderedDict[str, list[s
             out[cur] = []
         elif cur is not None and raw.startswith("  - "):
             item = raw[4:].strip()
+            problem = yaml_value_problem(item)
+            if problem:
+                errors.append(f"{path.relative_to(ROOT)}: {problem}: {item[:70]!r}")
             out[cur].append(strip_quotes(item))
         else:
             errors.append(f"{path.relative_to(ROOT)}: malformed line: {raw!r}")
     return out
+
+
+def normalize_for_anchor(text: str) -> str:
+    """Lowercase, drop markdown emphasis and code ticks, collapse whitespace."""
+    text = re.sub(r"[*`]", "", text.lower())
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def split_coverage(src: str) -> tuple[str, str | None, str]:
+    """Return (source text without tag, kind or None, tag argument text)."""
+    m = COVERAGE_TAG_RE.search(src)
+    if not m:
+        return src.strip(), None, ""
+    return src[: m.start()].strip(), m.group(1), m.group(2).strip()
+
+
+def validate_source_coverage(owner: str, srcs: list[str], corpus: str, errors: list[str]) -> None:
+    """Each source must carry a coverage tag; a `port` must point at text that really exists."""
+    norm_corpus = normalize_for_anchor(corpus)
+    for src in srcs:
+        text, kind, arg = split_coverage(src)
+        short = text[:70]
+        if kind is None:
+            errors.append(f"{owner}: source lacks a [port \"…\"] / [idea] / [gap …] tag: {short!r}")
+        elif kind == "port":
+            anchors = ANCHOR_RE.findall(arg)
+            if not anchors:
+                errors.append(f"{owner}: [port] needs at least one quoted anchor: {short!r}")
+            for a in anchors:
+                if len(a.strip()) < MIN_ANCHOR_CHARS:
+                    errors.append(f"{owner}: anchor {a!r} is shorter than {MIN_ANCHOR_CHARS} chars: {short!r}")
+                elif normalize_for_anchor(a) not in norm_corpus:
+                    errors.append(f"{owner}: claimed port not found in skill text — anchor {a!r} for {short!r}")
+        elif kind == "idea" and arg:
+            errors.append(f"{owner}: [idea] takes no argument: {short!r}")
+        elif kind == "gap" and not arg:
+            errors.append(f"{owner}: [gap] must say what is missing: {short!r}")
+
+
+def skill_corpus(skill_dir: Path, body: str) -> str:
+    """The text a port anchor may point at: SKILL.md body plus references/, resources/ and scripts/."""
+    parts = [body]
+    for sub in ("references", "resources", "scripts"):
+        d = skill_dir / sub
+        if d.is_dir():
+            for f in sorted(d.rglob("*")):
+                if f.is_file() and f.suffix in {".md", ".py", ".sh", ".txt", ".html", ".yaml", ".json"}:
+                    parts.append(f.read_text(encoding="utf-8", errors="replace"))
+    return "\n".join(parts)
 
 
 def _parse_iso_date(raw: str) -> date | None:
@@ -350,30 +438,43 @@ def build_expected_credits(
     rule_sources: OrderedDict[str, list[str]],
     externals: list[dict],
 ) -> str:
-    merged: OrderedDict[str, list[str]] = OrderedDict()
+    sections: dict[str, OrderedDict[str, list[str]]] = {k: OrderedDict() for k in ("port", "idea", "gap")}
+
+    def add(src: str, label: str) -> None:
+        text, kind, arg = split_coverage(src)
+        key = f"{text} — missing: {arg}" if kind == "gap" else text
+        bucket = sections[kind or "idea"]
+        bucket.setdefault(key, [])
+        if label not in bucket[key]:
+            bucket[key].append(label)
+
     for skill_name, srcs in skill_sources:
         for s in srcs:
-            merged.setdefault(s, [])
-            if skill_name not in merged[s]:
-                merged[s].append(skill_name)
+            add(s, skill_name)
     for rule_name, srcs in rule_sources.items():
-        label = f"rule {rule_name}"
         for s in srcs:
-            merged.setdefault(s, [])
-            if label not in merged[s]:
-                merged[s].append(label)
+            add(s, f"rule {rule_name}")
 
     lines = [
         "# Credits",
         "",
         "Skills here were written from the sources below: read and rewritten, not copied.",
         "Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.",
-        "",
-        "## Per-skill sources",
-        "",
+        "Each source is tagged in its skill's frontmatter; `python3 scripts/check.py` fails if a",
+        "ported item's anchor text is not actually present in the skill.",
     ]
-    for src, users in merged.items():
-        lines.append(f"- {src} — used in: {', '.join(users)}")
+    headings = {
+        "port": ("Ported", "Procedure carried over; anchored in the skill text."),
+        "idea": ("Ideas drawn on", "Inspiration only; no procedure from these is claimed."),
+        "gap": ("Known gaps", "The upstream has this capability and the toolkit does not (yet)."),
+    }
+    for kind in ("port", "idea", "gap"):
+        title, blurb = headings[kind]
+        lines.extend(["", f"## {title}", "", blurb, ""])
+        if not sections[kind]:
+            lines.append("- none")
+        for src, users in sections[kind].items():
+            lines.append(f"- {src} — used in: {', '.join(users)}")
     lines.extend([
         "",
         "## Adopted external projects (installed from their own source; not included)",
@@ -429,6 +530,8 @@ def main() -> int:
 
         body = str(fm.get("_body", ""))
         skill_bodies[smd.parent.name] = (rel, body)
+        if isinstance(srcs, list):
+            validate_source_coverage(str(rel), [str(s) for s in srcs], skill_corpus(smd.parent, body), errors)
         docs_to_scan = [(rel, body)] + [
             (ref_md.relative_to(ROOT), ref_md.read_text(encoding="utf-8"))
             for ref_md in sorted((smd.parent / "references").glob("*.md"))
@@ -467,6 +570,12 @@ def main() -> int:
         errors.append(f"toolkit/rules/sources.yaml: missing provenance for rules: {missing_rule_prov}")
     if extra_rule_prov:
         errors.append(f"toolkit/rules/sources.yaml: unknown rule keys: {extra_rule_prov}")
+    for rule_name, srcs in rule_sources.items():
+        rule_md = TOOLKIT / "rules" / f"{rule_name}.md"
+        if rule_md.exists():
+            validate_source_coverage(
+                f"toolkit/rules/sources.yaml ({rule_name})", srcs, rule_md.read_text(encoding="utf-8"), errors
+            )
 
     # Validate category READMEs don't promise personal.local.md when category has no local skills/
     for cat_readme in sorted(TOOLKIT.glob("*/README.md")):
@@ -475,6 +584,20 @@ def main() -> int:
                 errors.append(
                     f"{cat_readme.relative_to(ROOT)}: mentions personal.local.md but category has no local skills/"
                 )
+
+    # Every credited upstream must be registered (repo + reviewed commit) so drift can be checked.
+    lock_path = TOOLKIT / "upstreams.json"
+    lock = json.loads(lock_path.read_text(encoding="utf-8")).get("upstreams", {}) if lock_path.exists() else {}
+    credited_names: set[str] = set()
+    for _, srcs in skill_sources + list(rule_sources.items()):
+        for src in srcs:
+            for m in re.finditer(r"upstream/(\{[^}]+\}|[A-Za-z0-9._-]+)", split_coverage(src)[0]):
+                raw = m.group(1)
+                credited_names.update(x.strip() for x in raw.strip("{}").split(","))
+    for name in sorted(credited_names - set(lock)):
+        errors.append(f"toolkit/upstreams.json: credited upstream {name!r} is not registered (repo, reviewed_sha)")
+    for name in sorted(set(lock) - credited_names):
+        errors.append(f"toolkit/upstreams.json: {name!r} is registered but no source credits it")
 
     externals = parse_external_yaml(TOOLKIT / "external.yaml", errors)
     validate_install_external_prefixes(ROOT / "install.sh", externals, errors)
@@ -488,10 +611,18 @@ def main() -> int:
         errors.append("CREDITS.md is out of sync with skill/rule/external sources (run: python3 scripts/check.py --sync-credits)")
 
     # Run validator and claim-check unit tests
-    for label, test_script in (
+    test_scripts = [
         ("check.py", ROOT / "scripts" / "test_check.py"),
+        ("upstream_drift.py", ROOT / "scripts" / "test_upstream_drift.py"),
         ("claim-check", TOOLKIT / "hooks" / "claim-check" / "test_claim_check.py"),
-    ):
+    ]
+    # Executable helpers shipped inside a skill must carry their own tests.
+    for script_dir in sorted(TOOLKIT.glob("*/skills/*/scripts")):
+        tests = sorted(script_dir.glob("test_*.py"))
+        if any(script_dir.glob("*.py")) and not tests:
+            errors.append(f"{script_dir.relative_to(ROOT)}: has Python helpers but no test_*.py")
+        test_scripts.extend((f"{script_dir.parent.name} scripts", t) for t in tests)
+    for label, test_script in test_scripts:
         res = subprocess.run([sys.executable, str(test_script)], capture_output=True, text=True)
         if res.returncode != 0:
             errors.append(f"{label} tests failed:\n{res.stdout}\n{res.stderr}")
@@ -503,9 +634,16 @@ def main() -> int:
         return 1
 
     avg_desc = total_desc_chars // max(len(skill_mds), 1)
+    kinds = {"port": 0, "idea": 0, "gap": 0}
+    for _, srcs in skill_sources + list(rule_sources.items()):
+        for src in srcs:
+            kind = split_coverage(src)[1]
+            if kind:
+                kinds[kind] += 1
     print(
         f"OK: {len(skill_mds)} skills ({total_desc_chars} total description chars, avg {avg_desc}), "
-        f"{len(rule_files)} rules, {len(externals)} externals, CREDITS.md in sync, unit tests green."
+        f"{len(rule_files)} rules, {len(externals)} externals, CREDITS.md in sync, unit tests green. "
+        f"Sources: {kinds['port']} ported (anchored), {kinds['idea']} idea-only, {kinds['gap']} known gaps."
     )
     return 0
 

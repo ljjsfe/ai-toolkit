@@ -4,14 +4,16 @@ description: >-
   Set, test, and change pricing from willingness-to-pay evidence: pick value metric before tiers,
   segment distributions (never average WTP), sort leader/filler/killer features, and stage price
   increases to new cohorts first. Trigger on 定价, 涨价, 收费方案. Competitor prices: market-scan.
-version: 1.0.1
+version: 1.2.1
 sources:
-  - upstream/wondelai-skills/monetizing-innovation/SKILL.md (MIT) — value metric before level, segment by willingness to pay, zero pushback as the under-pricing signature
-  - upstream/wondelai-skills/monetizing-innovation/references/wtp-conversations.md (MIT) — top-box scoring, haircut stated numbers, curve not average, red flags in answers
-  - upstream/wondelai-skills/monetizing-innovation/references/packaging-tiers.md (MIT) — leader/filler/killer thresholds, killers never inside a tier price
-  - upstream/aidevgtm-gtm-cofounder/skills/12-pricing/SKILL.md (MIT) — deflected payment requests as the strongest signal, value-metric decision tree, the free/paid line (give away individual value), metric then packaging then number, value-multiple heuristic
-  - upstream/marketingskills/skills/pricing/SKILL.md (MIT) — new-customers-first rollout, small existing cohort, grandfathering as a transition, the ultra-low-price trap
-  - upstream/marketingskills/skills/pricing/references/pricing-page-teardown.md (MIT) — reviewing the page for AI agents as well as humans
+  - upstream/wondelai-skills/monetizing-innovation/SKILL.md (MIT) — value metric before level, segment by willingness to pay, zero pushback as the under-pricing signature [port "value metric, then packaging, then the number" "never average willingness to pay" "zero pushback means too cheap"]
+  - upstream/wondelai-skills/monetizing-innovation/references/wtp-conversations.md (MIT) — top-box scoring, haircut stated numbers, curve not average, red flags in answers [port "count only 5s" "haircut them" "quoting the market back"]
+  - upstream/wondelai-skills/monetizing-innovation/references/wtp-conversations.md (MIT) — the exact WTP question scripts, a simplified conjoint procedure, B2C sample sizes [port "three-point price probe" "at what price is it out of the question" "write 8–12 choice tasks" "150–300 survey respondents"]
+  - upstream/wondelai-skills/monetizing-innovation/references/packaging-tiers.md (MIT) — leader/filler/killer thresholds, killers never inside a tier price [port "top-5 in purchase ranking" "never inside a tier price"]
+  - upstream/aidevgtm-gtm-cofounder/skills/12-pricing/SKILL.md (MIT) — deflected payment requests as the strongest signal, value-metric decision tree, the free/paid line (give away individual value), metric then packaging then number, value-multiple heuristic [port "requests received or turned away" "wrong-metric test" "give away individual value" "roughly 10x the price"]
+  - upstream/marketingskills/skills/pricing/SKILL.md (MIT) — new-customers-first rollout, small existing cohort, grandfathering as a transition, the ultra-low-price trap [port "new sign-ups only" "small existing cohort" "price the grandfathering" "ultra-low entry price"]
+  - upstream/marketingskills/skills/pricing/references/pricing-page-teardown.md (MIT) — reviewing the page for AI agents as well as humans [port "ai agents that shortlist tools"]
+  - upstream/marketingskills/skills/pricing/{SKILL.md,references/research-methods.md} (MIT) — Van Westendorp measures price perception, not demand [port "measure price perception and do not forecast demand"]
 ---
 
 # Pricing
@@ -44,14 +46,20 @@ a hypothesis with evidence attached, decided in a fixed order, and changed like 
 | strongest | payment already taken, or "can we pay you for X" requests received or turned away | reply to each: what does not having it cost them, and what could they get approved |
 | strong | a priced fake door, pre-order, deposit or pilot / letter of intent at a named price | behaviour at a stated price; count only completed commitments |
 | medium | 1–5 purchase-probability answers at a stated price | sets a price level only once commitment-tier demand exists (`customer-discovery`); never evidence of demand itself. Count only 5s, and discount those; 4s are maybes; 1–3 are no. Read how the share of 5s falls across 2–3 price points, not the raw share |
-| weak | stated acceptable / expensive / prohibitive prices | a ceiling, not a price: stated numbers run high, so haircut them and confirm with behaviour |
+| weak | stated acceptable / expensive / prohibitive prices | a ceiling, not a price: stated numbers run high, so haircut them and confirm with behaviour. Van Westendorp-style answers measure price perception and do not forecast demand, conversion or churn at a new price |
 | not evidence | team opinion, a competitor's list price, cost-plus | a competitor's price is a reference point in the buyer's head (market-scan), not their valuation |
 
 Distrust the data when answers cluster on your current or a competitor's price (they are
 quoting the market back), when very different customers give identical answers (the concept
 description is leading them), or when every feature is "very valuable" (switch to forced
 trade-offs: ranking or allocating 100 points). Sample-size heuristic from the source: 15–25
-B2B conversations per segment; under 10, treat results as directional.
+B2B conversations per segment (under 10, directional); B2C needs 150–300 survey respondents
+per segment, about 200 for a conjoint; before sending one, run the survey checks in
+the survey-design reference of `customer-discovery` (is a survey the right tool, pilot,
+report sample and non-response). When preparing a WTP conversation or survey, first
+read `references/wtp-scripts.md` (the question scripts in order, the simplified conjoint,
+the full sizing table); `scripts/conjoint_count.py` counts win rates per level from the
+choice tasks.
 
 ## Step 2 — Value metric
 

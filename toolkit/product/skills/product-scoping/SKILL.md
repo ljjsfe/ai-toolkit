@@ -4,12 +4,13 @@ description: >-
   Scope what to build and write lean PRDs: set explicit ambition mode (expand/selective/hold/reduce),
   frame user opportunities before features, compare >=3 solutions + current alternative, and
   red-team "fails if" assumptions. Demand: customer-discovery; contracts: spec; slices: tdd.
-version: 1.0.1
+version: 1.1.0
 sources:
-  - upstream/gstack/plan-ceo-review (MIT) — four explicit scope modes chosen before review
-  - upstream/phuryn-pm-skills/pm-product-discovery/skills/opportunity-solution-tree (MIT) — opportunities not features, three solutions per opportunity, opportunity score
-  - upstream/phuryn-pm-skills/pm-execution/skills/create-prd (MIT) — value proposition with an explicit alternatives slot; findings enter the PRD only if they change a decision
-  - upstream/phuryn-pm-skills/pm-execution/skills/strategy-red-team (MIT) — load-bearing claims, steelman then attack, "fails if", ranked cheapest tests, no manufactured doubt
+  - upstream/gstack/plan-ceo-review (MIT) — four explicit scope modes chosen before review [port "choose the ambition level out loud"]
+  - upstream/phuryn-pm-skills/pm-product-discovery/skills/opportunity-solution-tree (MIT) — opportunities not features, three solutions per opportunity, opportunity score [port "opportunities before features" "at least three solutions per opportunity" "importance ×"]
+  - upstream/phuryn-pm-skills/pm-execution/skills/create-prd (MIT) — value proposition with an explicit alternatives slot; findings enter the PRD only if they change a decision [port "name the alternative" "research that does not change a decision"]
+  - upstream/phuryn-pm-skills/pm-execution/skills/create-prd (MIT) — the six-part value proposition and the ask-up-to-three-questions-before-writing rule [port "up to three short questions in one message" "what before (how they do it today" "the how must be delivered by the chosen solution"]
+  - upstream/phuryn-pm-skills/pm-execution/skills/strategy-red-team (MIT) — load-bearing claims, steelman then attack, "fails if", ranked cheapest tests, no manufactured doubt [port "load-bearing" "write the strongest case that it is true" "do not invent weaknesses"]
 ---
 
 # Product Scoping
@@ -35,6 +36,29 @@ built, or the plan rested on an assumption nobody tested.
    non-software option and "do nothing".
 4. **Name the alternative.** For each target user: what they use today without this, and why
    they would switch. If you cannot say why they would switch, the scope is not ready.
+5. **Ask before writing when only the user knows.** If the problem, the target users or the
+   success metric is missing, ask up to three short questions in one message and write no PRD
+   in that reply. Ask only what only the user knows (their evidence, their users, their
+   metric); look up what a search can answer. Write without answers only when told to go
+   ahead, and then list each missing input as an assumption, not as fact.
+
+## Step 0 — Value proposition per segment
+
+Segments are defined by the job or problem, not demographics; keep the first version to two
+or three. For each, six lines:
+
+| part | answers |
+|---|---|
+| who | the segment |
+| why | the job they are trying to get done and the problem in the way |
+| what before (how they do it today, and what hurts) | the current alternative in use, with its cost |
+| how | the key capability that gets the job done (features come later) |
+| what after | the improved outcome, and what becomes possible that was not |
+| alternatives | what they would use without us, and why they would pick us instead |
+
+Close with a one- or two-sentence statement. Then tie it to the rest: the how must be delivered
+by the chosen solution in Step 2, and the outcome metric must measure the what after. If they
+do not line up, fix that before cutting scope.
 
 ## Step 1 — Map
 
@@ -62,7 +86,7 @@ first version must prove, and how you will know (the metric and the threshold).
 ```
 Outcome and metric:
 Mode:                     expand / selective / hold / reduce — and why
-Users and alternatives:   who · what they use now · why they would switch
+Value proposition:        per segment — who · why · what before · how · what after · alternatives
 Opportunities (ranked):
 Chosen solution:          and the two it beat, with why
 In / out of scope:

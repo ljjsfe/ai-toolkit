@@ -6,7 +6,10 @@ command (or browser verification tool) after the last edit, and its final messag
 success. Blocks once per stop and tells the agent to verify. Fails open on any error.
 
 Supports Claude Code, Antigravity (agy), and Codex Stop hook payloads and transcripts.
-A tripwire, not proof: any command call after the last edit satisfies it, whatever it ran.
+A tripwire, not proof. A shell command counts as a run unless every part of it is read-only
+(ls, cat, grep, git status, ...); a shell command that writes files (sed -i, redirection, tee,
+git apply, a Python heredoc that writes) counts as an edit, and as a run only if a non-read-only
+part follows the write.
 """
 from __future__ import annotations
 
@@ -36,9 +39,12 @@ CLAIM = re.compile(
     rf"\bfixed\b(?!-[a-z]|\s+({FIXED_ADJECTIVE_NOUNS})\b)"
     r"|\b(works now|is working|all (tests )?pass(ed|ing|es)?|tests (now )?pass(ed|ing|es)?|"
     r"(successfully )?deployed (to|successfully)|verified|ready to (merge|ship)|"
-    r"all done|it'?s done|is done)\b"
-    r"|\b(done|deployed)\s*([.!]|$)"
-    r"|(完成了|已完成|全部完成|修好了|已修复|修复完成|改好了|写好了|搞定|测试通过|测试已通过|都通过|部署好了|已部署)",
+    r"all done|it'?s done|is done|(is|are|been|now) resolved|"
+    r"(is|are|now|changes|implementation|work|task|migration|refactor) (now )?complete|"
+    r"(everything|it|all|this|that) works|all working)\b"
+    r"|\b(done|deployed)\s*([.!,:;—–-]|$)"
+    r"|(完成了|已完成|全部完成|修好了|已修复|修复完成|改好了|写好了|搞定|测试通过|测试已通过|都通过|部署好了|已部署|"
+    r"完毕|已解决|解决了|已经好了|没问题了|已修改|修改好了|已实现|实现好了|已上线)",
     re.IGNORECASE,
 )
 # A claim preceded closely in the same clause by a negation or conditional ("not verified",
@@ -60,6 +66,18 @@ INJECTED_PREFIXES = (
     "<collaboration_mode",
     "Caveat:",
     "[Request interrupted",
+)
+# code-review iron law 6: a P0/P1 finding needs an independent refutation before it is reported.
+# Prose alone was skipped in practice (gstack's /review evals); this enforces it where the transcript
+# shows subagent calls (Claude Code). The skill's own fallback, a "self-checked" label, satisfies it.
+SUBAGENT_TOOLS = frozenset({"Agent", "Task"})
+REVIEW_REPORT = re.compile(r"spec conformance|findings \(standards\)|^\s*findings\s*:", re.I | re.M)
+SEVERE_FINDING = re.compile(r"\bP[01]\b")
+REVIEW_REASON = (
+    "This code review reports a P0/P1 finding, but no independent subagent was dispatched this turn "
+    "to refute it (code-review iron law 6). Give each P0/P1 to a fresh subagent with the finding, the "
+    "cited rule and the repository - not your reasoning - and drop or demote what it refutes. If no "
+    "subagent is available, re-check in a separate pass and label those findings self-checked."
 )
 REASON = (
     "You edited files this turn and ran no command after the last edit, but your message "
@@ -94,6 +112,118 @@ def _is_edit_tool(name: str, args: dict | None = None) -> bool:
 
 def _is_run_tool(name: str) -> bool:
     return name in RUN_TOOLS or name.startswith(RUN_TOOL_PREFIXES)
+
+
+HEREDOC_RE = re.compile(r"<<-?\s*(['\"]?)(\w+)\1[^\n]*\n(.*?)\n\s*\2\s*(?=\n|$)", re.S)
+SHELL_WRITE_RE = re.compile(
+    r"\bsed\s+(-[a-zA-Z]*i\b|--in-place)|\bperl\s+-[a-zA-Z]*i|\btee\b(?!\s+/dev/null)|"
+    r"\bgit\s+(apply|am|checkout\s+--|restore)\b|\bpatch\s|"
+    r"(?<![0-9&>])>>?\s*(?!&|/dev/null)[^\s|&;<>]+"
+)
+SCRIPT_WRITE_RE = re.compile(r"""open\([^)]*['"][wax]\+?b?['"]|\.write_text\(|\.write_bytes\(|writeFileSync|fs\.write""")
+READ_ONLY_RE = re.compile(
+    r"^\s*(ls|ll|cat|head|tail|less|more|grep|rg|ag|find|fd|pwd|echo|printf|wc|which|type|file|stat|"
+    r"tree|du|df|env|date|whoami|cd|true|sed\s+-n|awk\s+'[^']*print|"
+    r"git\s+(status|diff|log|show|branch|remote|rev-parse|ls-files|blame))\b"
+)
+SEGMENT_SPLIT = re.compile(r"&&|\|\||;|\n|\|")
+REDIRECT_RE = re.compile(r"(?<![0-9&>])>>?\s*(?!&)([^\s|&;<>]+)")
+SCRATCH_TARGET_RE = re.compile(r"^(/dev/|/tmp/|/private/tmp/|/var/folders/|\$TMPDIR|\$\{TMPDIR)")
+CONTENT_WRITERS_RE = re.compile(r"^\s*(echo|printf|cat|tee)\b")
+DOC_SUFFIXES = (".md", ".mdx", ".rst", ".adoc")  # not .txt: requirements.txt, CMakeLists.txt are code
+CAPTURE_SUFFIXES = (".log", ".out", ".err")  # redirecting a program's output here is capture, not an edit
+
+
+def split_segments(cmd: str) -> list[str]:
+    """Split a shell line on unquoted ;, |, ||, && and newlines (quotes and escapes respected)."""
+    segs, cur, quote, i = [], [], None, 0
+    while i < len(cmd):
+        ch = cmd[i]
+        if quote:
+            cur.append(ch)
+            if ch == quote:
+                quote = None
+            elif ch == "\\" and quote == '"' and i + 1 < len(cmd):
+                cur.append(cmd[i + 1])
+                i += 1
+        elif ch == "#" and (not cur or cur[-1].isspace()):
+            while i < len(cmd) and cmd[i] != "\n":  # an unquoted comment runs to the end of the line
+                i += 1
+            continue
+        elif ch in ("'", '"'):
+            quote = ch
+            cur.append(ch)
+        elif ch == "\\" and i + 1 < len(cmd):
+            cur += [ch, cmd[i + 1]]
+            i += 1
+        elif ch in ";|\n" or cmd.startswith("&&", i):
+            if cmd.startswith(("&&", "||"), i):
+                i += 1
+            segs.append("".join(cur))
+            cur = []
+        else:
+            cur.append(ch)
+        i += 1
+    segs.append("".join(cur))
+    return [s for s in segs if s.strip()]
+
+
+def _segment_writes(seg: str) -> bool:
+    """A segment edits files when it rewrites them in place or puts content into a workspace file.
+    Redirecting a program's output (`pytest > log`) or writing to a scratch path is not an edit."""
+    if re.search(r"\bsed\s+(-[a-zA-Z]*i\b|--in-place)|\bperl\s+-[a-zA-Z]*i|\bgit\s+(apply|am|checkout\s+--|restore)\b|\bpatch\s", seg):
+        return True
+    if SCRIPT_WRITE_RE.search(seg):  # inline code (python -c, node -e) that writes files
+        return True
+    tee = re.search(r"\btee\b(?:\s+-a)?\s+([^\s|&;<>]+)", seg)
+    if tee and not SCRATCH_TARGET_RE.match(tee.group(1)):
+        return True
+    for target in REDIRECT_RE.findall(seg):
+        if SCRATCH_TARGET_RE.match(target):
+            continue
+        if target.lower().endswith(CAPTURE_SUFFIXES) and not CONTENT_WRITERS_RE.match(seg):
+            continue  # `pytest > test-output.log`: the program ran, its output was saved
+        return True
+    return False
+
+
+def _shell_effect(cmd: str) -> tuple[bool, bool]:
+    """(writes files, runs something non-read-only after its last write) for one shell command."""
+    bodies = [m.group(3) for m in HEREDOC_RE.finditer(cmd)]
+    marked = HEREDOC_RE.sub(" <<HEREDOC ", cmd)
+    segments = split_segments(marked)
+    write_idx = [i for i, seg in enumerate(segments) if _segment_writes(seg.replace("<<HEREDOC", ""))
+                 or ("<<HEREDOC" in seg and REDIRECT_RE.search(seg)
+                     and not all(SCRATCH_TARGET_RE.match(t) for t in REDIRECT_RE.findall(seg)))]
+    if any(SCRIPT_WRITE_RE.search(b) for b in bodies):
+        # The heredoc body runs in the segment that opened it.
+        write_idx += [i for i, seg in enumerate(segments) if "<<HEREDOC" in seg] or [0]
+    last_write = max(write_idx, default=-1)
+    after = segments[last_write + 1:] if last_write >= 0 else segments
+    runs = any(not READ_ONLY_RE.match(seg) and "<<HEREDOC" not in seg.split()[0:1] for seg in after)
+    return last_write >= 0, runs
+
+
+def _command_of(args: object) -> str | None:
+    """The shell command from a tool call's arguments (Claude `command`, agy `CommandLine`, Codex `cmd`)."""
+    if isinstance(args, str):
+        try:
+            args = json.loads(args)
+        except json.JSONDecodeError:
+            return args
+    if not isinstance(args, dict):
+        return None
+    for key in ("command", "CommandLine", "cmd"):
+        v = args.get(key)
+        if isinstance(v, list):
+            # Codex passes argv, usually ["bash", "-lc", "<script>"]: the script is what ran.
+            if len(v) >= 3 and str(v[0]).rsplit("/", 1)[-1] in ("bash", "sh", "zsh") and str(v[1]).startswith("-") and "c" in str(v[1]):
+                v = str(v[-1])
+            else:
+                v = " ".join(str(x) for x in v)
+        if isinstance(v, str) and v.strip():
+            return v
+    return None
 
 
 def _entries(path: Path) -> list[dict]:
@@ -153,11 +283,64 @@ def _is_user_prompt(entry: dict) -> bool:
     return isinstance(content, str) and not content.lstrip().startswith(INJECTED_PREFIXES)
 
 
+def review_needs_refutation(entries: list[dict], final_text: str | None = None) -> bool:
+    """A Claude Code turn whose final review report has P0/P1 findings but dispatched no subagent."""
+    start = max((i for i, e in enumerate(entries) if _is_user_prompt(e)), default=-1)
+    turn = entries[start + 1:]
+    claude_turn, dispatched, text = False, False, ""
+    for e in turn:
+        if e.get("type") != "assistant":
+            continue
+        claude_turn = True
+        for c in e.get("message", {}).get("content", []) or []:
+            if isinstance(c, dict) and c.get("type") == "tool_use" and c.get("name") in SUBAGENT_TOOLS:
+                dispatched = True
+            elif isinstance(c, dict) and c.get("type") == "text":
+                text = c.get("text", "")
+    text = final_text if final_text is not None else text
+    return (claude_turn and not dispatched and bool(REVIEW_REPORT.search(text))
+            and _severe_findings(text) and "self-checked" not in text.lower())
+
+
+def _edits_only_docs(args: object) -> bool:
+    """True when an edit tool call names only documentation files (.md, .rst, .txt, ...)."""
+    if not isinstance(args, dict):
+        return False
+    paths = [args.get(k) for k in ("file_path", "path", "TargetFile", "notebook_path") if isinstance(args.get(k), str)]
+    return bool(paths) and all(p.lower().endswith(DOC_SUFFIXES) for p in paths)
+
+
+def _severe_findings(text: str) -> bool:
+    """A line that reports a P0/P1 at a file:line, and is not a 'no P0/P1' statement."""
+    for line in text.splitlines():
+        if (SEVERE_FINDING.search(line) and re.search(r"[\w./-]+:\d+|\bline\s+\d+", line)
+                and not re.search(r"\bno\s+(open\s+)?P[01]\b|\bzero\s+P[01]\b|P[01]\s*:\s*(none|0)\b", line, re.I)):
+            return True
+    return False
+
+
 def should_block(entries: list[dict], final_text: str | None = None) -> bool:
     """final_text: the last assistant message as given to the hook; falls back to the transcript."""
     start = max((i for i, e in enumerate(entries) if _is_user_prompt(e)), default=-1)
     turn = entries[start + 1 :]
-    step, last_edit, last_run, transcript_text = 0, -1, -1, ""
+    step, last_edit, last_run, transcript_text = 0, -1.0, -1.0, ""
+
+    def record(name: str, args: object) -> None:
+        nonlocal last_edit, last_run
+        if _is_edit_tool(name, args if isinstance(args, dict) else None) and _edits_only_docs(args):
+            return  # prose edits (README, notes) need no command run before "done"
+        if _is_edit_tool(name, args if isinstance(args, dict) else None):
+            last_edit = step
+        elif _is_run_tool(name):
+            cmd = _command_of(args) if name in RUN_TOOLS else None
+            if cmd is None:  # unknown arguments or a browser tool: count it as a run
+                last_run = step
+                return
+            writes, runs = _shell_effect(cmd)
+            if writes:
+                last_edit = step
+            if runs:
+                last_run = step + 0.5 if writes else step
 
     for e in turn:
         etype = e.get("type")
@@ -169,12 +352,7 @@ def should_block(entries: list[dict], final_text: str | None = None) -> bool:
                     continue
                 step += 1
                 if c.get("type") == "tool_use":
-                    name = c.get("name", "")
-                    args = c.get("input") if isinstance(c.get("input"), dict) else None
-                    if _is_edit_tool(name, args):
-                        last_edit = step
-                    elif _is_run_tool(name):
-                        last_run = step
+                    record(c.get("name", ""), c.get("input"))
                 elif c.get("type") == "text":
                     transcript_text = c.get("text", "")
 
@@ -187,12 +365,7 @@ def should_block(entries: list[dict], final_text: str | None = None) -> bool:
                 if not isinstance(tc, dict):
                     continue
                 step += 1
-                name = tc.get("name", "")
-                args = tc.get("args") if isinstance(tc.get("args"), dict) else None
-                if _is_edit_tool(name, args):
-                    last_edit = step
-                elif _is_run_tool(name):
-                    last_run = step
+                record(tc.get("name", ""), tc.get("args"))
 
         # Codex rollout response_item entry
         elif etype == "response_item":
@@ -202,11 +375,7 @@ def should_block(entries: list[dict], final_text: str | None = None) -> bool:
             ptype = p.get("type")
             if ptype in ("function_call", "custom_tool_call"):
                 step += 1
-                name = p.get("name", "")
-                if _is_edit_tool(name):
-                    last_edit = step
-                elif _is_run_tool(name):
-                    last_run = step
+                record(p.get("name", ""), p.get("arguments", p.get("input")))
             elif ptype == "message" and p.get("role") == "assistant":
                 parts = p.get("content", [])
                 if isinstance(parts, list):
@@ -251,8 +420,12 @@ def main() -> int:
         path = Path(payload.get("transcript_path", ""))
         if not path.is_file():
             return 0
-        if should_block(_entries(path), payload.get("last_assistant_message")):
+        entries = _entries(path)
+        final = payload.get("last_assistant_message")
+        if should_block(entries, final):
             print(json.dumps({"decision": "block", "reason": REASON}))
+        elif review_needs_refutation(entries, final):
+            print(json.dumps({"decision": "block", "reason": REVIEW_REASON}))
     except (OSError, ValueError, TypeError):
         if is_agy:
             print(json.dumps({"decision": "allow"}))

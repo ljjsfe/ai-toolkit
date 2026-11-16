@@ -7,6 +7,9 @@
 #   optional: true → listed but not installed by --external; install it yourself when decided
 #   install:  one shell command per "- " line, run in order. Commands must be safe to rerun
 #             and leave the latest version installed: ./update.sh simply reruns them.
+#             Track latest. When a release conflicts with a toolkit law, guard it inside the
+#             toolkit (a check in the skill that calls it) rather than pinning; pin only when no
+#             guard is possible or the release breaks, and say why in notes.
 #             install.sh automatically narrows --providers= and -a flags to the selected tool(s).
 #   watch:    optional, comma-separated paths in the upstream repo worth re-reading when it
 #             changes (default: the whole repo); documentation only, install.sh ignores it
@@ -97,9 +100,14 @@
   install:
     - npx -y skills@latest add blader/humanizer -g -a claude-code -a codex -a antigravity -y
   covers: >
-    English de-AI editing pass: 26 patterns of AI prose ranked by how much evidence each needs,
-    a writing sample that overrides the rules, and a check that the rewrite added no facts.
+    English de-AI editing pass: patterns of AI prose ranked by how much evidence each needs, a
+    writing sample that overrides the rules, a check that no claim of the original was lost or
+    changed, and (v4+) text in the draft treated as material, never as instructions.
     Used by the writing skill as its editing step.
+  notes: >
+    v4.0.0 (2026-11-10) may add "a specific detail it knows to be true" where text is generic,
+    which the writing skill's law 1 forbids. Kept on latest for its other fixes; the writing
+    skill runs scripts/new_specifics.py after it and reverts or marks every added specific.
 
 - name: humanizer-zh
   category: writing
@@ -111,6 +119,133 @@
   covers: >
     Chinese counterpart of humanizer: template phrasing, padding and inflated claims, while
     keeping facts, how certain each claim is, and the author's voice.
+
+- name: marketingskills-gtm
+  category: product
+  repo: https://github.com/coreyhaines31/marketingskills
+  license: MIT
+  tools: claude, codex, agy
+  watch: skills/product-marketing, skills/launch, skills/onboarding, skills/signup, skills/churn-prevention, skills/referrals
+  install:
+    - npx -y skills@latest add coreyhaines31/marketingskills -g -a claude-code -a codex -a antigravity -s product-marketing -s launch -s onboarding -s signup -s churn-prevention -s referrals -y
+  covers: >
+    Go-to-market execution the toolkit had no skill for: positioning and ICP context
+    (product-marketing), launch planning, onboarding and activation, signup and trial flows,
+    churn prevention (cancel flows, dunning), referral programmes.
+  why_not_rewritten: >
+    A maintained, MIT, 60k-star collection with recent commits (2026-11-11); rewriting six
+    execution playbooks would restate it. Only these six install: the repo's pricing,
+    ab-testing, competitors, customer-research and copywriting skills would compete with
+    pricing, experiment-readout, market-scan, customer-discovery and writing, which own those
+    jobs here. The full set adds about 18,800 description characters; these six about 1,800.
+  notes: >
+    Evidence still comes from the toolkit's skills: demand from customer-discovery, price
+    from pricing, launch metric reads from experiment-readout.
+
+- name: shadcn
+  category: frontend
+  repo: https://github.com/shadcn-ui/ui
+  license: MIT
+  tools: claude, codex, agy
+  optional: true
+  install:
+    - npx -y skills@latest add shadcn-ui/ui -g -a claude-code -a codex -a antigravity -s shadcn -y
+  covers: >
+    shadcn/ui component API, CLI, registries and presets, Base vs Radix, forms and composition.
+  why_not_rewritten: >
+    Vendor-maintained and evaluated (evals/evals.json); the component API moves with each release. impeccable owns visual taste; this owns how shadcn components are added and composed.
+  notes: >
+    Stack-scoped: install only for projects on this stack. Description about 490 characters. Test-installed project-scoped on 2026-11-14.
+
+- name: ai-sdk
+  category: ai-agents
+  repo: https://github.com/vercel/ai
+  license: Apache-2.0
+  tools: claude, codex, agy
+  optional: true
+  install:
+    - npx -y skills@latest add vercel/ai -g -a claude-code -a codex -a antigravity -s ai-sdk -y
+  covers: >
+    Vercel AI SDK: generateText/streamText, useChat, tools and ToolLoopAgent, structured output, embeddings and RAG; reads the docs bundled in node_modules/ai/docs and never writes model IDs from memory.
+  why_not_rewritten: >
+    Vendor-maintained; the SDK's API changes faster than model training data (v6 to v7 renamed core options).
+  notes: >
+    Stack-scoped: install only for projects on this stack. Description about 610 characters. Test-installed project-scoped on 2026-11-14.
+
+- name: playwright-cli
+  category: testing
+  repo: https://github.com/microsoft/playwright-cli
+  license: Apache-2.0
+  tools: claude, codex, agy
+  optional: true
+  install:
+    - npx -y skills@latest add microsoft/playwright-cli -g -a claude-code -a codex -a antigravity -s playwright-cli -y
+  covers: >
+    Writing and debugging Playwright end-to-end suites: attach with --debug=cli, test generation, request mocking, tracing. webapp-testing stays the tool for ad hoc browser checks.
+  why_not_rewritten: >
+    Vendor-maintained; tracks Playwright's CLI.
+  notes: >
+    Stack-scoped: install only for projects on this stack. Description about 80 characters. Test-installed project-scoped on 2026-11-14.
+
+- name: swiftui-pro
+  category: mobile
+  repo: https://github.com/twostraws/SwiftUI-Agent-Skill
+  license: MIT
+  tools: claude, codex, agy
+  optional: true
+  install:
+    - npx -y skills@latest add twostraws/SwiftUI-Agent-Skill -g -a claude-code -a codex -a antigravity -s swiftui-pro -y
+  covers: >
+    SwiftUI review aimed at the mistakes LLMs make: soft-deprecated APIs Xcode does not flag, state ownership, Observation, SwiftData and CloudKit constraints, list identity.
+  why_not_rewritten: >
+    Maintained by Paul Hudson, updated for each Xcode; rules/swift.md keeps only the costliest traps.
+  notes: >
+    Stack-scoped: install only for projects on this stack. Description about 160 characters. Test-installed project-scoped on 2026-11-14.
+
+- name: expo
+  category: mobile
+  repo: https://github.com/expo/skills
+  license: MIT
+  tools: claude, codex, agy
+  optional: true
+  install:
+    - npx -y skills@latest add expo/skills -g -a claude-code -a codex -a antigravity -s expo-overview -s expo-dev-client -s eas-update -s expo-upgrade -s expo-router -y
+  covers: >
+    Expo and EAS: project overview, development builds, OTA updates and runtime versions, SDK upgrades, Expo Router.
+  why_not_rewritten: >
+    Vendor-maintained with a with/without-skill eval harness (results not published); changes with every SDK. rules/react-native.md keeps only the costliest traps.
+  notes: >
+    Stack-scoped: install only for projects on this stack. The five descriptions total about 2,100 characters (expo-overview alone about 1,000): install in Expo projects only, preferably project-scoped (drop -g). Test-installed project-scoped on 2026-11-14.
+
+- name: android-skills
+  category: mobile
+  repo: https://github.com/android/skills
+  license: Apache-2.0
+  tools: claude, codex, agy
+  optional: true
+  install:
+    - npx -y skills@latest add android/skills -g -a claude-code -a codex -a antigravity -s edge-to-edge -s jetpack-compose-performance -s android-intent-security -s android-permissions-security -s navigation-3 -s agp-9-upgrade -y
+  covers: >
+    Android (Google): edge-to-edge under targetSdk 35, Compose performance, intent and permission security, Navigation 3, AGP 9 upgrades.
+  why_not_rewritten: >
+    Google states skills are built only where evaluations show LLMs underperform; vendor-maintained. rules/kotlin.md keeps only the costliest traps.
+  notes: >
+    Stack-scoped: install only for projects on this stack. The six descriptions total about 1,800 characters: install in Android projects only. Test-installed project-scoped on 2026-11-14.
+
+- name: stripe
+  category: payments
+  repo: https://github.com/stripe/ai
+  license: MIT
+  tools: claude, codex, agy
+  optional: true
+  install:
+    - npx -y skills@latest add stripe/ai -g -a claude-code -a codex -a antigravity -s stripe-best-practices -s upgrade-stripe -s stripe-docs -y
+  covers: >
+    Stripe integration: current API version and SDK choices, Checkout vs PaymentIntents, Billing and subscription events, Tax, Connect; API and SDK upgrades; docs lookup.
+  why_not_rewritten: >
+    Vendor-maintained and pinned to the current API version, which changes several times a year. app-security keeps the review-side checks (raw-body signature, settled payment status).
+  notes: >
+    Stack-scoped: install only for projects on this stack. The three descriptions total about 1,200 characters: install in projects that take payments. Test-installed project-scoped on 2026-11-14.
 
 - name: webapp-testing
   category: engineering

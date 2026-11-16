@@ -5,16 +5,17 @@ description: >-
   cost, failure domains), or review an existing technical design/plan without inventing findings.
   Not for unsettled framing (design-discussion), behavioral specs (spec), agent loops
   (agent-architecture), or diffs (code-review).
-version: 1.0.2
+version: 1.3.0
 sources:
-  - upstream/jeffallan-claude-skills/skills/architecture-designer/references/nfr-checklist.md (MIT) — numeric non-functional requirements before design; RPO and RTO as separate targets
-  - upstream/everything-claude-code/skills/redis-patterns (MIT) — cache stampede named with a concrete fix
-  - upstream/jeffallan-claude-skills/skills/cloud-architect/references/multi-cloud.md (MIT) — lock-in tier per service type; multi-cloud only for a named exit scenario
-  - upstream/gstack/{plan-eng-review,review} (MIT) — named review battery; two-real-callers rule for extraction
-  - upstream/compound-engineering-plugin/skills/ce-doc-review (MIT) — adequate needs no change; name the downstream cost
-  - upstream/mattpocock-skills/skills/engineering/{domain-modeling,triage,codebase-design} (MIT) — decision-record gate, prior-solution search, deletion and seam tests
-  - upstream/optimnow-cloud-finops-skills (CC BY-SA 4.0 — ideas only, no wording) — find waste from billing data per resource type
-  - authored for this toolkit from a stated need (capacity and unit-cost estimation) — the estimation worksheet and the hot-spot checklist
+  - upstream/jeffallan-claude-skills/skills/architecture-designer/references/nfr-checklist.md (MIT) — numeric non-functional requirements before design; RPO and RTO as separate targets [port "numbers before boxes" "resilience as three numbers"]
+  - upstream/everything-claude-code/skills/redis-patterns (MIT) — cache stampede named with a concrete fix [port "cache stampede when a hot key expires"]
+  - upstream/jeffallan-claude-skills/skills/cloud-architect/references/multi-cloud.md (MIT) — lock-in tier per service type; multi-cloud only for a named exit scenario [port "grade each one's lock-in" "is not a reason for multi-cloud"]
+  - upstream/gstack/review (MIT) — two-real-callers rule for extraction [port "two verified real callers"]
+  - upstream/compound-engineering-plugin/skills/ce-doc-review (MIT) — adequate needs no change; name the downstream cost [port "is a valid outcome" "every finding names its cost"]
+  - upstream/compound-engineering-plugin/skills/ce-doc-review/references/{personas/*,synthesis-and-presentation}.md (MIT) — coherence, feasibility and adversarial persona reviewers with independent verification [port "the document disagreeing with itself" "whether it can be built as written" "whether it is *right*" "a reviewer's claim is a lead, not a finding"]
+  - upstream/mattpocock-skills/skills/engineering/{domain-modeling,triage,codebase-design} (MIT) — decision-record gate, prior-solution search, deletion and seam tests [port "record a decision only when it is hard to reverse" "check it does not already exist" "deletion test" "one adapter behind an interface"]
+  - upstream/optimnow-cloud-finops-skills (CC BY-SA 4.0 — ideas only, no wording) — find waste from billing data per resource type [port "start from the billing export"]
+  - authored for this toolkit from a stated need (capacity and unit-cost estimation) — the estimation worksheet and the hot-spot checklist [port "daily requests ÷ 86,400" "failure domains"]
 ---
 
 # System Design
@@ -80,20 +81,29 @@ real cost.
 
 ## Review mode — an existing design, plan or refactor
 
+Review ceremony does not pay on current models: gstack retired its plan-review skill
+(2026-11-07) after plain Opus 5.5 found 15 of 16 seeded flaws unaided at 1/7 of the cost, and
+superpowers dropped subagent plan reviews (v5.0.6) after 5 versions x 5 trials showed the same
+plan quality with or without them. Spend the effort on the checks below.
+
 1. **"This is fine" is a valid outcome.** Judge whether the document would guide correct work,
    not how detailed it is; do not invent findings.
 2. **Check it does not already exist** — in this codebase, a dependency, or a prior rejected
    proposal — searching by concept, not by the proposal's wording.
 3. **Every finding names its cost:** what breaks, slows or becomes hard, and when.
-4. **Most consequential first.** In an interactive session raise them one at a time; otherwise
-   list them in that order. Never finalise a plan that silently resolves open findings.
+4. **Most consequential first.** Never finalise a plan that silently resolves open findings.
 5. Check the numbers the design states, if any, and check that components and failure handling
    honour any active `spec` (living capability specs or change deltas); review mode does not demand
    a full estimate.
+6. **Self-review inline before reporting:** placeholders (TBD, "similar to X"), internal
+   contradictions, scope beyond the goal, ambiguous steps a builder would have to guess.
+7. **Persona subagent passes only when the user asks for them.** If asked, run coherence,
+   feasibility and adversarial reviewers as fresh subagents and verify every claim before it
+   becomes a finding; read `references/review-personas.md` first for the lenses, prompt and
+   verification steps.
 
 | test | ask |
 |---|---|
-| boring by default | new technology where known technology would do? A team affords about three innovations — which is this spending? |
 | essential vs accidental | which complexity comes from the problem, which from the solution? Cut the second |
 | deletion test | if this layer or module were deleted, would complexity vanish or move into callers? |
 | seam test | one adapter behind an interface is a hypothetical seam; two (often production + a test fake) make it real |
@@ -106,7 +116,8 @@ a real trade-off.
 ## Output
 
 Review mode: verdict (proceed / proceed with changes / rethink) · findings by consequence ·
-what already exists · open questions that change the design. Design mode:
+what already exists ·
+open questions that change the design. Design mode:
 
 ```
 Requirements:     the numbers, with assumptions marked

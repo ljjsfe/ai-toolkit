@@ -17,6 +17,12 @@ paths:
 - Supabase / Postgres RLS: wrap auth calls in a subquery — `(SELECT auth.uid()) = user_id` — so
   they are evaluated once per query, not per row; index every column referenced in RLS predicates;
   avoid mutual cross-table RLS policies (`A → B → A`) that recurse.
+- Postgres views bypass RLS by default (they run as the view owner): on PG15+ create them
+  `WITH (security_invoker = true)`; older versions, revoke `anon`/`authenticated` or use an unexposed schema.
+- Supabase: `raw_user_meta_data` / `user_metadata` is user-editable, so never use it in RLS or
+  authz (use `app_metadata`); `TO authenticated` without an ownership predicate is an IDOR; an
+  UPDATE without a SELECT policy silently changes 0 rows; Storage upsert needs INSERT, SELECT and
+  UPDATE policies; deleting a user leaves existing access tokens valid.
 - Postgres `SECURITY DEFINER` functions must pin `SET search_path = ''`, schema-qualify all
   referenced objects, and live outside API-exposed schemas (`public` in PostgREST).
 - Connection poolers in transaction mode (e.g. PgBouncer port 6543): never rely on session-level

@@ -4,13 +4,15 @@ description: >-
   Threat-model and harden an agent with tools, MCP servers, file/network access, credentials, or
   money: untrusted text and self-notes as data, code-level authority, deny-by-default, human-gated
   destructive calls, and supply-chain checks. For surrounding web/API security use app-security.
-version: 1.0.1
+version: 1.2.2
 sources:
-  - upstream/everything-claude-code/skills/{agent-security-hardening,mcp-dependency-review,prompt-caching-strategy,llm-trading-agent-security,agent-architecture-audit} (MIT)
-  - upstream/vila-lab/README.md, docs/architecture.md (CC BY-NC-SA 4.0 — ideas only, no wording)
-  - upstream/everything-claude-code/the-security-guide.md (MIT) — Simon Willison's "lethal trifecta" (private data, untrusted content, an outbound channel), behind "The dangerous combination"
-  - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-managed-context,harness-engineering,self-improvement-loops} (MIT)
-  - Gambit Security, "AI Agents Are Hacking Online Retailers for $25 a Company" (2026), https://gambit.security/blog-posts/autonomous-ai-agents-online-retailers-25-a-company
+  - upstream/everything-claude-code/skills/{agent-security-hardening,mcp-dependency-review,prompt-caching-strategy,llm-trading-agent-security} (MIT) — deny-wins policy, path containment, sentinel-secret test, MCP pinning tiers, cache keys are not access checks, trading limits [port "deny wins, and the unclassifiable is denied" "is_relative_to" "sentinel secret" "pin the server version" "authorise before the lookup" "per-action and rolling"]
+  - upstream/everything-claude-code/skills/{agent-security-hardening,llm-trading-agent-security} (MIT) — trust-boundary map (source, parser, validator, side effect); identifier allowlists and argv separation; env-value validation; private temp files; tool-output bounding with truncation markers and control-character stripping; a tests-cover-it completion gate per hardening step; transaction deadlines and MEV protection [port "Trust-boundary map" "source → parser → validator → side effect" "allowlist pattern with a hard length cap" "separate argv elements after" "Reject missing or whitespace-only environment values" "created atomically with mode" "append a truncation marker with the original size" "strip control characters and terminal escape sequences" "a tests-cover-it completion gate per step" "short transaction deadline" "private mempool or protected RPC for MEV protection" "Final verification gate"]
+  - upstream/supabase-agent-skills/skills/supabase/SKILL.md (MIT) — scoped personal access tokens for the Management API, CLI and MCP server instead of full-access classic tokens [port "account-wide token is not least privilege" "scoped personal access tokens"]
+  - upstream/vila-lab/README.md, docs/architecture.md (CC BY-NC-SA 4.0 — ideas only, no wording) — agent system threat surfaces [idea]
+  - upstream/everything-claude-code/the-security-guide.md (MIT) — Simon Willison's "lethal trifecta" (private data, untrusted content, an outbound channel), behind "The dangerous combination" [port "a channel that can send data out"]
+  - upstream/muratcankoylan-agent-skills-for-context-engineering/skills/{self-managed-context,harness-engineering,self-improvement-loops} (MIT) — self-written notes as untrusted input; graders locked from the agent [port "instruction-shaped text into its own notes" "edit its own grader will"]
+  - Gambit Security, "AI Agents Are Hacking Online Retailers for $25 a Company" (2026), https://gambit.security/blog-posts/autonomous-ai-agents-online-retailers-25-a-company [port "dropped 180 tables"]
 ---
 
 # Agent Security
@@ -25,21 +27,18 @@ context. Secure the program, not the prompt.
    memory are untrusted too, unless a human reviewed them or they live in a write-protected
    path. Text that tries to instruct is reported, not followed.
 2. **Authority is enforced in code, outside the model.** Permissions, spend limits, rate limits
-   and allowed targets are checked by the harness on every call, regardless of what the model
-   says or how confident it is.
-3. **Deny wins, and the unclassifiable is denied.** A broad deny beats a narrower allow (the
-   reverse of "most specific rule wins"). If the policy cannot fully classify an action — a
-   shell line too long or too compound to analyse, an unknown tool — the answer is "ask a
-   human", never "allow".
+   and allowed targets are checked by the harness on every call, whatever the model says.
+3. **Deny wins, and the unclassifiable is denied.** A broad deny beats a narrower allow. If the
+   policy cannot fully classify an action — a shell line too compound to analyse, an unknown
+   tool — the answer is "ask a human", never "allow".
 4. **Destructive and irreversible actions:** exact identifiers, never patterns; a dry run; a
-   human approval step; and backups the agent cannot reach. A pattern will eventually match
-   what it should not: Gambit Security's 2026 report on an AI-run intrusion campaign records an
-   agent whose over-broad table-name match dropped 180 tables at one retailer, including the
-   backups its administrators had made (https://gambit.security/blog-posts/autonomous-ai-agents-online-retailers-25-a-company).
+   human approval step; and backups the agent cannot reach. (Gambit Security, 2026: an
+   agent's over-broad table-name match dropped 180 tables at one retailer, backups included.)
 5. **Least privilege per run and per agent.** Read-only credentials by default; write scopes
    are granted per task and expire with it. Subagents inherit the parent's permissions unless
-   restricted — give each worker its own narrower tool allowlist and credential, so logs show
-   which agent did what.
+   restricted — give each worker its own narrower tool allowlist and credential. A platform's
+   account-wide token is not least privilege: scope the token to the organisations, projects
+   and permissions the task needs (e.g. Supabase's scoped personal access tokens).
 
 ## The dangerous combination
 
@@ -48,33 +47,51 @@ untrusted content**, and **a channel that can send data out** (HTTP, email, comm
 comments, rendered links or images). Any injected instruction can then exfiltrate. Remove one
 leg — split the agent, drop the outbound channel, or require approval on outbound actions.
 
+## Hardening workflow
+
+Work the boundaries in order; each step is done only when its tests pass through the real
+entry point (a tests-cover-it completion gate per step, not a checklist tick).
+
+1. **Trust-boundary map** — one row per path, source → parser → validator → side effect, with
+   the identity that authorises the effect. Every write, command, network mutation and
+   credential use has a named validator immediately before it.
+2. **Identifiers and argv** — identifiers that become filenames, keys or command arguments
+   pass an allowlist pattern with a hard length cap, and reach commands as separate argv
+   elements after `--` where the program reads `--` that way (not git: there it starts a
+   pathspec), never inside a shell string. Reject missing or whitespace-only
+   environment values before building any client.
+3. **Filesystem containment** — the rules below.
+4. **Private temp files** — sensitive files created atomically with mode `0o600` (directories
+   `0o700`) in a user-private directory, removed in `finally`.
+5. **Bound tool output** — read at most N bytes, strip control characters and terminal escape
+   sequences, append a truncation marker with the original size, and turn malformed output
+   into a typed error, never an empty success.
+
+Read `references/hardening.md` when doing this work: map template, code and test gates per
+step, the final verification gate, trading-agent transaction protections.
+
 ## Checklist
 
 **Untrusted content and memory**
 - Untrusted text is delimited and labelled as data where it enters the context.
-- Memory, compaction notes and self-written instructions are reviewed or constrained like any
-  other input: a model can write instruction-shaped text into its own notes that a later
-  context then obeys.
+- Memory, compaction notes and self-written instructions are constrained like any input: a
+  model can write instruction-shaped text into its own notes that a later context obeys.
 - Instruction-like content found in data is logged and surfaced to the user.
 
 **Before the trust prompt**
 - A cloned or downloaded repository's agent files — `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`,
-  `.claude/`, `.codex/`, `.agents/` (`hooks.json`, `mcp_config.json`, `plugins.json`, rules) — are
-  untrusted code. Read them before opening the folder with an agent, and do not rely on the trust
-  dialog as the boundary: past releases let parts of a repository's configuration act before the
-  user accepted it, and a fix in one version says nothing about the version you run.
+  `.claude/`, `.codex/`, `.agents/` (hooks, MCP and plugin configs, rules) — are untrusted code.
+  Read them before opening the folder with an agent; the trust dialog is not the boundary (past
+  releases let configuration act before acceptance).
 
 **Supply chain (MCP servers, plugins, tools)**
 
-MCP tool descriptions are instructions injected into the context, and a server can change them
-after you approved it. Pin the server version and diff its tool list and descriptions on
-update.
-
-MCP configs are routinely written as `npx -y <package>` with no version: that is code which can
-change after you approved it. Risk is high for a bare name, `@latest` or any dist-tag, and an
-image tag without a digest; medium for version ranges; acceptable only for an exact version or
-`@sha256:` digest — and only if someone reviewed that version. "Pin to whatever is latest
-today" is not a review.
+- MCP tool descriptions are injected instructions a server can change after approval: pin the
+  server version and diff its tool list and descriptions on update.
+- Unpinned `npx -y <package>`, `@latest`, any dist-tag or an image tag without a digest is high
+  risk; version ranges medium; acceptable only for an exact version or `@sha256:` digest that
+  someone reviewed, or for a latest-tracking install gated by a review of what changed since the
+  last one (this toolkit's `update.sh` lists each external's releases and asks first).
 
 **Filesystem**
 - Resolve both the workspace root and the target, then check containment with a path API
@@ -96,24 +113,22 @@ today" is not a review.
   error or prompt.
 
 **Caches and multi-tenancy**
-- An application response or semantic cache key is a routing hint, not an access check. Authorise before the lookup; scope
-  entries to user, workspace, model and content version; invalidate on permission change. A
-  cache hit across users is a data leak.
+- A response or semantic cache key is a routing hint, not an access check. Authorise before
+  the lookup; scope entries to user, workspace, model and content version; invalidate on
+  permission change.
 
 **A runaway or compromised agent in production**
-- Kill it in code, not by asking it: revoke its credentials, disable its trigger, or flip a
-  harness-enforced kill switch. Rotate every secret it could read (environment, files, its
-  context), not only its own, and quarantine its memory and notes before any restart — a
-  poisoned note re-infects the next run. Preserve its transcript and tool-call log, list every external
-  input it read, and check what it wrote or sent out (the dangerous-combination check above).
-  Incident handling otherwise follows `production-ops`.
+- Kill it in code, not by asking it: revoke credentials, disable its trigger, or flip a
+  harness-enforced kill switch. Rotate every secret it could read, not only its own; quarantine
+  its memory and notes before any restart. Preserve its transcript and tool-call log, list its
+  external inputs, and check what it wrote or sent out. Otherwise follow `production-ops`.
 
 **Agents that move money or place orders**
 - Per-action and rolling (e.g. 24h) spend limits enforced outside the model.
-- Simulate or preview every transaction before execution; require explicit bounds (max price,
-  min received).
 - Circuit breaker: halt on consecutive losses or a drawdown threshold; resume only by a human.
 - Separate, minimally funded credentials for the agent; never the main account's keys.
+- Before wiring any transaction path, read the trading section of `references/hardening.md`
+  (simulation, minimum received from an independent price, slippage caps, deadlines, MEV routing).
 
 **Evaluation and self-improvement loops**
 - Rubrics, test suites and evaluator code are locked from the agent (see `agent-evals`); an

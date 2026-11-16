@@ -1,9 +1,11 @@
 ---
 name: architecture-diagram
 description: Create polished dark-themed architecture diagrams as standalone, self-contained HTML+SVG files. Use when the user asks for a standalone system, infrastructure, cloud, security or network topology diagram file — not for diagrams embedded in a document.
-version: 1.1.0
+version: 1.2.1
 sources:
-  - third-party skill adapted from Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 — description rewritten for routing, template arrow z-order and legend placement aligned to spec (MIT; see LICENSE in this folder)
+  - third-party skill adapted from Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 — description rewritten for routing, template arrow z-order and legend placement aligned to spec (MIT; see LICENSE in this folder) [port "draw connection arrows early in the svg" "place legends outside all boundary boxes"]
+  - third-party skill from Cocoon AI, https://github.com/Cocoon-AI/architecture-diagram-generator v1.1 (MIT) — worked examples (web app, microservices, AWS serverless) shipped under resources/examples with the AWS legend moved below its region [port "start from the closest worked example"]
+  - authored for this toolkit from a stated need (render-and-check) — a static geometry check script and a look-in-the-browser step for the spacing and legend rules [port "def check(html" "is inside the boundary" "open the file in a real browser"]
 ---
 
 # Architecture Diagram Skill
@@ -150,7 +152,7 @@ Caveats: clipboard API needs a user gesture and a secure context (https/file/loc
 <div class="card">
   <div class="card-header">
     <div class="card-dot COLOR"></div>
-    <h3>Title</h3>
+    <h2>Title</h2>
   </div>
   <ul>
     <li>• Item one</li>
@@ -169,6 +171,37 @@ Copy and customize the template at `resources/template.html`. Key customization 
 4. Draw connection arrows between components
 5. Update the three summary cards
 6. Update footer metadata
+
+## Worked examples
+
+Start from the closest worked example rather than the bare template when one fits; each follows
+every rule above (arrows first, opaque backing rects, legend outside boundaries, export toolbar):
+
+| file | shape | shows |
+|---|---|---|
+| `resources/examples/web-app.html` | three tiers left to right | the minimal layout: four boxes, labelled arrows, ports as annotations |
+| `resources/examples/microservices.html` | gateway, services, a message bus, per-service stores inside a cluster boundary | buses placed in the gap between rows, nested boundaries, a legend below the cluster |
+| `resources/examples/aws-serverless.html` | managed services inside a region boundary | cloud colours, a vertical flow, the viewBox extended so the legend sits under the region |
+
+## Render and check
+
+A diagram is not done until it has been checked as rendered, not as written:
+
+1. **Static check:** `python3 scripts/check_diagram.py <file>.html` (standard library only). It
+   fails on overlapping component boxes, boxes or labels outside the viewBox, a legend inside a
+   boundary, and missing template hooks (report-container, toolbar, SRI hashes); it warns on
+   arrows drawn after boxes. Fix every error and rerun.
+2. **Look at it:** open the file in a real browser. If Playwright is available (the
+   `webapp-testing` skill), load it with `file://`, wait for fonts, take a full-page screenshot,
+   collect console errors, and read the screenshot. Otherwise ask the user to open it, or work
+   through the checklist yourself.
+3. **Checklist** (what the static check cannot see): rows at least 40px apart and the legend
+   at least 20px below the lowest boundary (the script finds overlap and containment, not
+   spacing); no label wider than its box or running into a neighbour; arrow labels clear of lines and boxes; no arrow visible through a box; every colour
+   in the diagram appears in the legend; the summary cards describe this system, not template
+   text; no console errors.
+
+Say which of the three you did; "looks right" from the source alone is not a check.
 
 ## Output
 

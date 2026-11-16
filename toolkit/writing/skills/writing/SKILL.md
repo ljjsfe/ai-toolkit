@@ -5,18 +5,20 @@ description: >-
   with zero invented facts ([NEED: ...] placeholders, competing openings, platform rules, de-AI
   editing pass, fresh-reader check). Trigger on 写文章, 发帖, 公众号, 推文, 写稿. Not for resumes
   (career-navigator) or AGENTS.md/CLAUDE.md (agent-instructions).
-version: 1.1.0
+version: 1.4.1
 sources:
-  - upstream/khazix-skills/khazix-writer (MIT) — first-hand observation is what a model cannot supply; ask the writer for it
-  - upstream/marketingskills/skills/copywriting/references/ai-tells.md (MIT) — placeholder for missing proof instead of an invented fact; the swap test
-  - upstream/ahao-writing-dna-distiller (MIT) — voice as ranges and verbatim samples by function, not averages; prescriptive rules over descriptions
-  - upstream/everything-claude-code/skills/brand-voice (MIT) — a banned move must be observed in the writer's own corpus; report splits instead of averaging
-  - upstream/mattpocock-skills/skills/in-progress/writing-shape (MIT) — 2–3 openings, each implying a different thesis; ground a concept before leaning on it
-  - upstream/getsentry-skills/skills/blog-writing-guide (Apache-2.0) — open on the problem or the conclusion; voice throughout, not only at the ends; informative headings; name what was not chosen
-  - upstream/marketingskills/skills/social/references/{platforms.md,x-algorithm.md} (MIT) — specific claim at the top of a post; no engagement bait; verified versus reported platform mechanics
-  - upstream/xbtlin-ai-berkshire/codex-skills/wechat-article (MIT) — every formula or number gets a plain-language gloss; when editor and reader disagree, the reader wins
-  - upstream/anthropics-skills/skills/doc-coauthoring (licence not stated for this skill; method only) — test the draft on a fresh agent that sees only the draft
-  - upstream/{blader-humanizer,op7418-humanizer-zh} (MIT) — the de-AI editing pass (external skills in toolkit/external.yaml) and the inline structural fallback checklist when external skills are absent
+  - upstream/khazix-skills/khazix-writer (MIT) — first-hand observation is what a model cannot supply; ask the writer for it [port "first-hand detail comes from the writer"]
+  - upstream/marketingskills/skills/copywriting/references/ai-tells.md (MIT) — placeholder for missing proof instead of an invented fact; the swap test [port "never fill it with something" "apply the swap test"]
+  - upstream/marketingskills/skills/copywriting/references/ai-tells.md (MIT) — second-generation tells and the writer behind the copy (uneven density, honest limits, never invent experience); persona-built opinions replaced by asking the writer [port "sentences shaped like wisdom" "reflexive specificity" "too balanced" "uneven density" "honest limits" "never invent experience"]
+  - upstream/ahao-writing-dna-distiller (MIT) — voice as ranges and verbatim samples by function, not averages; prescriptive rules over descriptions [port "ranges, not averages" "verbatim samples grouped by job" "rules written as instructions"]
+  - upstream/ahao-writing-dna-distiller (MIT) — the measuring pipeline (distill_metrics.py for sentence-length spread, short/long ratio, punctuation, nominalisation and risky-word density), beat sheets and structure archetypes, the form-vs-content forbidden map, the AI-flavour firewall self-check [port "sentence-length spread" "def doc_metrics" "that sequence is a structure archetype" "content goes in a forbidden map" "ai-flavour self-check (run after the de-ai pass)"]
+  - upstream/everything-claude-code/skills/brand-voice (MIT) — a banned move must be observed in the writer's own corpus; report splits instead of averaging [port "only bans that the corpus shows" "splits, not blends"]
+  - upstream/mattpocock-skills/skills/in-progress/writing-shape (MIT) — 2–3 openings, each implying a different thesis; ground a concept before leaning on it [port "draft 2–3 openings, each implying a different thesis" "must be introduced before a sentence leans on it"]
+  - upstream/getsentry-skills/skills/blog-writing-guide (Apache-2.0) — open on the problem or the conclusion; voice throughout, not only at the ends; informative headings; name what was not chosen [port "opens on the problem or the conclusion" "not only the first and last paragraph" "say what was not chosen and why"]
+  - upstream/marketingskills/skills/social/references/{platforms.md,x-algorithm.md} (MIT) — specific claim at the top of a post; no engagement bait; verified versus reported platform mechanics [port "the first line carries a specific claim" "never a request for likes" "treat reach advice as directional"]
+  - upstream/xbtlin-ai-berkshire/codex-skills/wechat-article (MIT) — every formula or number gets a plain-language gloss; when editor and reader disagree, the reader wins [port "gets a plain-language gloss" "change the text for the reader"]
+  - upstream/anthropics-skills/skills/doc-coauthoring (licence not stated for this skill; method only) — test the draft on a fresh agent that sees only the draft [port "give a subagent only the draft"]
+  - upstream/{blader-humanizer,op7418-humanizer-zh} (MIT) — the de-AI editing pass (external skills in toolkit/external.yaml) and the inline structural fallback checklist when external skills are absent [port "run this structural pass directly"]
 ---
 
 # Writing
@@ -53,16 +55,27 @@ it is allowed to claim**. This skill fixes those two things and runs a de-AI lin
 5. **Cut** — apply the swap test: a sentence that would read the same on a competitor's or a
    stranger's page says nothing about this writer or this subject; make it specific or delete it.
 6. **De-AI** — if `humanizer` (English) or `humanizer-zh` (Chinese) is installed, run it on the
-   cut draft with `PERSONAL.md` as the voice sample. If neither external skill is available in
-   this session, run this structural pass directly:
+   cut draft with `PERSONAL.md` as the voice sample, then run
+   `scripts/new_specifics.py <cut draft> <humanized> --sources <notes…>`: humanizer 4+ adds "a
+   specific detail it knows to be true" where text is generic, which law 1 forbids. Every number,
+   date, name or quote it lists is traced to the writer or a source, or reverted, or becomes
+   `[NEED: …]`. If neither external skill is available in this session, run this structural pass
+   directly:
    - Cut false contrasts (`not X, but Y` / `不是 X，而是 Y` where nobody claimed X) and one-line
      dramatic closers that only restate the paragraph above;
    - Break mechanical rule-of-three padding, habitual em-dash chains, bold-label bullet
      templates, and chatbot wrappers;
    - Replace inflated significance verbs (`pivotal`, `underscores`, `赋能`, `重塑`) with plain
      verbs and concrete facts;
+   - Then scan for the tells that survive a first pass — sentences shaped like wisdom,
+     self-narration, tidy closers, staccato bursts, perfect balance between sections,
+     reflexive specificity — and, without a profile, ask the writer where the piece should
+     be uneven; when a cleaned draft still reads as generated or sounds like nobody, first
+     read `references/second-pass-tells.md` (the table and the questions);
    - Preserve every fact, number, quote, condition, epistemic hedge (`may`, `reported`, `可能`,
      `据称`), the `PERSONAL.md` voice rules, and every `[NEED: ...]` marker verbatim.
+   With a profile in place, also run `scripts/voice_metrics.py <corpus> --draft <draft>` and
+   the self-check list in the profile; fix or justify each flag.
 7. **Fresh-reader test** — give a subagent only the draft and 3–5 questions the piece must
    answer (what is the claim, why believe it, what should I do). Wrong or hesitant answers mark
    the passages to fix. Without subagents (e.g. some Codex setups), paste the draft alone into a
@@ -91,6 +104,13 @@ Built from 3–10 pieces the writer actually published, stored in `toolkit/writi
 - **Only bans that the corpus shows** — something the writer never does, with the evidence.
 - **Splits, not blends** — where Chinese and English pieces, or posts and long-form, differ, keep
   both and say which applies where.
+- **Measured, then instructed** — `scripts/voice_metrics.py <corpus folder>` gives per-language
+  min / median / max for sentence-length spread, short/long share, punctuation, stock-phrase,
+  contrast and nominalisation density; each range becomes an instruction in the profile, and
+  `--draft draft.md` flags where a draft leaves the range. When building or
+  refreshing the profile, or when a draft reads as AI and the profile cannot say why, first
+  read `references/voice-distilling.md` (beat sheets and structure archetypes, the forbidden
+  map of the writer's own cases and lines, a writer-specific AI-flavour self-check).
 
 ## Output
 

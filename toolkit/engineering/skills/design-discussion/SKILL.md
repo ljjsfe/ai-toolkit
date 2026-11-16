@@ -4,35 +4,44 @@ description: >-
   Hold an open-ended design conversation before planning: one question + guess per turn, frame goal
   and constraints before proposing, 2–3 distinct mechanisms, and a live decision log. Trigger on
   "discuss the design", 讨论方案/聊设计; once settled use system-design, spec, or agent-architecture.
-version: 1.1.1
+version: 1.3.2
 sources:
-  - upstream/superpowers/skills/brainstorming (MIT) — think wide privately, play back in chunks, builder check by a fresh reader, nothing built before approval
-  - upstream/addyosmani-agent-skills/skills/interview-me (MIT) — one question with a guess attached, "want vs should want" probe, predict-the-next-three stop test, bare assent is not a yes
-  - upstream/addyosmani-agent-skills/skills/idea-refine (MIT) — directions must differ, not vary; name what each bets on; a not-doing list
-  - upstream/mattpocock-skills/skills/engineering/domain-modeling (MIT) — sharpen overloaded terms, edge-case scenarios, check the code, ADR only when hard to reverse, surprising and a real trade-off
-  - upstream/mattpocock-skills/skills/engineering/grill-with-docs (MIT) — record decisions and terms as they settle, not at the end
-  - upstream/compound-engineering-plugin/skills/ce-brainstorm/references/{approaches,dialogue,interaction-rules,settled-decisions}.md (MIT) — present all approaches before recommending, anti-genericness test, look up rather than ask, integration check, no self-settling of decisions
-  - upstream/gstack/office-hours (MIT) — premise challenge (right problem, cost of doing nothing, what already exists); minimal versus long-term versus lateral approaches
-  - upstream/janestreet-agent-skills/socratic-tutor/SKILL.md (MIT, https://github.com/janestreet/agent_skills) — ambiguous-intent confirmation guard before starting a multi-turn loop; never project unstated constraints onto the user's answer
+  - upstream/superpowers/skills/brainstorming (MIT) — think wide privately, nothing built before approval [port "generate several privately" "nothing gets built during the discussion"]
+  - upstream/superpowers/skills/brainstorming/{SKILL.md,builder-check-prompt.md} (MIT) — design played back in short chunks each ending with a what-is-missing question; builder check as a required subagent pass with a prompt and three-pile triage; sizing and splitting the work [port "end the chunk by asking what is wrong or missing" "dispatch a fresh subagent" "minor, my call" "say how big the work is" "several independent designs"]
+  - upstream/superpowers/skills/brainstorming/SKILL.md (MIT, v7.0.2) — ask only when the answer changes what gets built, else state the call as a proposal; why first, open-ended, no example answers; process steps are your own calls (release notes report blind-graded filler questions falling from 41 to 23) [port "would change what gets built" "no example answers attached" "never ask about process"]
+  - upstream/addyosmani-agent-skills/skills/interview-me (MIT) — one question with a guess attached, "want vs should want" probe, predict-the-next-three stop test, bare assent is not a yes [port "with your guess attached" "justifying to an imagined reviewer" "reaction to the next three questions" "covers only what you actually showed"]
+  - upstream/addyosmani-agent-skills/skills/idea-refine (MIT) — directions must differ, not vary; name what each bets on; a not-doing list [port "differ in mechanism, not in parameters" "and the bet it makes" "what this deliberately will not do"]
+  - upstream/mattpocock-skills/skills/engineering/domain-modeling (MIT) — sharpen overloaded terms, edge-case scenarios, check the code, ADR only when hard to reverse, surprising and a real trade-off [port "overloaded nouns" "boundary scenarios" "check the code and raise" "surprising without context"]
+  - upstream/mattpocock-skills/skills/engineering/grill-with-docs (MIT) — record decisions and terms as they settle, not at the end [port "whenever something settles, not at the end"]
+  - upstream/compound-engineering-plugin/skills/ce-brainstorm/references/{approaches,dialogue,interaction-rules,settled-decisions}.md (MIT) — present all approaches before recommending, anti-genericness test, look up rather than ask, integration check, no self-settling of decisions [port "show all of them before you recommend" "generic article on the topic" "look it up instead of asking" "combine what has been decided" "only the user settles a decision"]
+  - upstream/compound-engineering-plugin/skills/ce-brainstorm/references/blindspot-pass.md (MIT) — a blindspot pass for users who cannot evaluate the options themselves [port "a decision map, not a lesson" "not when they are merely undecided" "settled by evidence is not a decision"]
+  - upstream/gstack/office-hours (MIT) — premise challenge (right problem, cost of doing nothing, what already exists); minimal versus long-term versus lateral approaches [port "is this the right problem" "the minimal version"]
+  - upstream/gstack/office-hours (MIT) — landscape search before proposing; premises the user must explicitly agree to [port "search generic category terms" "where the conventional approach is wrong" "agree or disagree with each"]
+  - upstream/janestreet-agent-skills/socratic-tutor/SKILL.md (MIT, https://github.com/janestreet/agent_skills) — ambiguous-intent confirmation guard before starting a multi-turn loop; never project unstated constraints onto the user's answer [port "ask in one sentence before starting the loop" "never attribute to the user a constraint"]
 ---
 
 # Design Discussion
 
-A design conversation is worth having because each answer changes the next question. Treat it
-as a dialogue that converges on decisions, not an interview that collects requirements. If it is
-unclear whether the user wants a quick recommendation or a multi-turn design discussion, ask in one
+Each answer should change the next question: a dialogue that converges on decisions, not an
+interview that collects requirements. If it is unclear whether the user wants a quick recommendation or a multi-turn design discussion, ask in one
 sentence before starting the loop.
 
 ## Iron laws
 
-1. **One question per message, with your guess attached.** Ask the single question whose answer
-   most changes the design, state what you expect the answer to be and why, then wait. A list of
-   questions gets skimmed answers and locks in a framing before the first answer arrives.
+1. **One question per message, with your guess attached (except the why).** Ask only a question whose answer
+   would change what gets built and that neither the request nor the code answers; otherwise state
+   your call and reason as a proposal the user can correct. Ask the single question that most
+   changes the design, state what you expect the answer to be and why, then wait.
+   **Exception — the why.** If the user has not said why they want this, ask that first, as one
+   open question in their terms with no example answers attached and no guess.
+   **Never ask about process** (writing things up, where files go, whether to look further, how
+   to show something): those are your calls — do them and say so. Not process: the mode check
+   before the loop, consent before sending anything off the machine, and the blindspot offer.
 2. **No approaches before the frame.** Until the goal, the binding constraints and the test for
    "good" are stated (or recorded as assumptions), do not propose a solution. Before the first
    proposal, ask what the user already has in mind; your framing anchors theirs.
-3. **Approaches differ in mechanism, not in parameters.** Two caches with different TTLs are
-   one approach. Show all of them before you recommend one.
+3. **Approaches differ in mechanism, not in parameters.** Show all of them before you
+   recommend one.
 4. **Keep a decision log and honour it.** A decided item is not re-asked; it reopens only on
    new evidence, which you name. Only the user settles a decision — your own proposal that they
    did not engage with stays *open*, "sounds good" covers only what you actually showed, and you
@@ -54,42 +63,51 @@ Cover this ground through the one-at-a-time dialogue, never as a checklist read 
 | non-goals | what this deliberately will not do — make it explicit; it is where misalignment hides |
 | premise | is this the right problem? what happens if nothing is built? what already partly does it? |
 
-- **Look it up instead of asking** when the codebase or docs can answer; ask the user only for
-  decisions and preferences. When the user states how the system works, check the code and raise
-  any contradiction before building on it.
-- **Probe "should want" answers.** When a goal arrives as a virtue word (scalable, clean,
-  flexible, robust), ask what concrete situation it must handle; if it sounds like justifying to
-  an imagined reviewer, ask what they would want with no one to justify it to.
+- Look it up instead of asking when the code or docs can answer; check the code and raise any
+  contradiction with what the user says before building on it.
+- Before proposing, learn the landscape (generic category terms only; ask before sending
+  anything off the machine), then get the numbered premises agreed or disagreed one by one.
+  Read `references/dialogue.md`, "Grounding the frame", before starting.
+- **Unfamiliar territory.** If the user cannot weigh the options (they say so, or two "no idea,
+  you decide" answers in a row on a domain-judgement point), offer a blindspot pass — a decision
+  map, not a lesson, of 3–7 decisions with your defaults. It is not when they are merely
+  undecided. Read `references/blindspot-pass.md` when that signal appears.
+- Probe virtue-word goals ("scalable", "clean") for the concrete situation behind them.
 
 ## Step 2 — Sharpen the language
 
-Vague terms hide undecided design. Whenever one is load-bearing, stop and pin it.
-
-- **Overloaded nouns:** "you say *account* — the paying organisation or the person logging in?"
-  Propose one precise term per concept and use it from then on.
-- **Boundary scenarios:** invent a concrete edge case that forces a choice — a partial refund, a
-  retried webhook, an agent that times out mid-tool-call — and ask what should happen.
-- **Load-bearing assumptions:** name the assumption the favoured direction rests on, and ask
-  what would have to be true for it to fail. Challenge it once; if the user holds it with the
-  risk in view, log it as decided.
+Whenever a vague term, overloaded noun or unexamined assumption is load-bearing, stop and pin
+it with a boundary scenario. Read `references/dialogue.md`, "Sharpen the language", when one
+appears.
 
 ## Step 3 — Lay out the approaches
 
-Generate several privately and drop the weak ones. Present 2-3 that differ on a real axis:
-where state lives, who owns the invariant, sync versus async, build versus compose. A useful
-spread is the minimal version (smallest change that meets the goal), the long-term version, and
+Generate several privately and drop the weak ones. Present 2-3 that differ on a real axis
+(where state lives, who owns the invariant, sync versus async). A useful spread is the minimal version (smallest change that meets the goal), the long-term version, and
 one lateral reframing. Drop any approach that would appear in a generic article on the topic
 without reference to this system. For each give: the mechanism in two sentences, what it is
 best at, what it costs, and the bet it makes. Then recommend one, tied to the stated test for
 "good", with anything larger than the goal needs offered as an option rather than the default.
 
-## Step 4 — Run the log and converge
+## Step 4 — Play back, run the log and converge
 
-Update the log in the conversation whenever something settles, not at the end. Before closing,
-combine what has been decided: two decisions that are each fine can produce an effect neither
-answer considered ("events are fire-and-forget" plus "billing reads from events" means a lost
-event is lost revenue). Ask about each such combination once. If several rounds pass and the
-user's answers are still not predictable, say so and step back to the frame instead of grinding.
+Play the design back in 200–300-word chunks as parts form, marking what you filled in as your
+proposal, and end each chunk by asking what is wrong or missing. Log decisions whenever
+something settles, not at the end; before closing, check combinations of decisions once each.
+Not converging after several rounds → step back to the frame. Before the first playback, read
+`references/dialogue.md`, "Playback and convergence".
+
+## Step 5 — Size and split
+
+Once an approach is chosen, say how big the work is in plain words; the user can override it.
+
+| size | design doc | builder check |
+|---|---|---|
+| small change | short: what was already covered, a line or two per heading | no |
+| project | the full doc below | required |
+
+If it grows, step up a size. If it is really several independent designs (no shared decision,
+any ship order), agree an order and discuss one at a time; log the others as open.
 
 ## Hand-offs
 
@@ -105,9 +123,12 @@ user's answers are still not predictable, say so and step back to the frame inst
 
 ## Output
 
-During the discussion, show the log whenever it changes. At the end, write the design doc so
-a capable builder could plan from it without returning to the conversation; optionally give it
-to a fresh reader and ask only the questions that reader could not settle alone.
+Show the log whenever it changes. At the end, write the design doc so a builder could plan
+from it without the conversation. For a project-sized design, run the builder check first:
+dispatch a fresh subagent with no
+conversation history on the saved doc, sort its questions into three piles (answered already ·
+minor, my call · the user's) and bring only the user's pile back, in one message. When the
+doc is written, read `references/builder-check.md` (prompt, triage rules) before dispatching.
 
 ```
 DECISION LOG

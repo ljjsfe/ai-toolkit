@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from claim_check import claims_success, should_block  # noqa: E402
+from claim_check import claims_success, review_needs_refutation, should_block  # noqa: E402
 
 HOOK = Path(__file__).with_name("claim_check.py")
 
@@ -194,6 +194,107 @@ class ClaimCheckTests(unittest.TestCase):
                 self.assertTrue(claims_success(msg))
 
     # ---- Antigravity transcript & CLI tests ---------------------------------------------
+    def test_wider_claim_wording(self):
+        for claim in ("Done — the fix is in.", "Done, pushed the change.", "The bug is resolved.",
+                      "Changes complete.", "Everything works.", "已经修改完毕", "问题已解决"):
+            self.assertTrue(claims_success(claim), claim)
+        for not_claim in ("This is not resolved yet.", "Once everything works we can ship.",
+                          "完成之前还需要跑测试", "It isn't complete."):
+            self.assertFalse(claims_success(not_claim), not_claim)
+
+    def test_read_only_command_does_not_count_as_verification(self):
+        for cmd in ("ls -la src", "git status && git diff", "cat app.py | grep foo", "sed -n 1,20p x.py"):
+            t = [user("fix it"), asst(tool("Edit")), tool_result(),
+                 asst(tool("Bash", {"command": cmd})), tool_result(), asst(text("Fixed."))]
+            self.assertTrue(should_block(t), cmd)
+        t = [user("fix it"), asst(tool("Edit")), tool_result(),
+             asst(tool("Bash", {"command": "python -m pytest -q 2>&1 | tail -5"})), tool_result(), asst(text("Fixed."))]
+        self.assertFalse(should_block(t))
+
+    def test_shell_edit_counts_as_edit(self):
+        for cmd in ("sed -i '' 's/a/b/' app.py", "echo 'x = 1' >> config.py", "printf hi | tee out.txt",
+                    "python3 - <<'EOF'\nopen('a.py','w').write('x')\nEOF", "git apply fix.patch"):
+            t = [user("fix it"), asst(tool("Bash", {"command": cmd})), tool_result(), asst(text("Fixed."))]
+            self.assertTrue(should_block(t), cmd)
+
+    def test_shell_edit_followed_by_a_real_run_in_the_same_command(self):
+        t = [user("fix it"), asst(tool("Bash", {"command": "sed -i 's/a/b/' app.py && pytest -q"})),
+             tool_result(), asst(text("Fixed."))]
+        self.assertFalse(should_block(t))
+        t = [user("fix it"), asst(tool("Bash", {"command": "pytest -q && sed -i 's/a/b/' app.py"})),
+             tool_result(), asst(text("Fixed."))]
+        self.assertTrue(should_block(t))
+
+    def test_non_writing_shell_is_not_an_edit(self):
+        for cmd in ("python3 - <<'EOF'\nif a > b:\n    print(a)\nEOF", "make test > /dev/null 2>&1",
+                    "npm test 2>&1 | tail -3"):
+            t = [user("check"), asst(tool("Edit")), tool_result(),
+                 asst(tool("Bash", {"command": cmd})), tool_result(), asst(text("Fixed."))]
+            self.assertFalse(should_block(t), cmd)
+
+    def test_codex_and_agy_command_arguments_are_read(self):
+        codex_ls = {"type": "response_item", "payload": {"type": "function_call", "name": "exec_command",
+                                                          "arguments": json.dumps({"cmd": ["bash", "-lc", "ls"]})}}
+        self.assertTrue(should_block([codex_user("patch"), codex_call("apply_patch", "custom_tool_call"),
+                                      codex_ls, codex_asst("Fixed.")]))
+        agy = [agy_user("fix"), agy_model("edit", [agy_tc("edit_file")]),
+               agy_model("check", [agy_tc("run_command", {"CommandLine": "git diff"})]), agy_model("Done.")]
+        self.assertTrue(should_block(agy))
+
+    def test_review_with_p0_needs_a_subagent_refutation(self):
+        report = "Spec conformance: met\nFindings (standards): P1 api.py:40 · token not checked · fix"
+        self.assertTrue(review_needs_refutation([user("review this PR"), asst(text(report))]))
+        dispatched = [user("review this PR"), asst(tool("Agent", {"prompt": "disprove"})), tool_result(), asst(text(report))]
+        self.assertFalse(review_needs_refutation(dispatched))
+        self.assertFalse(review_needs_refutation([user("review"), asst(text(report + " (self-checked)"))]))
+        low = "Spec conformance: met\nFindings (standards): P2 util.py:3 · naming"
+        self.assertFalse(review_needs_refutation([user("review"), asst(text(low))]))
+        self.assertFalse(review_needs_refutation([user("explain P0 vs P1"), asst(text("P0 means outage; P1 means bug."))]))
+        # not a Claude Code transcript: unknown how subagents appear, so never block
+        self.assertFalse(review_needs_refutation([codex_user("review"), codex_asst(report)]))
+
+    def test_saving_test_output_is_a_run_not_an_edit(self):
+        t = [user("fix"), asst(tool("Edit", {"file_path": "app.py"})), tool_result(),
+             asst(tool("Bash", {"command": "pytest -q > /tmp/tests.log 2>&1; tail -5 /tmp/tests.log"})),
+             tool_result(), asst(text("Fixed; tests passed."))]
+        self.assertFalse(should_block(t))
+        t2 = [user("fix"), asst(tool("Edit", {"file_path": "app.py"})), tool_result(),
+              asst(tool("Bash", {"command": "pytest -q > test-output.log 2>&1"})), tool_result(), asst(text("Fixed."))]
+        self.assertFalse(should_block(t2))
+
+    def test_quoted_separator_is_not_a_second_command(self):
+        t = [user("fix"), asst(tool("Bash", {"command": "sed -i '' 's/old/new;/' app.py"})), tool_result(),
+             asst(text("Fixed."))]
+        self.assertTrue(should_block(t))
+        t = [user("fix"), asst(tool("Bash", {"command": "sed -i 's/a/b/' app.py && echo 'done; really' | cat"})),
+             tool_result(), asst(text("Fixed."))]
+        self.assertTrue(should_block(t))
+
+    def test_docs_only_edit_needs_no_run(self):
+        t = [user("update readme"), asst(tool("Edit", {"file_path": "/repo/README.md"})), tool_result(),
+             asst(tool("Bash", {"command": "git diff"})), tool_result(), asst(text("Done."))]
+        self.assertFalse(should_block(t))
+        mixed = [user("x"), asst(tool("Edit", {"file_path": "README.md"}), tool("Edit", {"file_path": "app.py"})),
+                 tool_result(), asst(text("Done."))]
+        self.assertTrue(should_block(mixed))
+
+    def test_review_gate_ignores_clean_reviews_and_explanations(self):
+        clean = "Spec conformance: met\nFindings (standards): no P0/P1 issues; P2 util.py:3 naming"
+        self.assertFalse(review_needs_refutation([user("review"), asst(text(clean))]))
+        explain = "Spec conformance means meeting the brief. P0 is an outage, P1 a user-facing bug."
+        self.assertFalse(review_needs_refutation([user("what is P0"), asst(text(explain))]))
+
+    def test_codex_verify_pass_regressions(self):
+        from claim_check import _shell_effect
+        self.assertEqual(_shell_effect('python3 -c "print(123)" > ./src/a.ts'), (True, False))
+        self.assertTrue(_shell_effect("python -c \"open('x','w').write('x')\" > output.log")[0])
+        self.assertEqual(_shell_effect("sed -i 's/a/b/' app.py # don't forget\npytest -q"), (True, True))
+        cfg = [user("bump"), asst(tool("Edit", {"file_path": "requirements.txt"})), tool_result(), asst(text("Done."))]
+        self.assertTrue(should_block(cfg))
+        for loc in ("Findings (standards): P1 Dockerfile:40 bug", "Findings (standards): P1 path/to/file.py line 40"):
+            report = [user("review"), asst(text("Spec conformance: met\n" + loc))]
+            self.assertTrue(review_needs_refutation(report), loc)
+
     def test_antigravity_transcript_blocks_and_allows(self):
         blocked = [
             agy_user("fix bug"),
