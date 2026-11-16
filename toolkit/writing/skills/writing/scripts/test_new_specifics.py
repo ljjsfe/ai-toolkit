@@ -48,6 +48,23 @@ class NewSpecificsTests(unittest.TestCase):
         self.assertEqual(ns.new_specifics("Ratio was 6.5 overall.", "Ratio was 6.5 overall.", []), [])
         self.assertIn("6", [s for _, s, _ in ns.new_specifics("Ratio was 6.5 overall.", "Ratio was 6.", [])])
 
+    def test_name_does_not_run_into_the_next_sentence(self) -> None:
+        # Seen in a live humanizer run: "...to GitHub Actions. Median build..." was flagged as the
+        # new name "GitHub Actions. Median" although GitHub Actions was in the draft.
+        before = "We moved our CI from Jenkins to GitHub Actions, and median build time fell."
+        after = "We moved our CI from Jenkins to GitHub Actions. Median build time fell."
+        self.assertEqual(ns.new_specifics(before, after, []), [])
+        got = ns.new_specifics(before, "We then tried Buildkite Pipelines. Median time fell.", [])
+        self.assertIn("Buildkite Pipelines", [s for _, s, _ in got])
+        self.assertNotIn("Buildkite Pipelines. Median", [s for _, s, _ in got])
+        for after, name in (
+            ("We switched to the Vue.js Router for routing.", "Vue.js Router"),
+            ("We met with Dr. Ada Smith yesterday.", "Dr. Ada Smith"),
+            ("We flew to St. Louis on Monday.", "St. Louis"),
+            ("It came from the U.S. Army archive.", "U.S. Army"),
+        ):
+            self.assertIn(name, [s for _, s, _ in ns.new_specifics("Plain text.", after, [])], after)
+
     def test_cli_exit_codes(self) -> None:
         import tempfile
         with tempfile.TemporaryDirectory() as tmp:

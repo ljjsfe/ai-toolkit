@@ -5,7 +5,7 @@ description: >-
   with zero invented facts ([NEED: ...] placeholders, competing openings, platform rules, de-AI
   editing pass, fresh-reader check). Trigger on 写文章, 发帖, 公众号, 推文, 写稿. Not for resumes
   (career-navigator) or AGENTS.md/CLAUDE.md (agent-instructions).
-version: 1.5.0
+version: 1.5.1
 sources:
   - upstream/khazix-skills/khazix-writer (MIT) — first-hand observation is what a model cannot supply; ask the writer for it [port "first-hand detail comes from the writer"]
   - upstream/marketingskills/skills/copywriting/references/ai-tells.md (MIT) — placeholder for missing proof instead of an invented fact; the swap test [port "never fill it with something" "apply the swap test"]
