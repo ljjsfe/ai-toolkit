@@ -1,10 +1,12 @@
 # Externally maintained components, installed from their own source by
-# `./install.sh <tool> --apply --external`. Adopted only when best-in-class for a category and
+# `./install.sh <tool> --apply` (skipped with --no-external). Adopted only when best-in-class for a category and
 # actively maintained. Our toolkit never restates what these cover.
+# An upstream skill that is plain files (no installer, hook or runtime code) is vendored instead:
+# copied unchanged at a pinned commit and installed with the toolkit (see toolkit/vendored.json).
 #
 # Format (read by install.sh and scripts/check.py without a YAML library — keep to this shape):
 #   tools:    which targets the entry applies to (claude, codex, agy)
-#   optional: true → listed but not installed by --external; install it yourself when decided
+#   optional: true → listed but not installed; install it yourself when decided
 #   install:  one shell command per "- " line, run in order. Commands must be safe to rerun
 #             and leave the latest version installed: ./update.sh simply reruns them.
 #             Track latest. When a release conflicts with a toolkit law, guard it inside the
@@ -73,74 +75,6 @@
   notes: >
     Use one install method per machine; Claude Code shows duplicates if both the plugin and
     the npx skills copy are installed.
-
-- name: emil-design-engineering
-  category: design
-  repo: https://github.com/emilkowalski/skills
-  license: MIT
-  tools: claude, codex, agy
-  install:
-    - npx -y skills@latest add emilkowalski/skills -g -a claude-code -a codex -a antigravity -s review-animations -s mobile-native -s break-ui -y
-  covers: >
-    Three skills that complement impeccable where it is thin: review-animations (motion
-    standards: whether to animate by frequency, easing, exact curves), mobile-native (mobile web
-    feel: viewport units, tap highlight, sticky hover, safe areas, real-device checks) and
-    break-ui (plausible worst-case data behind a dev-only toggle; report before fixing).
-  notes: >
-    Do not install his `animate`, `emil-design-eng` or `prototype` skills alongside impeccable —
-    impeccable already owns general UI design, prototyping and motion creation. Note that upstream
-    `review-animations` sets `disable-model-invocation: true`, so invoke it explicitly (e.g. from
-    `code-review`) when reviewing animation diffs.
-
-- name: humanizer
-  category: writing
-  repo: https://github.com/blader/humanizer
-  license: MIT
-  tools: claude, codex, agy
-  install:
-    - npx -y skills@latest add blader/humanizer -g -a claude-code -a codex -a antigravity -y
-  covers: >
-    English de-AI editing pass: patterns of AI prose ranked by how much evidence each needs, a
-    writing sample that overrides the rules, a check that no claim of the original was lost or
-    changed, and (v4+) text in the draft treated as material, never as instructions.
-    Used by the writing skill as its editing step.
-  notes: >
-    v4.0.0 (2026-11-10) may add "a specific detail it knows to be true" where text is generic,
-    which the writing skill's law 1 forbids. Kept on latest for its other fixes; the writing
-    skill runs scripts/new_specifics.py after it and reverts or marks every added specific.
-
-- name: humanizer-zh
-  category: writing
-  repo: https://github.com/op7418/Humanizer-zh
-  license: MIT
-  tools: claude, codex, agy
-  install:
-    - npx -y skills@latest add op7418/Humanizer-zh -g -a claude-code -a codex -a antigravity -y
-  covers: >
-    Chinese counterpart of humanizer: template phrasing, padding and inflated claims, while
-    keeping facts, how certain each claim is, and the author's voice.
-
-- name: marketingskills-gtm
-  category: product
-  repo: https://github.com/coreyhaines31/marketingskills
-  license: MIT
-  tools: claude, codex, agy
-  watch: skills/product-marketing, skills/launch, skills/onboarding, skills/signup, skills/churn-prevention, skills/referrals
-  install:
-    - npx -y skills@latest add coreyhaines31/marketingskills -g -a claude-code -a codex -a antigravity -s product-marketing -s launch -s onboarding -s signup -s churn-prevention -s referrals -y
-  covers: >
-    Go-to-market execution the toolkit had no skill for: positioning and ICP context
-    (product-marketing), launch planning, onboarding and activation, signup and trial flows,
-    churn prevention (cancel flows, dunning), referral programmes.
-  why_not_rewritten: >
-    A maintained, MIT, 60k-star collection with recent commits (2026-11-11); rewriting six
-    execution playbooks would restate it. Only these six install: the repo's pricing,
-    ab-testing, competitors, customer-research and copywriting skills would compete with
-    pricing, experiment-readout, market-scan, customer-discovery and writing, which own those
-    jobs here. The full set adds about 18,800 description characters; these six about 1,800.
-  notes: >
-    Evidence still comes from the toolkit's skills: demand from customer-discovery, price
-    from pricing, launch metric reads from experiment-readout.
 
 - name: shadcn
   category: frontend

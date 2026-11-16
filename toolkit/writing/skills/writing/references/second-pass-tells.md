@@ -1,6 +1,6 @@
 # Second-pass tells and the writer behind the draft
 
-Read after the step-6 structural pass when the draft is clean but still reads as generated,
+Read after the step-6 humanizer pass when the draft is clean but still reads as generated,
 or when there is no `PERSONAL.md` and the draft sounds like nobody. A voice profile overrides
 everything here (Iron law 3): a habit the profile shows the writer uses on purpose stays.
 

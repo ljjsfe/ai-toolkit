@@ -2,12 +2,13 @@
 """Zero-dependency repository validator and CREDITS.md synchronizer.
 
 Usage:
-  python3 scripts/check.py                 # validate skills, rules, externals, CREDITS.md, and hook tests
+  python3 scripts/check.py                 # validate skills, rules, vendored skills, externals, CREDITS.md, tests
   python3 scripts/check.py --sync-credits  # regenerate CREDITS.md from skill/rule/external metadata, then validate
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -19,6 +20,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 TOOLKIT = ROOT / "toolkit"
 CREDITS = ROOT / "CREDITS.md"
+VENDORED = TOOLKIT / "vendored.json"
+SHA_RE = re.compile(r"^[0-9a-f]{40}$")
+REPO_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 VALID_TOOLS = {"claude", "codex", "agy"}
 VALID_EXTERNAL_STATUS = {"adopted", "optional", "trial"}
 MAX_DESC_CHARS = 360
@@ -355,6 +359,122 @@ def parse_external_yaml(path: Path, errors: list[str], today: date | None = None
     return entries
 
 
+# ---- vendored skills ----------------------------------------------------------------------
+# A vendored skill is an upstream skill folder copied byte for byte at a pinned commit, with the
+# upstream licence beside it. It is never edited here: scripts/vendor_sync.py replaces it whole,
+# and the recorded sha256 of every file makes a local edit fail validation. Guards against an
+# upstream rule go in the toolkit skill that uses it, never in the copy.
+
+
+def file_digests(d: Path) -> dict[str, str]:
+    """sha256 of every file under d, keyed by its posix path relative to d."""
+    out: dict[str, str] = {}
+    for f in sorted(d.rglob("*")):
+        if f.is_file() and "__pycache__" not in f.parts and f.name != ".DS_Store":
+            out[f.relative_to(d).as_posix()] = hashlib.sha256(f.read_bytes()).hexdigest()
+    return out
+
+
+VENDOR_TEXT_SUFFIXES = {".md", ".txt", ".json"}  # inert text and data; no code
+
+
+def vendor_file_ok(f: Path) -> bool:
+    """Vendoring is for plain text only: .md/.txt/.json (or the LICENSE), never executable."""
+    return (f.suffix.lower() in VENDOR_TEXT_SUFFIXES or f.name == "LICENSE") and not (f.stat().st_mode & 0o111)
+
+
+def include_problem(f: object) -> bool:
+    """True when an include entry could point outside its skill folder."""
+    if not isinstance(f, str) or not f.strip() or f.startswith(("/", "\\")):
+        return True
+    return any(part in ("..", "") for part in f.replace("\\", "/").split("/"))
+
+
+def load_vendored(path: Path, errors: list[str]) -> list[dict]:
+    """Flatten vendored.json into one dict per skill; schema problems go to errors."""
+    if not path.exists():
+        return []
+    label = path.relative_to(ROOT) if path.is_relative_to(ROOT) else path
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as e:
+        errors.append(f"{label}: invalid JSON ({e})")
+        return []
+    out: list[dict] = []
+    for src_name, src in (raw.get("sources") or {}).items():
+        where = f"{label}: {src_name}"
+        for key, rx in (("repo", REPO_RE), ("sha", SHA_RE), ("synced_on", ISO_DATE_RE)):
+            if not isinstance(src.get(key), str) or not rx.match(src[key]):
+                errors.append(f"{where}: {key} missing or malformed (got {src.get(key)!r})")
+        for key in ("license", "license_path"):
+            if not isinstance(src.get(key), str) or not src[key].strip():
+                errors.append(f"{where}: {key} missing")
+        skills = src.get("skills") or {}
+        if not skills:
+            errors.append(f"{where}: no skills listed")
+        for name, sk in skills.items():
+            dest = str(sk.get("to", ""))
+            if not re.fullmatch(rf"toolkit/[a-z0-9-]+/vendor/{re.escape(name)}", dest):
+                errors.append(f"{where}: {name}: 'to' must be toolkit/<category>/vendor/{name} (got {dest!r})")
+            if not sk.get("from"):
+                errors.append(f"{where}: {name}: 'from' missing")
+            inc = sk.get("include")
+            if inc is not None and (not isinstance(inc, list) or not inc or any(include_problem(f) for f in inc)):
+                errors.append(f"{where}: {name}: 'include' must be a non-empty list of relative file paths "
+                              f"inside 'from' (no '..', no absolute paths): {inc!r}")
+            out.append({
+                "name": name, "source": src_name, "repo": src.get("repo", ""),
+                "license": src.get("license", ""), "sha": src.get("sha", ""),
+                "to": dest, "files": dict(sk.get("files") or {}),
+            })
+    return out
+
+
+def validate_vendored(
+    entries: list[dict], root: Path, our_names: set[str], external_names: set[str], errors: list[str]
+) -> None:
+    """Each vendored folder matches its recorded hashes exactly and its name collides with nothing."""
+    listed = {e["to"] for e in entries}
+    for d in sorted(root.glob("toolkit/*/vendor/*")):
+        rel = d.relative_to(root).as_posix()
+        if d.is_dir() and rel not in listed:
+            errors.append(f"{rel}: vendored folder not listed in toolkit/vendored.json")
+    for e in entries:
+        d = root / e["to"]
+        where = f"{e['to'] or e['name']}"
+        if not d.is_dir():
+            errors.append(f"{where}: vendored folder missing (run: python3 scripts/vendor_sync.py --update {e['source']})")
+            continue
+        if not e["files"]:
+            errors.append(f"{where}: no file hashes recorded (run: python3 scripts/vendor_sync.py --update {e['source']})")
+            continue
+        actual = file_digests(d)
+        for f in sorted(set(e["files"]) - set(actual)):
+            errors.append(f"{where}/{f}: recorded but missing")
+        for f in sorted(set(actual) - set(e["files"])):
+            errors.append(f"{where}/{f}: not in the upstream copy; vendored folders are never edited here")
+        for f in sorted(set(actual) & set(e["files"])):
+            if actual[f] != e["files"][f]:
+                errors.append(f"{where}/{f}: differs from {e['repo']}@{e['sha'][:7]}; vendored files are never edited here")
+        for f in sorted(actual):
+            if not vendor_file_ok(d / f):
+                errors.append(f"{where}/{f}: not plain text (or executable); such a skill belongs in external.yaml")
+        if "LICENSE" not in actual:
+            errors.append(f"{where}: upstream LICENSE missing")
+        skill_md = d / "SKILL.md"
+        if skill_md.is_file():
+            m = re.match(r"---\n(.*?)\n---\n", skill_md.read_text(encoding="utf-8"), re.S)
+            nm = re.search(r"^name:\s*(.+?)\s*$", m.group(1), re.M) if m else None
+            if not nm or strip_quotes(nm.group(1)) != e["name"]:
+                errors.append(f"{where}/SKILL.md: frontmatter name must be {e['name']!r}")
+        else:
+            errors.append(f"{where}: SKILL.md missing")
+        if e["name"] in our_names:
+            errors.append(f"{where}: name {e['name']!r} is also a toolkit skill")
+        if e["name"].lower() in external_names:
+            errors.append(f"{where}: {e['name']!r} is still installed by toolkit/external.yaml; drop it there")
+
+
 def extract_skill_structure(body: str) -> dict[str, set[int]]:
     clean = re.sub(r"```.*?```", "", body, flags=re.S)
     steps = {int(m.group(1)) for m in re.finditer(r"^#{2,3}\s+Step\s+(\d+)\b", clean, re.M)}
@@ -365,6 +485,23 @@ def extract_skill_structure(body: str) -> dict[str, set[int]]:
     if law_sec:
         laws = {int(m.group(1)) for m in re.finditer(r"^(\d+)\.\s+", law_sec.group(1), re.M)}
     return {"steps": steps, "passes": passes, "sections": sections, "laws": laws}
+
+
+CROSS_SKILL_RE = re.compile(r"`((?:\.\./)+[A-Za-z0-9_.-]+/[A-Za-z0-9_./-]+)`")
+
+
+def validate_cross_skill_paths(docs: list[tuple[str, Path, str]], skill_dirs: dict[str, Path], errors: list[str]) -> None:
+    """`../other-skill/FILE` paths, read as installed: every skill folder is a sibling in one skills dir.
+
+    docs holds (skill name, path of the doc inside that skill folder, text)."""
+    import posixpath
+    for skill, doc_rel, text in docs:
+        base = posixpath.dirname(f"{skill}/{doc_rel.as_posix()}")
+        for m in CROSS_SKILL_RE.finditer(text):
+            target = posixpath.normpath(posixpath.join(base, m.group(1)))
+            head, _, rest = target.partition("/")
+            if target.startswith("..") or head not in skill_dirs or not (skill_dirs[head] / rest).is_file():
+                errors.append(f"{skill}/{doc_rel.as_posix()}: path {m.group(1)!r} does not resolve to an installed skill file")
 
 
 def validate_skill_section_refs(
@@ -407,6 +544,16 @@ def validate_skill_section_refs(
                 )
 
 
+def external_skill_names(externals: list[dict]) -> set[str]:
+    """Lower-cased entry names plus every skill an install command selects with -s / --skill."""
+    return {e["name"].lower() for e in externals} | {
+        sm.lower()
+        for e in externals
+        for cmd in e["install"]
+        for sm in re.findall(r"(?:^|\s)(?:-s|--skill)\s+([A-Za-z0-9_.-]+)", cmd)
+    }
+
+
 def validate_install_external_prefixes(
     install_sh: Path,
     externals: list[dict],
@@ -419,12 +566,7 @@ def validate_install_external_prefixes(
         return
     prefixes = re.findall(r'"([^"]+)"|\'([^\']+)\'', m.group(1))
     flat_prefixes = [a or b for a, b in prefixes]
-    active_tokens = {e["name"].lower() for e in externals} | {
-        sm.lower()
-        for e in externals
-        for cmd in e["install"]
-        for sm in re.findall(r"(?:^|\s)(?:-s|--skill)\s+([A-Za-z0-9_.-]+)", cmd)
-    }
+    active_tokens = external_skill_names(externals)
     for pref in flat_prefixes:
         plow = pref.lower()
         if not any(tok == plow or tok.startswith(plow) for tok in active_tokens):
@@ -437,6 +579,7 @@ def build_expected_credits(
     skill_sources: list[tuple[str, list[str]]],
     rule_sources: OrderedDict[str, list[str]],
     externals: list[dict],
+    vendored: list[dict] | None = None,
 ) -> str:
     sections: dict[str, OrderedDict[str, list[str]]] = {k: OrderedDict() for k in ("port", "idea", "gap")}
 
@@ -462,6 +605,8 @@ def build_expected_credits(
         "Sources under CC BY-SA or CC BY-NC-SA contributed ideas only, no wording.",
         "Each source is tagged in its skill's frontmatter; `python3 scripts/check.py` fails if a",
         "ported item's anchor text is not actually present in the skill.",
+        "The one exception is the vendored skills listed last: copied unchanged at a pinned commit,",
+        "with their licence, and checked against recorded hashes.",
     ]
     headings = {
         "port": ("Ported", "Procedure carried over; anchored in the skill text."),
@@ -475,6 +620,16 @@ def build_expected_credits(
             lines.append("- none")
         for src, users in sections[kind].items():
             lines.append(f"- {src} — used in: {', '.join(users)}")
+    lines.extend(["", "## Vendored (copied unchanged at a pinned commit; licence kept beside each copy)", ""])
+    by_source: OrderedDict[str, list[dict]] = OrderedDict()
+    for v in vendored or []:
+        by_source.setdefault(v["source"], []).append(v)
+    if not by_source:
+        lines.append("- none")
+    for vs in by_source.values():
+        v0 = vs[0]
+        names = ", ".join(v["name"] for v in vs)
+        lines.append(f"- {names} — https://github.com/{v0['repo']} at {v0['sha'][:12]} ({v0['license']})")
     lines.extend([
         "",
         "## Adopted external projects (installed from their own source; not included)",
@@ -601,7 +756,25 @@ def main() -> int:
 
     externals = parse_external_yaml(TOOLKIT / "external.yaml", errors)
     validate_install_external_prefixes(ROOT / "install.sh", externals, errors)
-    expected_credits = build_expected_credits(skill_sources, rule_sources, externals)
+    vendored = load_vendored(VENDORED, errors)
+    validate_vendored(vendored, ROOT, set(seen_names), external_skill_names(externals), errors)
+    skill_dirs = {smd.parent.name: smd.parent for smd in skill_mds}
+    skill_dirs.update({v["name"]: ROOT / v["to"] for v in vendored if v["to"]})
+    cross_docs = [
+        (smd.parent.name, f.relative_to(smd.parent), f.read_text(encoding="utf-8"))
+        for smd in skill_mds
+        for f in [smd] + sorted((smd.parent / "references").glob("*.md"))
+    ]
+    validate_cross_skill_paths(cross_docs, skill_dirs, errors)
+    # Vendored descriptions are resident too. They are never trimmed here (the copy stays
+    # unchanged), so they sit outside the per-skill cap but count in the reported total.
+    vendored_desc_chars = 0
+    for v in vendored:
+        vmd = ROOT / v["to"] / "SKILL.md"
+        if vmd.is_file():
+            d = parse_skill_frontmatter(vmd, []).get("description")
+            vendored_desc_chars += len(d) if isinstance(d, str) else 0
+    expected_credits = build_expected_credits(skill_sources, rule_sources, externals, vendored)
     if args.sync_credits:
         CREDITS.write_text(expected_credits, encoding="utf-8")
         print(f"Synced {CREDITS.relative_to(ROOT)}")
@@ -614,6 +787,7 @@ def main() -> int:
     test_scripts = [
         ("check.py", ROOT / "scripts" / "test_check.py"),
         ("upstream_drift.py", ROOT / "scripts" / "test_upstream_drift.py"),
+        ("vendor_sync.py", ROOT / "scripts" / "test_vendor_sync.py"),
         ("claim-check", TOOLKIT / "hooks" / "claim-check" / "test_claim_check.py"),
     ]
     # Executable helpers shipped inside a skill must carry their own tests.
@@ -641,8 +815,9 @@ def main() -> int:
             if kind:
                 kinds[kind] += 1
     print(
-        f"OK: {len(skill_mds)} skills ({total_desc_chars} total description chars, avg {avg_desc}), "
-        f"{len(rule_files)} rules, {len(externals)} externals, CREDITS.md in sync, unit tests green. "
+        f"OK: {len(skill_mds)} skills ({total_desc_chars} total description chars, avg {avg_desc}; "
+        f"+{vendored_desc_chars} from vendored skills), "
+        f"{len(rule_files)} rules, {len(vendored)} vendored, {len(externals)} externals, CREDITS.md in sync, unit tests green. "
         f"Sources: {kinds['port']} ported (anchored), {kinds['idea']} idea-only, {kinds['gap']} known gaps."
     )
     return 0

@@ -5,7 +5,7 @@ description: >-
   dialog/popover/invokers/anchor/select over JS libraries, INP/LCP/CLS and long tasks, forms and
   autofill, passkeys, CSP/Trusted Types, Temporal dates, legacy modernising. Not for visual design
   (impeccable), mobile feel (mobile-native), React/Next (typescript-web rule), webapp-testing.
-version: 1.0.1
+version: 1.0.2
 sources:
   - upstream/googlechrome-modern-web-guidance/skills/modern-web-guidance/SKILL.md (CC-BY-4.0, adapted) — Baseline policy (Widely available needs no fallback, otherwise follow the fallback unless the project states a policy; Baseline-year targets), conditional polyfills, verify legacy-scan findings before modernising [port "a Baseline YYYY target" "keep the library as the fallback" "drop false positives"]
   - upstream/googlechrome-modern-web-guidance/skills/modern-web-guidance/guides/performance/{performance,identify-inp-causes,identify-heavy-scripts,break-up-long-tasks,schedule-tasks-by-priority}.md (CC-BY-4.0, adapted) — field attribution with web-vitals, INP subparts, LoAF style vs layout split, deadline-based yielding with a setTimeout fallback, task budget [port "Split the slow interaction into its three subparts" "Yield on a deadline, not a counter" "puts it at the front" "A console log is not field data"]
@@ -17,7 +17,7 @@ sources:
   - upstream/googlechrome-modern-web-guidance/skills/modern-web-guidance/guides/security/{security,trusted-types,sanitize-untrusted-html,validate-origins}.md (CC-BY-4.0, adapted) — sink hygiene, Sanitizer with DOMPurify fallback, Trusted Types rollout, nonce-based CSP rollout, companion headers, origin comparison [port "reopens mutation XSS" "Never create a pass-through policy" "Never stamp nonces onto every" "reject `'null'`, compare `.origin`"]
   - upstream/googlechrome-modern-web-guidance/skills/modern-web-guidance/guides/security/{passkeys,passkey-registration,passkey-authentication,passkey-conditional-create,passkey-management,passkey-reauthentication}.md (CC-BY-4.0, adapted) — server-provided rpId, conditional mediation, conditional create after full sign-in, Signal API gating [port "never from `window.location.hostname`" "after every MFA factor" "never an access decision"]
   - upstream/googlechrome-modern-web-guidance/skills/modern-web-guidance/guides/js/{capture-location-agnostic-data,coordinate-global-events,calculate-event-differentials,sort-high-precision-timestamps,support-global-calendar-systems}.md (CC-BY-4.0, adapted) — Temporal type choice, DST disambiguation, durations, instants, calendars [port "Pick the type by what the value means" "never a fixed offset" "relativeTo` is required" "Loop to `monthsInYear`"]
-  - authored for this toolkit (cross-source resolution with mobile-native and the review-animations external) — motion values come from the motion rules, not from the view-transition samples [port "keep the API usage, not those timings"]
+  - authored for this toolkit (cross-source resolution with the vendored mobile-native and review-animations) — motion values come from the motion rules, not from the view-transition samples [port "keep the API usage, not those timings"]
 ---
 
 # Web Platform
@@ -58,7 +58,8 @@ Read the file for the matching row before answering.
 | dates, time zones, durations, timestamps, calendars | `references/dates.md` |
 
 Hand-offs: visual design → `impeccable`; phone feel and viewport units → `mobile-native`; motion
-values → `review-animations` (if installed); React and Next.js → `rules/typescript-web.md`;
+values → `review-animations` (user-invoked only in Claude Code: read `../review-animations/STANDARDS.md`
+rather than calling it); React and Next.js → `rules/typescript-web.md`;
 server-side authorisation → `app-security`; proving it in a browser → `webapp-testing`.
 
 ## Support snapshot (guides' data, v1.0.0)

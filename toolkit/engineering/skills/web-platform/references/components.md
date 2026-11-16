@@ -2,8 +2,8 @@
 
 Support data is from the guides' Baseline data at v1.0.0 (2026-11-10). "Limited" means at least
 one core browser lacks it, so ship the fallback unless the project's matrix excludes that browser.
-Motion values (easing, duration) are not set here; take them from `review-animations` (if
-installed) or the project's motion rules.
+Motion values (easing, duration) are not set here; take them from `review-animations`
+(`../../review-animations/STANDARDS.md` from this file) or the project's motion rules.
 
 ## Dialog — replaces modal libraries and focus-trap code
 

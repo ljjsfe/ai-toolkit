@@ -21,40 +21,55 @@ is missing from the skill), `idea` or `gap`; see [CREDITS.md](CREDITS.md).
 | investing | `thesis-ledger` · `valuation-audit` — decision support for individual investors; never buy/sell advice |
 | strategy | `liu-ayi` — a strategic-analysis framework built on order-and-institution checks, base rates and calibrated decisions |
 | career | `career-navigator` |
-| writing | `writing` — posts, articles and social media in the writer's voice, no invented facts; de-AI pass via humanizer / humanizer-zh (external) with inline fallback |
+| writing | `writing` — posts, articles and social media in the writer's voice, no invented facts; de-AI pass via the vendored humanizer / humanizer-zh, then an added-facts check |
 | rules | `core.md` (always loaded, ~20 lines) plus language traps that load only for matching files: Python, Java/Spring, C++, TypeScript/React/Next.js, web platform (HTML/CSS/JS), Swift, Kotlin, React Native/Expo, Flutter/Dart, SQL/containers |
 | hooks | `claim-check` — blocks "done / fixed / tests pass" claims made after editing files without running anything (Claude Code, Antigravity, Codex transcript support) |
 
-Design taste is delegated to [impeccable](https://github.com/pbakaus/impeccable) plus three of
-[emilkowalski/skills](https://github.com/emilkowalski/skills) (motion review, mobile-web feel, worst-case data), trend signals to
-[last30days](https://github.com/mvanhorn/last30days-skill), de-AI prose editing to
-[humanizer](https://github.com/blader/humanizer) and [humanizer-zh](https://github.com/op7418/Humanizer-zh), browser UI verification to
-[webapp-testing](https://github.com/anthropics/skills) (or optional [agent-browser](https://github.com/vercel-labs/agent-browser)), safety hooks to
-[claude-code-hooks](https://github.com/karanb192/claude-code-hooks) (optional), go-to-market
-execution (positioning, launch, onboarding, signup, churn, referrals) to six skills of
-[marketingskills](https://github.com/coreyhaines31/marketingskills), stack-specific vendor skills as optional, per-project installs (shadcn/ui, Vercel AI SDK,
-Playwright CLI, SwiftUI, Expo, Android, Stripe), and handoff to Codex
-to [codex-plugin-cc](https://github.com/openai/codex-plugin-cc) — installed from their own
-sources (see `toolkit/external.yaml`).
+Two ways of using other people's work, besides porting it into a skill:
+
+- **Vendored** (copied unchanged at a pinned commit, shipped in this repo; `toolkit/vendored.json`):
+  three skills of [emilkowalski/skills](https://github.com/emilkowalski/skills) (motion review,
+  mobile-web feel, worst-case data), de-AI prose editing from
+  [humanizer](https://github.com/blader/humanizer) and [humanizer-zh](https://github.com/op7418/Humanizer-zh),
+  and go-to-market execution (positioning, launch, onboarding, signup, churn, referrals) from six
+  skills of [marketingskills](https://github.com/coreyhaines31/marketingskills).
+- **External** (installed from their own source because they carry an installer, hooks or runtime
+  code; `toolkit/external.yaml`): design taste from [impeccable](https://github.com/pbakaus/impeccable),
+  trend signals from [last30days](https://github.com/mvanhorn/last30days-skill), browser UI
+  verification from [webapp-testing](https://github.com/anthropics/skills) (or optional
+  [agent-browser](https://github.com/vercel-labs/agent-browser)), handoff to Codex through
+  [codex-plugin-cc](https://github.com/openai/codex-plugin-cc), safety hooks from
+  [claude-code-hooks](https://github.com/karanb192/claude-code-hooks) (optional), and
+  stack-specific vendor skills as optional, per-project installs (shadcn/ui, Vercel AI SDK,
+  Playwright CLI, SwiftUI, Expo, Android, Stripe).
 
 ## Install
 
 ```bash
 git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
 ./install.sh claude|codex|agy|both|all         # dry run: prints what would change (`both` = claude+codex)
-./install.sh claude --apply                    # install for Claude Code
+./install.sh claude --apply                    # install for Claude Code (toolkit, vendored and external skills)
 ./install.sh agy --apply                       # install for Google Antigravity
 ./install.sh claude --apply --replace-legacy   # also move your existing skills/rules to ~/.toolkit-backup/
-./install.sh all --apply --external            # new machine: all three harnesses + external components
-./update.sh                                    # later: git pull, review external changes, reinstall all + external
+./install.sh all --apply                       # new machine: all three harnesses
+./install.sh claude --apply --no-external      # offline or toolkit-only: skip external installers
+./update.sh                                    # later: git pull, review external changes, reinstall all
 ```
 
-- `--external` runs each non-optional installer listed in `toolkit/external.yaml` scoped to the
-  selected target(s): impeccable, last30days, emilkowalski/skills, humanizer (latest, with an added-facts check),
-  humanizer-zh, six marketingskills GTM skills, webapp-testing, and (for Claude Code) codex-plugin-cc. Entries marked `optional` — currently
-  taste-skill, agent-browser, mcp-builder, mcp-server-dev, claude-security and claude-code-hooks —
-  are printed, not installed. Any entry placed on `status: trial` must declare `trial_start` and
+- A full install also runs each non-optional installer in `toolkit/external.yaml`, scoped to the
+  selected target(s): impeccable, last30days, webapp-testing and (for Claude Code)
+  codex-plugin-cc. These need network and `npx`, and impeccable registers its detector hook in
+  `~/.claude/settings.json`; `--no-external` skips them (`--external` is still accepted and
+  changes nothing). Entries marked `optional` — taste-skill, agent-browser, mcp-builder,
+  mcp-server-dev, claude-security, claude-code-hooks and the stack-specific vendor skills — are
+  printed, not installed. Any entry placed on `status: trial` must declare `trial_start` and
   `trial_review_by` dates, enforced by `scripts/check.py`.
+- Vendored skills live unchanged under `toolkit/<category>/vendor/`, pinned in
+  `toolkit/vendored.json`, and install like the toolkit's own skills (also with
+  `--no-external`). Their descriptions are not trimmed
+  to the toolkit's cap (the copies stay unchanged), so `check.py` reports them as a separate
+  resident cost. If an earlier install put one of them there through the `skills` CLI, install.sh
+  prints the one command that drops that record.
 - Skills are stored once in `~/.agents/skills/`, which Codex reads directly; Claude Code gets
   symlinks in `~/.claude/skills/` and Antigravity gets symlinks in `~/.gemini/config/skills/`
   (including any external skills installed in `~/.agents/skills/`, excluding `*-traps`, since both
@@ -65,8 +80,9 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
   writing voice profile in `toolkit/writing/`); they are merged into that category's skills as
   `PERSONAL.md` at install time.
 - Validation and tests (zero external dependencies):
-  - Full repo check (frontmatter, resident description budget, references, source coverage tags and their anchors, `external.yaml` trial review dates, `CREDITS.md` sync, unit tests, and tests of any skill `scripts/`): `python3 scripts/check.py`
+  - Full repo check (frontmatter, resident description budget, references, source coverage tags and their anchors, vendored file hashes, `external.yaml` trial review dates, `CREDITS.md` sync, unit tests, and tests of any skill `scripts/`): `python3 scripts/check.py`
   - Upstream drift: `python3 scripts/upstream_drift.py [name …]` (needs an authenticated `gh`) lists, for every credited path, whether it still exists upstream and which commits touched it since the commit recorded in `toolkit/upstreams.json`. After re-reading a change and updating the skill, move that upstream's `reviewed_sha` / `reviewed_on` forward. `check.py` fails if a credited upstream is not registered there.
+  - Vendored skills: `python3 scripts/vendor_sync.py` lists upstream commits since each pin; `--update <source>` copies the new upstream folder and re-pins. Read `git diff` before committing, then `python3 scripts/check.py --sync-credits`.
   - Validator & hook tests alone: `python3 scripts/test_check.py` and `python3 toolkit/hooks/claim-check/test_claim_check.py` (also `pytest -q` compatible).
 - `claim-check` is a cheap tripwire, not proof of verification: it checks that a command that is
   not purely read-only (`ls`, `cat`, `git status`… do not count) or a browser check ran after the
@@ -84,8 +100,13 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
    hook enforced them. So where a rule can be checked mechanically it gets a script or a hook
    (claim-check, the anchored credits, the skill scripts); the rest stays as short gates.
 2. One owner per behaviour; skills cross-reference instead of repeating each other.
-3. Rewrite, don't copy — upstream material is read and restated; licences are respected; every
-   credit is tagged and anchored, and `toolkit/upstreams.json` records what was read and when.
+3. Rewrite or vendor, never half of each. Upstream material is read and restated; licences are
+   respected; every credit is tagged and anchored, and `toolkit/upstreams.json` records what was
+   read and when. An upstream skill that is good as written and is plain files (no installer,
+   hook or runtime code) is vendored instead: copied unchanged at a pinned commit with its
+   licence, never edited here (`check.py` verifies file hashes), refreshed only through
+   `scripts/vendor_sync.py --update` after reading the diff. Guards against a vendored rule live
+   in the toolkit skill that uses it.
 4. Resident cost is a budget: descriptions are short, long rules load only when relevant.
 5. When sources disagree, decide in this order:
    1. Check whether they answer the same question. Most conflicts are different contexts (an
@@ -103,7 +124,9 @@ git clone https://github.com/ljjsfe/ai-toolkit && cd ai-toolkit
    (`--yes` skips it). That review is what makes `@latest` acceptable here; agent-security's
    rule against unreviewed `@latest` still applies to everything else. When a release conflicts
    with a toolkit law, guard it inside the toolkit instead of pinning (humanizer 4 began adding
-   facts; writing now checks for them). `scripts/upstream_drift.py` lists what changed or was
+   facts; writing now checks for them). Vendored skills follow upstream the same way, one step
+   earlier: `scripts/vendor_sync.py` lists commits since each pin and `--update` brings them in
+   as a diff to read before committing. `scripts/upstream_drift.py` lists what changed or was
    removed since each credited upstream was last read.
 
 ## License

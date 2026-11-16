@@ -46,12 +46,6 @@
       "reviewed_sha": "f7d87aff034507a529ccf34b84de2aff7879f5ec",
       "reviewed_on": "2026-11-14"
     },
-    "blader-humanizer": {
-      "repo": "blader/humanizer",
-      "reviewed_sha": "b48c832f0f809c1b5658edbb838c2521b72f2413",
-      "reviewed_on": "2026-11-14",
-      "note": "external, tracks latest; v4.0.0 release notes read 2026-11-14 and guarded by writing/scripts/new_specifics.py"
-    },
     "claude-plugins-official": {
       "repo": "anthropics/claude-plugins-official",
       "reviewed_sha": "b5b01ac4f889fec0c4c6bb89f27ca7c8574473f6",
@@ -167,12 +161,6 @@
       "repo": "Yeachan-Heo/oh-my-claudecode",
       "reviewed_sha": "dec7e4188c0e3de6b92fb3d734ee5c95326021ed",
       "reviewed_on": "2026-11-14"
-    },
-    "op7418-humanizer-zh": {
-      "repo": "op7418/Humanizer-zh",
-      "reviewed_sha": "f4518a8eab97b8bfebc66a89d34320a89bef6930",
-      "reviewed_on": "2026-11-14",
-      "note": "external, tracks latest; last change 2026-09-23 (preserve meaning and author voice) read 2026-11-14"
     },
     "optimnow-cloud-finops-skills": {
       "repo": "OptimNow/cloud-finops-skills",
