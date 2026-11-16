@@ -24,7 +24,11 @@ NUMBER_RE = re.compile(r"(?<![0-9A-Za-z_.])[-+]?\d+(?:,\d{3})*(?:\.\d+)?(?:\s?(?
 DATE_RE = re.compile(r"\b\d{4}-\d{2}(?:-\d{2})?\b|\b(?:19|20)\d{2}年(?:\d{1,2}月)?(?:\d{1,2}日)?")
 QUOTE_RE = re.compile(r"[\"“「『]([^\"”」』]{6,})[\"”」』]")
 # Two or more capitalised words (Latin), not at a sentence start: likely a proper name.
-NAME_RE = re.compile(r"(?<=[a-z,;:)] )(?:[A-Z][a-zA-Z&.-]+(?:\s+(?:of|de|and|&)?\s*[A-Z][a-zA-Z&.-]+)+)")
+# A dot belongs to a word only when letters follow it ("Vue.js") or it closes a title or an
+# initialism ("Dr. Ada Smith", "St. Louis", "U.S. Army"); any other dot ends the sentence and
+# the name, so "GitHub Actions. Median" is not one name.
+_NAME_WORD = r"(?:(?:Dr|Mr|Mrs|Ms|Mt|St|Jr|Sr|Prof)\.|(?:[A-Z]\.){2,}|[A-Z](?:[a-zA-Z&-]|\.(?=[A-Za-z]))+)"
+NAME_RE = re.compile(rf"(?<=[a-z,;:)] )(?:{_NAME_WORD}(?:\s+(?:of|de|and|&)?\s*{_NAME_WORD})+)")
 
 
 def norm(text: str) -> str:
